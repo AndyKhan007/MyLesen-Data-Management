@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Faceprint & Absensi Biometrik</title>
-
-    
-
+    <title>MyLesen Data Management dan Attendance - Pusat Latihan Memandu Cemerlang</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -34,33 +31,49 @@
 <body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col justify-between select-none">
 
     <!-- HEADER / STATUS BAR -->
-    <header class="w-full bg-brand-card border-b border-slate-800 p-4 flex justify-between items-center shadow-md">
+    <header class="w-full bg-brand-card border-b border-slate-800 p-4 flex flex-col md:flex-row justify-between items-center shadow-md gap-2">
         <div class="flex items-center space-x-3">
             <div class="w-3 h-3 bg-brand-success rounded-full animate-pulse"></div>
-            <span class="font-bold tracking-wider text-sm md:text-base">Mulyadi _ BIO ATTENDANCE SYSTEM</span>
+            <span class="font-bold tracking-wider text-xs md:text-sm text-blue-400">
+                MyLesen Data Management & Attendance &bull; Pusat Latihan Memandu Cemerlang
+            </span>
         </div>
-        <div id="real-time-clock" class="text-sm font-mono text-slate-400">00:00:00 | 00-00-0000</div>
+        <div id="real-time-clock" class="text-xs font-mono text-slate-400">00:00:00 | 00-00-0000</div>
     </header>
 
     <!-- MAIN CONTAINER -->
     <main class="flex-grow flex items-center justify-center p-4">
 
         <!-- 1. HOME VIEW -->
-        <section id="view-home" class="w-full max-w-md bg-brand-card border border-slate-700/50 rounded-2xl p-8 shadow-2xl text-center space-y-8">
+        <section id="view-home" class="w-full max-w-md bg-brand-card border border-slate-700/50 rounded-2xl p-8 shadow-2xl text-center space-y-6">
             <div>
                 <div class="w-20 h-20 bg-brand-accent/20 border border-brand-accent rounded-full flex items-center justify-center mx-auto mb-4 text-brand-accent text-3xl shadow-inner">
-                    <i class="fa-solid fa-fingerprint"></i>
+                    <i class="fa-solid fa-id-card-clip"></i>
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight">Sistem Faceprint</h1>
-                <p class="text-slate-400 text-sm mt-1">Silakan pilih menu operasional di bawah ini</p>
+                <h1 class="text-xl font-bold tracking-tight">Sistem Attendance MyLesen</h1>
+                <p class="text-slate-400 text-xs mt-1">Pusat Latihan Memandu Cemerlang</p>
             </div>
 
-            <div class="space-y-4">
-                <button onclick="switchView('view-faceprint')" class="w-full py-4 bg-blue-600 hover:bg-blue-500 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-lg group">
-                    <i class="fa-solid fa-camera group-hover:scale-110 transition-transform"></i>
-                    <span>Mulai Faceprint</span>
+            <!-- Status Sesi QR Code -->
+            <div id="qr-session-badge" class="bg-slate-900/80 border border-slate-700 p-3 rounded-xl text-xs flex justify-between items-center">
+                <span class="text-slate-400">Status Sesi QR:</span>
+                <span id="qr-session-text" class="text-amber-400 font-semibold"><i class="fa-solid fa-key"></i> Belum Scan QR</span>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="promptQrScan()" class="w-full py-3 bg-amber-600 hover:bg-amber-500 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-2 text-sm">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Scan / Input Token QR Code</span>
                 </button>
-                <button onclick="switchView('view-admin-login')" class="w-full py-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-lg text-slate-300">
+                <button onclick="switchView('view-faceprint')" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-base group">
+                    <i class="fa-solid fa-camera group-hover:scale-110 transition-transform"></i>
+                    <span>Mulai Faceprint (Kehadiran)</span>
+                </button>
+                <button onclick="startUpdateDataFlow()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-base group text-white">
+                    <i class="fa-solid fa-pen-to-square group-hover:scale-110 transition-transform"></i>
+                    <span>Update Data MyLesen & L Licence</span>
+                </button>
+                <button onclick="switchView('view-admin-login')" class="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm text-slate-300">
                     <i class="fa-solid fa-lock"></i>
                     <span>Login Admin / Pendaftaran</span>
                 </button>
@@ -72,7 +85,7 @@
             <div class="flex justify-between items-center border-b border-slate-800 pb-4">
                 <h2 class="text-xl font-bold flex items-center space-x-2">
                     <i class="fa-solid fa-video text-brand-accent"></i>
-                    <span>Pemindaian Kehadiran (Faceprint)</span>
+                    <span>Pemindaian Kehadiran Latihan</span>
                 </h2>
                 <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
@@ -90,10 +103,10 @@
 
             <div class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-sm">
                 <div>
-                    <p class="text-slate-400">Status GPS:</p>
-                    <p id="gps-status-text" class="text-brand-success font-medium"><i class="fa-solid fa-spinner fa-spin"></i> Memeriksa GPS...</p>
+                    <p class="text-slate-400 text-xs">Status GPS Geofence:</p>
+                    <p id="gps-status-text" class="text-brand-success font-medium text-xs"><i class="fa-solid fa-spinner fa-spin"></i> Memeriksa GPS...</p>
                 </div>
-                <button id="btn-proses-absen" onclick="prosesAbsen()" class="px-6 py-2.5 bg-brand-success hover:bg-emerald-600 font-bold rounded-lg shadow transition">
+                <button id="btn-proses-absen" onclick="prosesAbsen()" class="px-6 py-2.5 bg-brand-success hover:bg-emerald-600 font-bold rounded-lg shadow transition text-sm">
                     Proses Absen
                 </button>
             </div>
@@ -124,50 +137,182 @@
             </form>
         </section>
 
-        <!-- 4. FACE REGISTRATION VIEW -->
-        <section id="view-registration" class="hidden w-full max-w-2xl bg-brand-card border border-slate-700/50 rounded-2xl p-6 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                <h2 class="text-xl font-bold flex items-center space-x-2">
+        <!-- 4. REGISTRATION VIEW -->
+        <section id="view-registration" class="hidden w-full max-w-3xl bg-brand-card border border-slate-700/50 rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h2 class="text-lg font-bold flex items-center space-x-2">
                     <i class="fa-solid fa-user-plus text-brand-accent"></i>
-                    <span>Pendaftaran Wajah Baru (7 Pose)</span>
+                    <span>Pendaftaran User / Admin Baru</span>
                 </h2>
                 <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">User ID (Otomatis)</label>
-                    <input type="text" id="reg-id" placeholder="User ID (Contoh: U001)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Nama Lengkap User</label>
-                    <input type="text" id="reg-name" placeholder="Nama Lengkap User" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+            <!-- Upload MyKad & OCR Gemini -->
+            <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-3">
+                <p class="text-xs font-semibold text-brand-accent flex items-center gap-2">
+                    <i class="fa-solid fa-id-card"></i> Upload MyKad Front & Back (Auto-OCR Gemini AI)
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 mb-1">MyKad Depan (Front)</label>
+                        <input type="file" id="reg-mykad-front" accept="image/*" onchange="handleMyKadFrontUpload(event)"
+                               class="w-full text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">MyKad Belakang (Back)</label>
+                        <input type="file" id="reg-mykad-back" accept="image/*" onchange="handleMyKadBackUpload(event)"
+                               class="w-full text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-white hover:file:bg-slate-600 cursor-pointer">
+                    </div>
                 </div>
             </div>
 
+            <!-- Form Isian -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">Role Status</label>
+                    <select id="reg-role" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-accent">
+                        <option value="User">User (Student)</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">User ID (Otomatis)</label>
+                    <input type="text" id="reg-id" readonly placeholder="Otomatis" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-blue-400 font-mono">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Nama Lengkap</label>
+                    <input type="text" id="reg-name" placeholder="Nama Lengkap" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">Nomor Telpon 1 *</label>
+                    <input type="tel" id="reg-phone1" placeholder="Contoh: 0123456789" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Nomor Telpon 2 *</label>
+                    <input type="tel" id="reg-phone2" placeholder="Contoh: 0198765432" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+            </div>
+
+            <!-- Data Hasil OCR MyKad -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">No Kad Pengenalan (IC)</label>
+                    <input type="text" id="reg-ic" placeholder="No IC" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Status Warganegara</label>
+                    <input type="text" id="reg-citizenship" placeholder="Warganegara" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Gender / Jantina</label>
+                    <input type="text" id="reg-gender" placeholder="LELAKI / PEREMPUAN" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Alamat Lengkap</label>
+                <textarea id="reg-address" rows="2" placeholder="Alamat Rumah Lengkap" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></textarea>
+            </div>
+
+            <!-- Kamera Wajah 7 Pose -->
             <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-slate-700 shadow-inner flex items-center justify-center">
                 <video id="reg-video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
-                
-                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-4 py-2 rounded-full text-center">
-                    <span id="pose-instruction" class="text-sm font-semibold text-brand-accent">Langkah 1/7: Hadap Depan Lurus (Netral)</span>
+                <div class="absolute top-3 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-4 py-1.5 rounded-full text-center">
+                    <span id="pose-instruction" class="text-xs font-semibold text-brand-accent">Langkah 1/7: Hadap Depan Lurus (Netral)</span>
                 </div>
             </div>
 
-            <div class="space-y-2">
+            <div class="space-y-1">
                 <div class="flex justify-between text-xs text-slate-400">
                     <span id="progress-text">Progress Sampel: 0 / 7</span>
                     <span id="progress-percentage">0%</span>
                 </div>
-                <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
+                <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
                     <div id="progress-bar" class="bg-brand-success h-full w-0 transition-all duration-300"></div>
                 </div>
             </div>
 
             <div class="flex justify-between items-center pt-2">
-                <button onclick="resetRegistration()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-sm rounded-lg border border-slate-600 transition">Reset</button>
-                <button onclick="captureNextPose()" id="btn-capture" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg shadow transition flex items-center space-x-2">
+                <button onclick="resetRegistration()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg border border-slate-600 transition">Reset</button>
+                <button onclick="captureNextPose()" id="btn-capture" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 font-bold text-xs rounded-lg shadow transition flex items-center space-x-2">
                     <i class="fa-solid fa-camera"></i>
                     <span>Ambil Sampel Pose Ini</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 5. UPDATE DATA MYLESEN VIEW / MODAL -->
+        <section id="view-update-data" class="hidden w-full max-w-2xl bg-brand-card border border-slate-700/50 rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h2 class="text-lg font-bold flex items-center space-x-2">
+                    <i class="fa-solid fa-pen-to-square text-emerald-400"></i>
+                    <span>Update Data MyLesen & L Licence</span>
+                </h2>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <!-- Ringkasan Profil Pengguna Terdeteksi -->
+            <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-700 space-y-2 text-xs">
+                <div class="flex justify-between border-b border-slate-800 pb-2">
+                    <span class="text-slate-400">User ID:</span>
+                    <span id="update-disp-userid" class="font-mono text-blue-400 font-bold">-</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-800 pb-2">
+                    <span class="text-slate-400">Nama Lengkap:</span>
+                    <span id="update-disp-name" class="font-semibold text-white">-</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-800 pb-2">
+                    <span class="text-slate-400">No Kad Pengenalan (IC):</span>
+                    <span id="update-disp-ic" class="text-slate-200">-</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-800 pb-2">
+                    <span class="text-slate-400">Alamat Lengkap:</span>
+                    <span id="update-disp-address" class="text-slate-300 text-right max-w-xs">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Dokumen Disimpan:</span>
+                    <span id="update-disp-docs" class="text-emerald-400 font-semibold">-</span>
+                </div>
+            </div>
+
+            <!-- Upload L Licence Depan & Belakang -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 space-y-3">
+                <p class="text-xs font-semibold text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-address-card"></i> Upload Gambar "L Licence"
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 mb-1">L Licence Depan (Front)</label>
+                        <input type="file" id="update-l-front" accept="image/*" onchange="handleLFrontUpload(event)"
+                               class="w-full text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">L Licence Belakang (Back)</label>
+                        <input type="file" id="update-l-back" accept="image/*" onchange="handleLBackUpload(event)"
+                               class="w-full text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-white hover:file:bg-slate-600 cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Nomor Telpon Tambahan -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">Nomor Telpon 1</label>
+                    <input type="tel" id="update-phone1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Nomor Telpon 2 (Opsional)</label>
+                    <input type="tel" id="update-phone2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <button onclick="submitUpdateData()" id="btn-submit-update" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl shadow transition text-sm flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Simpan & Update Data</span>
                 </button>
             </div>
         </section>
@@ -176,15 +321,12 @@
 
     <!-- FOOTER -->
     <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-slate-800">
-        Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script
+        MyLesen Data Management & Attendance &bull; Powered by Google Sheets & Gemini AI
     </footer>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // URL Apps Script Web App
-        const API_URL = "https://script.google.com/macros/s/AKfycbyfYsIb5WXCPqLE9VZww9SkCae-MHtYTQuZ8xmXDfVmDP3WKlV4MGRwsWr9wPhib5ZTUA/exec";
-
-        // CDN Model Face-API.js
+        const API_URL = "https://script.google.com/macros/s/AKfycbxYBH4gYxuxVTQZZ26Be75Gp2hYh_qqGUbY-sSBsZL-K8Pg2QDLQb6DJj08ZKkMgM-nrA/exec";
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
         const OFFICE_LAT = 5.350205443577465;
@@ -203,12 +345,23 @@
         
         let lastRecognizedId = null; 
         let faceLostTimeout = null;
-        let isDetecting = false; // Kill Switch
-        let ttsTimeoutId = null; // ID Pembersih Delay TTS
+        let isDetecting = false;
+        let ttsTimeoutId = null;
         
         let targetFps = 8;
         const MIN_FPS = 4;
         const MAX_FPS = 12;
+
+        // Status Sesi QR Code Dinamis
+        let hasActiveQrSession = false;
+        let currentActiveRole = "User"; // Role terdeteksi dari pemindaian wajah
+
+        // Base64 File Storage Variables
+        let regMyKadFrontBase64 = "", regMyKadFrontMime = "";
+        let regMyKadBackBase64 = "", regMyKadBackMime = "";
+        let updateLFrontBase64 = "", updateLFrontMime = "";
+        let updateLBackBase64 = "", updateLBackMime = "";
+        let activeProfileData = null;
 
         // Jam Real-time
         setInterval(() => {
@@ -218,7 +371,6 @@
             document.getElementById('real-time-clock').innerText = `${timeString} | ${dateString}`;
         }, 1000);
 
-        // --- FUNGSI FALLBACK SPEECH API NATIVE (JIKA RESPONSIVEVOICE OFF/GAGAL) ---
         function speakNativeFallback(text, lang = 'id-ID') {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -228,78 +380,49 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // --- FUNGSI PEMUTAR AUDIO UCAPAN DENGAN AUTO-SAPAAN RESPONSIVEVOICE ---
         function playVerifiedSound(userName = "") {
             if (!isDetecting) return; 
-
             stopAllAudio();
 
-            // 1. Tentukan Sapaan Berdasarkan Jam & Menit Lokal
             const now = new Date();
-            const jam = now.getHours();
-            const menit = now.getMinutes();
-            const totalMenit = jam * 60 + menit; // Konversi ke total menit untuk perhitungan presisi
-
+            const totalMenit = now.getHours() * 60 + now.getMinutes();
             let pesanSapaan = "";
 
-            // Jam 07:00 - 07:30 (420 menit - 450 menit)
             if (totalMenit >= 420 && totalMenit <= 450) {
                 pesanSapaan = `Terima kasih ${userName}, selamat bekerja.`;
-            } 
-            // Tengah Hari / Jam Istirahat (11:30 - 13:30) (690 menit - 810 menit)
-            else if (totalMenit >= 690 && totalMenit <= 810) {
+            } else if (totalMenit >= 690 && totalMenit <= 810) {
                 pesanSapaan = `Terima kasih ${userName}, selamat istirahat.`;
-            } 
-            // Jam Pulang Kerja (16:00 ke atas)
-            else if (jam >= 16) {
+            } else if (now.getHours() >= 16) {
                 pesanSapaan = `Terima kasih ${userName}, hati-hati di jalan.`;
-            } 
-            // Sapaan Standar untuk jam operasional lainnya
-            else {
+            } else {
                 pesanSapaan = `Terima kasih ${userName}, face print berhasil. Sila tekan butang hijau untuk melanjutkan.`;
             }
 
             const textEnglish = "Verified"; 
 
-            // 2. Eksekusi ResponsiveVoice
             if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
                 responsiveVoice.speak(textEnglish, "US English Female", {
-                    pitch: 1,
-                    rate: 0.35,
+                    pitch: 1, rate: 0.35,
                     onend: function() {
                         if (userName && isDetecting) {
                             ttsTimeoutId = setTimeout(() => {
-                                responsiveVoice.speak(pesanSapaan, "Malay Female", {
-                                    pitch: 1,
-                                    rate: 0.95
-                                });
+                                responsiveVoice.speak(pesanSapaan, "Malay Female", { pitch: 1, rate: 0.95 });
                             }, 150);
                         }
                     }
                 });
             } else {
-                // Fallback Native Speech API jika ResponsiveVoice offline/gagal dimuat
                 speakNativeFallback(textEnglish, 'en-US');
                 if (userName && isDetecting) {
-                    ttsTimeoutId = setTimeout(() => {
-                        speakNativeFallback(pesanSapaan, 'ms-MY');
-                    }, 1250);
+                    ttsTimeoutId = setTimeout(() => { speakNativeFallback(pesanSapaan, 'ms-MY'); }, 1250);
                 }
             }
         }
 
-        // --- FUNGSI PEMATIAN AUDIO INSTAN (Kill Switch Audio) ---
         function stopAllAudio() {
-            if (ttsTimeoutId) {
-                clearTimeout(ttsTimeoutId);
-                ttsTimeoutId = null;
-            }
-            if (typeof responsiveVoice !== 'undefined') {
-                try { responsiveVoice.cancel(); } catch(e){}
-            }
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
+            if (ttsTimeoutId) { clearTimeout(ttsTimeoutId); ttsTimeoutId = null; }
+            if (typeof responsiveVoice !== 'undefined') { try { responsiveVoice.cancel(); } catch(e){} }
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         }
 
         async function loadFaceModels() {
@@ -312,7 +435,6 @@
                 console.log("Model AI berhasil dimuat!");
             } catch (error) {
                 console.error("Gagal memuat model:", error);
-                alert("Gagal memuat model AI. Pastikan koneksi internet aktif.");
             }
         }
         window.addEventListener('load', loadFaceModels);
@@ -330,7 +452,7 @@
                             const parsedDesc = typeof desc === 'string' ? JSON.parse(desc) : desc;
                             return new Float32Array(Object.values(parsedDesc));
                         });
-                        return new faceapi.LabeledFaceDescriptors(`${person.id}|${person.name}`, descriptorsList);
+                        return new faceapi.LabeledFaceDescriptors(`${person.id}|${person.name}|${person.role || 'User'}`, descriptorsList);
                     });
                     faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, FACE_MATCH_THRESHOLD);
                 } else {
@@ -341,24 +463,38 @@
             }
         }
 
-        function generateNextUserId() {
-            const regIdInput = document.getElementById('reg-id');
-            if (!registeredFaceDatabase || registeredFaceDatabase.length === 0) {
-                regIdInput.value = "U001"; 
-                return;
-            }
-            let maxNum = 0;
-            registeredFaceDatabase.forEach(person => {
-                const rawId = person.id || person.ID || person.userId || person.User_ID || (Array.isArray(person) ? person[0] : null);
-                if (rawId) {
-                    const extractedNum = String(rawId).trim().replace(/\D/g, ''); 
-                    if (extractedNum) {
-                        const num = parseInt(extractedNum, 10);
-                        if (!isNaN(num) && num > maxNum) maxNum = num;
-                    }
-                }
+        // VERIFIKASI SESI QR CODE DINAMIS (1 QR = 1 TOKEN = 1 SESI)
+        async function promptQrScan() {
+            const { value: token } = await Swal.fire({
+                title: 'Scan / Masukkan Token QR Code',
+                input: 'text',
+                inputLabel: 'Masukkan string token dari QR Code dinamis Google Sheets',
+                inputPlaceholder: 'Contoh: MYLESEN-X82A9-1092',
+                showCancelButton: true,
+                background: '#1e293b', color: '#f8fafc', confirmButtonColor: '#3b82f6'
             });
-            regIdInput.value = maxNum > 0 ? 'U' + String(maxNum + 1).padStart(3, '0') : "U001";
+
+            if (token) {
+                Swal.fire({ title: 'Memverifikasi Token...', background: '#1e293b', color: '#f8fafc', didOpen: () => Swal.showLoading() });
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'validate_qr_token', token: token })
+                    });
+                    const res = await response.json();
+                    if (res.status === 'success') {
+                        hasActiveQrSession = true;
+                        document.getElementById('qr-session-text').innerHTML = `<span class="text-emerald-400"><i class="fa-solid fa-circle-check"></i> Sesi Aktif Valid</span>`;
+                        Swal.fire({ icon: 'success', title: 'Sesi QR Diterima!', text: res.message, background: '#1e293b', color: '#f8fafc' });
+                    } else {
+                        hasActiveQrSession = false;
+                        document.getElementById('qr-session-text').innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-key"></i> Belum Scan QR</span>`;
+                        Swal.fire({ icon: 'error', title: 'Token Gagal', text: res.message, background: '#1e293b', color: '#f8fafc' });
+                    }
+                } catch(e) {
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung ke server.', background: '#1e293b', color: '#f8fafc' });
+                }
+            }
         }
 
         function checkLocation() {
@@ -406,7 +542,7 @@
         }
 
         function switchView(viewId) {
-            ['view-home', 'view-faceprint', 'view-admin-login', 'view-registration'].forEach(id => {
+            ['view-home', 'view-faceprint', 'view-admin-login', 'view-registration', 'view-update-data'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(viewId).classList.remove('hidden');
@@ -415,14 +551,11 @@
             stopAllAudio();
             
             lastRecognizedId = null;
-            if (faceLostTimeout) {
-                clearTimeout(faceLostTimeout);
-                faceLostTimeout = null;
-            }
+            if (faceLostTimeout) { clearTimeout(faceLostTimeout); faceLostTimeout = null; }
             window.matchedUser = null;
             
             if (viewId === 'view-faceprint') {
-                if (!modelsLoaded) { alert("Model AI sedang dimuat dari server..."); switchView('view-home'); return; }
+                if (!modelsLoaded) { alert("Model AI sedang dimuat..."); switchView('view-home'); return; }
                 fetchFaceDatabase().then(() => {
                     startCamera('video-feed').then(() => {
                         checkLocation();
@@ -430,12 +563,10 @@
                     });
                 });
             } else if (viewId === 'view-registration') {
-                if (!modelsLoaded) { alert("Model AI sedang dimuat dari server..."); switchView('view-home'); return; }
+                if (!modelsLoaded) { alert("Model AI sedang dimuat..."); switchView('view-home'); return; }
                 startCamera('reg-video-feed');
                 resetRegistration();
-                fetchFaceDatabase().then(() => {
-                    generateNextUserId();
-                });
+                fetchFaceDatabase();
             }
         }
 
@@ -474,15 +605,13 @@
 
         async function startFaceDetection(videoId, canvasId) {
             isDetecting = true; 
-            
             const video = document.getElementById(videoId);
             const canvas = document.getElementById(canvasId);
             const displaySize = { width: video.videoWidth || 640, height: video.videoHeight || 480 };
             faceapi.matchDimensions(canvas, displaySize);
 
             const offCanvas = document.createElement('canvas');
-            offCanvas.width = 320;
-            offCanvas.height = 240;
+            offCanvas.width = 320; offCanvas.height = 240;
             const offCtx = offCanvas.getContext('2d');
 
             let isProcessing = false;
@@ -490,30 +619,21 @@
 
             const processLoop = async (now) => {
                 if (!isDetecting) return; 
-
                 detectAnimationId = requestAnimationFrame(processLoop);
 
                 const elapsed = now - lastFrameTime;
-                const interval = 1000 / targetFps;
-                if (elapsed < interval) return;
+                if (elapsed < (1000 / targetFps)) return;
                 lastFrameTime = now;
 
                 if (video.paused || video.ended || isProcessing) return;
                 isProcessing = true;
 
-                const startProc = Date.now();
                 try {
                     offCtx.drawImage(video, 0, 0, offCanvas.width, offCanvas.height);
+                    const detection = await faceapi.detectSingleFace(offCanvas, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.35 }))
+                        .withFaceLandmarks().withFaceDescriptor();
 
-                    const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.35 });
-                    const detection = await faceapi.detectSingleFace(offCanvas, options)
-                        .withFaceLandmarks()
-                        .withFaceDescriptor();
-
-                    if (!isDetecting) {
-                        isProcessing = false;
-                        return; 
-                    }
+                    if (!isDetecting) { isProcessing = false; return; }
 
                     const ctx = canvas.getContext('2d');
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -523,30 +643,25 @@
                         const box = detection.detection.box; 
                         const scaleX = displaySize.width / offCanvas.width;
                         const scaleY = displaySize.height / offCanvas.height;
-                        const drawBox = {
-                            x: box.x * scaleX, y: box.y * scaleY, width: box.width * scaleX, height: box.height * scaleY
-                        };
+                        const drawBox = { x: box.x * scaleX, y: box.y * scaleY, width: box.width * scaleX, height: box.height * scaleY };
 
                         const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
 
                         if (bestMatch.label !== 'unknown') {
-                            const [id, name] = bestMatch.label.split('|');
+                            const [id, name, role] = bestMatch.label.split('|');
                             const similarity = Math.round((1 - bestMatch.distance) * 100);
 
                             ctx.strokeStyle = '#10b981';
-                            statusLabel.innerText = `Terdeteksi: [${id}] ${name} (${similarity}%)`;
+                            statusLabel.innerText = `[${role}] ${name} (${similarity}%)`;
                             
-                            if (faceLostTimeout) {
-                                clearTimeout(faceLostTimeout);
-                                faceLostTimeout = null;
-                            }
+                            if (faceLostTimeout) { clearTimeout(faceLostTimeout); faceLostTimeout = null; }
 
                             if (lastRecognizedId !== id) {
                                 lastRecognizedId = id;
                                 playVerifiedSound(name); 
                             }
 
-                            window.matchedUser = { id, name, distance: bestMatch.distance };
+                            window.matchedUser = { id, name, role: role || 'User', distance: bestMatch.distance };
                         } else {
                             ctx.strokeStyle = '#ef4444';
                             statusLabel.innerText = "Wajah Tidak Dikenal";
@@ -554,39 +669,130 @@
                         }
                         ctx.lineWidth = 3;
                         ctx.strokeRect(drawBox.x, drawBox.y, drawBox.width, drawBox.height);
-                    } else if (detection) {
-                        const box = detection.detection.box;
-                        const scaleX = displaySize.width / offCanvas.width;
-                        const scaleY = displaySize.height / offCanvas.height;
-                        ctx.strokeStyle = '#3b82f6';
-                        ctx.lineWidth = 2;
-                        ctx.strokeRect(box.x * scaleX, box.y * scaleY, box.width * scaleX, box.height * scaleY);
-                        statusLabel.innerText = "Database Kosong / Mencocokkan...";
-                        handleFaceLoss();
                     } else {
                         statusLabel.innerText = "Posisikan Wajah";
                         handleFaceLoss();
                     }
-
-                    const procTime = Date.now() - startProc;
-                    if (procTime > interval && targetFps > MIN_FPS) {
-                        targetFps = Math.max(MIN_FPS, Math.floor(targetFps * 0.85));
-                    } else if (procTime < interval * 0.6 && targetFps < MAX_FPS) {
-                        targetFps = Math.min(MAX_FPS, targetFps + 1);
-                    }
-
                 } catch (err) {
-                    console.error("Error AI detection:", err);
+                    console.error(err);
                 } finally {
                     isProcessing = false;
                 }
             };
-
             detectAnimationId = requestAnimationFrame(processLoop);
+        }
+
+        // ALUR KHUSUS UPDATE DATA (PEMINDAIAN WAJAH -> BACA PROFIL -> EDIT)
+        async function startUpdateDataFlow() {
+            if (!modelsLoaded) { alert("Model AI sedang dimuat..."); return; }
+            await fetchFaceDatabase();
+
+            const { value: accept } = await Swal.fire({
+                title: 'Verifikasi Wajah Diperlukan',
+                text: 'Posisikan wajah Anda di kamera untuk membuka data terdaftar.',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Mulai Verifikasi Wajah',
+                background: '#1e293b', color: '#f8fafc', confirmButtonColor: '#10b981'
+            });
+
+            if (!accept) return;
+
+            switchView('view-faceprint');
+            const btnAbsen = document.getElementById('btn-proses-absen');
+            btnAbsen.innerText = "Verifikasi Wajah Saya";
+            btnAbsen.onclick = async function() {
+                if (!window.matchedUser) { alert("Wajah belum dikenali!"); return; }
+                
+                const userId = window.matchedUser.id;
+                const role = window.matchedUser.role;
+
+                Swal.fire({ title: 'Mengambil Data Profil...', background: '#1e293b', color: '#f8fafc', didOpen: () => Swal.showLoading() });
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'get_user_profile', userId: userId, role: role })
+                    });
+                    const res = await response.json();
+
+                    if (res.status === 'success') {
+                        activeProfileData = res.profile;
+                        // Tampilkan Data Profil
+                        document.getElementById('update-disp-userid').innerText = `${res.profile.role}_${res.profile.userId}`;
+                        document.getElementById('update-disp-name').innerText = res.profile.name;
+                        document.getElementById('update-disp-ic').innerText = res.profile.icNumber || 'Belum diisi';
+                        document.getElementById('update-disp-address').innerText = res.profile.address || 'Belum diisi';
+                        document.getElementById('update-phone1').value = res.profile.phone1 || '';
+                        document.getElementById('update-phone2').value = res.profile.phone2 || '';
+
+                        let docStatus = [];
+                        if (res.profile.mykadFrontUrl) docStatus.push("MyKad Front ✓");
+                        if (res.profile.mykadBackUrl) docStatus.push("MyKad Back ✓");
+                        if (res.profile.lLicenceFrontUrl) docStatus.push("L Licence Front ✓");
+                        if (res.profile.lLicenceBackUrl) docStatus.push("L Licence Back ✓");
+                        document.getElementById('update-disp-docs').innerText = docStatus.join(', ') || 'Belum ada dokumen';
+
+                        switchView('view-update-data');
+                        Swal.close();
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Gagal', text: res.message, background: '#1e293b', color: '#f8fafc' });
+                    }
+                } catch(e) {
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal mengambil data dari server.', background: '#1e293b', color: '#f8fafc' });
+                }
+            };
+        }
+
+        async function submitUpdateData() {
+            if (!activeProfileData) return;
+            const btn = document.getElementById('btn-submit-update');
+            btn.disabled = true; btn.innerText = "Menyimpan Ke Server...";
+
+            try {
+                const payload = {
+                    action: 'update_user_data',
+                    userId: activeProfileData.userId,
+                    role: activeProfileData.role,
+                    phone1: document.getElementById('update-phone1').value,
+                    phone2: document.getElementById('update-phone2').value,
+                    lLicenceFrontBase64: updateLFrontBase64,
+                    lLicenceFrontMime: updateLFrontMime,
+                    lLicenceBackBase64: updateLBackBase64,
+                    lLicenceBackMime: updateLBackMime
+                };
+
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const res = await response.json();
+
+                if (res.status === 'success') {
+                    await Swal.fire({ icon: 'success', title: 'Update Berhasil!', text: res.message, background: '#1e293b', color: '#f8fafc' });
+                    switchView('view-home');
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: res.message, background: '#1e293b', color: '#f8fafc' });
+                }
+            } catch(e) {
+                alert("Kesalahan saat mengunggah data.");
+            } finally {
+                btn.disabled = false; btn.innerText = "Simpan & Update Data";
+            }
         }
 
         async function prosesAbsen() {
             if (!window.matchedUser) { alert("Wajah tidak dikenali!"); return; }
+            const role = window.matchedUser.role || "User";
+
+            // RULES AKSEBILITAS: User Wajib Memiliki Sesi QR Aktif (1 QR = 1 Token = 1 Sesi)
+            if (role === "User" && !hasActiveQrSession) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Scan QR Code Diperlukan',
+                    text: 'Pengguna biasa (User) wajib scan QR Code dinamis terlebih dahulu untuk 1 kali sesi absensi!',
+                    background: '#1e293b', color: '#f8fafc'
+                });
+                return;
+            }
+
             const btn = document.getElementById('btn-proses-absen');
             btn.innerText = "Mengirim..."; btn.disabled = true;
 
@@ -598,33 +804,31 @@
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify({
-                        action: 'absen', id: window.matchedUser.id, name: window.matchedUser.name,
+                        action: 'absen', id: window.matchedUser.id, name: window.matchedUser.name, role: role,
                         gps: currentGpsData, radius: `${currentDistanceMeters} meter`, status: attendanceStatus
                     })
                 });
                 await response.json();
 
-                if (typeof Swal !== 'undefined') {
-                    await Swal.fire({
-                        icon: 'success',
-                        title: 'Absensi Berhasil!',
-                        background: '#1e293b',
-                        color: '#f8fafc',
-                        confirmButtonColor: '#3b82f6',
-                        confirmButtonText: 'Selesai',
-                        html: `
-                            <div style="text-align: left; font-size: 14px; line-height: 1.8; border-top: 1px solid #334155; padding-top: 12px; margin-top: 10px;">
-                                <p><strong style="color: #94a3b8;">User ID:</strong> <span style="font-family: monospace; color: #60a5fa; font-weight: bold;">${window.matchedUser.id}</span></p>
-                                <p><strong style="color: #94a3b8;">Nama Lengkap:</strong> <span style="color: #ffffff; font-weight: 600;">${window.matchedUser.name}</span></p>
-                                <p><strong style="color: #94a3b8;">Status Kehadiran:</strong> <span style="color: ${attendanceStatus === 'Hadir' ? '#10b981' : '#f59e0b'}; font-weight: 600;">${attendanceStatus}</span></p>
-                                <p><strong style="color: #94a3b8;">Jarak Radius:</strong> <span style="color: #e2e8f0;">${currentDistanceMeters} Meter</span></p>
-                                <p><strong style="color: #94a3b8;">Waktu & Tanggal:</strong> <span style="color: #e2e8f0;">${waktuStr} | ${tanggalStr}</span></p>
-                            </div>
-                        `
-                    });
-                } else {
-                    alert(`✅ ABSENSI BERHASIL!\n\nID: ${window.matchedUser.id}\nNama: ${window.matchedUser.name}\nStatus: ${attendanceStatus}\nRadius: ${currentDistanceMeters} Meter\nWaktu: ${waktuStr} | ${tanggalStr}`);
+                // RESET SESI UNTUK USER (1 SCAN = 1 SESI)
+                if (role === "User") {
+                    hasActiveQrSession = false;
+                    document.getElementById('qr-session-text').innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-key"></i> Belum Scan QR</span>`;
                 }
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Absensi Kehadiran Berhasil!',
+                    background: '#1e293b', color: '#f8fafc',
+                    html: `
+                        <div style="text-align: left; font-size: 14px; line-height: 1.8; border-top: 1px solid #334155; padding-top: 12px;">
+                            <p><strong style="color: #94a3b8;">User ID:</strong> <span style="color: #60a5fa;">${window.matchedUser.id} (${role})</span></p>
+                            <p><strong style="color: #94a3b8;">Nama Lengkap:</strong> <span style="color: #ffffff;">${window.matchedUser.name}</span></p>
+                            <p><strong style="color: #94a3b8;">Status Kehadiran:</strong> <span style="color: ${attendanceStatus === 'Hadir' ? '#10b981' : '#f59e0b'};">${attendanceStatus}</span></p>
+                            <p><strong style="color: #94a3b8;">Waktu & Tanggal:</strong> <span style="color: #e2e8f0;">${waktuStr} | ${tanggalStr}</span></p>
+                        </div>
+                    `
+                });
 
                 switchView('view-home');
             } catch (err) {
@@ -648,12 +852,78 @@
                 });
                 const result = await response.json();
                 if (result.status === 'success') {
-                    alert("Login Berhasil!"); switchView('view-registration');
+                    alert("Login Admin Berhasil!"); switchView('view-registration');
                 } else { alert(result.message); }
             } catch (err) { alert("Kesalahan server."); } 
             finally { btn.innerText = "Masuk ke Pendaftaran"; btn.disabled = false; }
         }
 
+        // HANDLER UPLOAD FILE BASE64
+        function fileToBase64(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result.split(',')[1];
+                const mime = file.type || 'image/jpeg';
+                callback(base64, mime);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleMyKadFrontUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            fileToBase64(file, (base64, mime) => {
+                regMyKadFrontBase64 = base64; regMyKadFrontMime = mime;
+                
+                // MENGALANKAN OCR GEMINI AI PADA MYKAD DEPAN
+                Swal.fire({
+                    title: 'Proses OCR Gemini AI...',
+                    text: 'Membaca No IC, Nama, Alamat, Warganegara, & Gender dari MyKad',
+                    background: '#1e293b', color: '#f8fafc', didOpen: () => Swal.showLoading()
+                });
+
+                fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'ocr_mykad', imageBase64: base64, mimeType: mime })
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.status === 'success' && res.data) {
+                        if (res.data.name) document.getElementById('reg-name').value = res.data.name;
+                        if (res.data.icNumber) document.getElementById('reg-ic').value = res.data.icNumber;
+                        if (res.data.address) document.getElementById('reg-address').value = res.data.address;
+                        if (res.data.citizenship) document.getElementById('reg-citizenship').value = res.data.citizenship;
+                        if (res.data.gender) document.getElementById('reg-gender').value = res.data.gender;
+
+                        Swal.fire({ icon: 'success', title: 'OCR MyKad Berhasil!', text: 'Data berhasil diekstrak otomatis.', background: '#1e293b', color: '#f8fafc' });
+                    } else { throw new Error(); }
+                })
+                .catch(() => {
+                    Swal.fire({ icon: 'warning', title: 'OCR Sebagian', text: 'Gambar MyKad tersimpan. Sila isi kolom yang belum terisi.', background: '#1e293b', color: '#f8fafc' });
+                });
+            });
+        }
+
+        function handleMyKadBackUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            fileToBase64(file, (base64, mime) => { regMyKadBackBase64 = base64; regMyKadBackMime = mime; });
+        }
+
+        function handleLFrontUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            fileToBase64(file, (base64, mime) => { updateLFrontBase64 = base64; updateLFrontMime = mime; });
+        }
+
+        function handleLBackUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            fileToBase64(file, (base64, mime) => { updateLBackBase64 = base64; updateLBackMime = mime; });
+        }
+
+        // FUNGSI REGISTRASI WAJAH 7 POSE
         let currentPoseStep = 1;
         const totalPoses = 7;
         let registeredFaceDescriptors = []; 
@@ -663,22 +933,25 @@
         ];
 
         async function captureNextPose() {
-            const id = document.getElementById('reg-id').value.trim();
             const name = document.getElementById('reg-name').value.trim();
-            if(!id || !name) { alert("Isi User ID dan Nama Lengkap!"); return; }
+            const phone1 = document.getElementById('reg-phone1').value.trim();
+            const phone2 = document.getElementById('reg-phone2').value.trim();
+            
+            if(!name) { alert("Nama Lengkap wajib diisi!"); return; }
+            if(!phone1 && !phone2) { alert("Minimal salah satu Nomor Telpon (Phone 1 atau Phone 2) wajib diisi!"); return; }
             
             const video = document.getElementById('reg-video-feed');
             const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
                     .withFaceLandmarks().withFaceDescriptor();
-            if(!detection) { alert("Wajah tidak jelas!"); return; }
+            if(!detection) { alert("Wajah tidak terdeteksi dengan jelas!"); return; }
 
-            // === LOGIKA CEK DUPLIKASI WAJAH DI LANGKAH PERTAMA ===
+            // Cek duplikasi wajah
             if (currentPoseStep === 1 && faceMatcher) {
                 const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
                 if (bestMatch.label !== 'unknown' && bestMatch.distance < 0.50) {
                     const registeredName = bestMatch.label.split('|')[1] || bestMatch.label;
-                    alert(`❌ PENDAFTARAN DITOLAK!\n\nWajah ini sudah terdaftar di sistem atas nama:\n👉 ${registeredName}`);
-                    return; // Menghentikan proses pendaftaran
+                    alert(`❌ PENDAFTARAN DITOLAK!\n\nWajah ini sudah terdaftar atas nama: ${registeredName}`);
+                    return;
                 }
             }
             
@@ -689,24 +962,43 @@
                 updateRegistrationUI();
             } else {
                 const btn = document.getElementById('btn-capture');
-                btn.innerText = "Menyimpan ke Server...";
+                btn.innerText = "Menyimpan ke Server & Google Drive...";
                 btn.disabled = true;
 
                 try {
-                    await fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            action: 'register', id: id, name: name, descriptors: registeredFaceDescriptors
-                        })
-                    });
-                    alert("Pendaftaran wajah berhasil disimpan ke database!");
-                    document.getElementById('reg-name').value = '';
-                    await fetchFaceDatabase();
-                    generateNextUserId();
-                    resetRegistration();
-                    switchView('view-home');
+                    const payload = {
+                        action: 'register',
+                        role: document.getElementById('reg-role').value,
+                        name: name,
+                        phone1: phone1,
+                        phone2: phone2,
+                        icNumber: document.getElementById('reg-ic').value,
+                        address: document.getElementById('reg-address').value,
+                        citizenship: document.getElementById('reg-citizenship').value,
+                        gender: document.getElementById('reg-gender').value,
+                        mykadFrontBase64: regMyKadFrontBase64,
+                        mykadFrontMime: regMyKadFrontMime,
+                        mykadBackBase64: regMyKadBackBase64,
+                        mykadBackMime: regMyKadBackMime,
+                        descriptors: registeredFaceDescriptors
+                    };
+
+                    const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                    const res = await response.json();
+
+                    if (res.status === 'success') {
+                        alert(`✅ Pendaftaran Berhasil!\n\nFolder Google Drive & ID Terbentuk: ${res.userId}`);
+                        document.getElementById('reg-name').value = '';
+                        document.getElementById('reg-phone1').value = '';
+                        document.getElementById('reg-phone2').value = '';
+                        await fetchFaceDatabase();
+                        resetRegistration();
+                        switchView('view-home');
+                    } else {
+                        alert(res.message);
+                    }
                 } catch (err) {
-                    alert("Gagal menyimpan data ke server.");
+                    alert("Gagal menyimpan data pendaftaran.");
                 } finally {
                     btn.disabled = false;
                 }
@@ -721,13 +1013,14 @@
             document.getElementById('progress-bar').style.width = `${percent}%`;
 
             if(currentPoseStep === totalPoses) {
-                document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-check"></i> <span>Simpan & Selesaikan</span>`;
+                document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-check"></i> <span>Simpan & Selesaikan Pendaftaran</span>`;
             }
         }
 
         function resetRegistration() {
             currentPoseStep = 1;
             registeredFaceDescriptors = [];
+            regMyKadFrontBase64 = ""; regMyKadBackBase64 = "";
             document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-camera"></i> <span>Ambil Sampel Pose Ini</span>`;
             updateRegistrationUI();
         }
