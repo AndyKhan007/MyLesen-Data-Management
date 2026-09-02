@@ -115,11 +115,24 @@
                 <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <!-- Langkah 1: Upload MyKad -->
+            <!-- Langkah 1: Upload MyKad (Kamera / Galeri) -->
             <div id="ocr-section" class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                <h3 class="text-sm font-semibold text-brand-accent"><i class="fa-solid fa-id-card"></i> Langkah 1: Ambil Foto MyKad untuk OCR</h3>
-                <input type="file" id="mykad-input" accept="image/*" capture="environment" class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
-                <button onclick="prosesMyKadOCR()" id="btn-ocr" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg shadow transition text-sm">Proses & Ekstrak MyKad</button>
+                <h3 class="text-sm font-semibold text-brand-accent"><i class="fa-solid fa-id-card"></i> Langkah 1: Ambil Foto atau Pilih MyKad dari Galeri</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Opsi Ambil Langsung dengan Kamera -->
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Ambil Foto Langsung (Kamera)</label>
+                        <input type="file" id="mykad-camera-input" accept="image/*" capture="environment" onchange="handleMyKadFileSelected(this)" class="w-full text-xs text-slate-400 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+                    </div>
+                    <!-- Opsi Pilih File dari Galeri / Penyimpanan -->
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Pilih dari Galeri / File</label>
+                        <input type="file" id="mykad-gallery-input" accept="image/*" onchange="handleMyKadFileSelected(this)" class="w-full text-xs text-slate-400 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-white hover:file:bg-slate-600 cursor-pointer">
+                    </div>
+                </div>
+
+                <button onclick="prosesMyKadOCR()" id="btn-ocr" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg shadow transition text-sm mt-2">Proses & Ekstrak MyKad</button>
             </div>
 
             <!-- Langkah 2: Form & Wajah (Tersembunyi Awal) -->
@@ -192,7 +205,7 @@
     </footer>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxO2pnuPaLnvjUxRkq5LXLiCEqc5GITAMO4tpSZJiUkRjq9wtFl3cV4hh-1g035kcWzhQ/exec"; // Ganti dengan Web App URL Apps Script Anda
+        const API_URL = "https://script.google.com/macros/s/AKfycbxO2pnuPaLnvjUxRkq5LXLiCEqc5GITAMO4tpSZJiUkRjq9wtFl3cV4hh-1g035kcWzhQ/exec"; 
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
         const OFFICE_LAT = 5.350205443577465;
         const OFFICE_LNG = 100.30359071228548;
@@ -208,12 +221,9 @@
         let registeredFaceDatabase = [];
         let faceMatcher = null;
         let lastRecognizedId = null; 
-        let faceLostTimeout = null;
-        let isDetecting = false;
         let ttsTimeoutId = null;
-        let targetFps = 8;
-        const MIN_FPS = 4;
-        const MAX_FPS = 12;
+        let isDetecting = false;
+        let selectedMyKadFile = null; // Menyimpan file yang dipilih (kamera / galeri)
 
         setInterval(() => {
             const now = new Date();
@@ -280,9 +290,20 @@
             }
         }
 
+        // =========================================================================
+        // PERBAIKAN FITUR GPS (Mendukung Deteksi Akurat Status ON/OFF/Ditolak)
+        // =========================================================================
         function checkLocation() {
             const statusText = document.getElementById('gps-status-text');
-            if (!navigator.geolocation) return;
+            
+            if (!navigator.geolocation) {
+                statusText.innerHTML = `<span class="text-red-400 font-medium">GPS Tidak Didukung Browser</span>`;
+                attendanceStatus = "GPS Tidak Didukung";
+                return;
+            }
+
+            statusText.innerHTML = `<span class="text-brand-success font-medium"><i class="fa-solid fa-spinner fa-spin"></i> Mengakses GPS...</span>`;
+
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const userLat = position.coords.latitude;
@@ -290,6 +311,7 @@
                     currentGpsData = `${userLat}, ${userLng}`;
                     const distance = calculateDistance(OFFICE_LAT, OFFICE_LNG, userLat, userLng);
                     currentDistanceMeters = Math.round(distance);
+                    
                     if (distance <= MAX_RADIUS_METERS) {
                         attendanceStatus = "Hadir";
                         statusText.innerHTML = `<span class="text-brand-success font-medium">Dalam Radius (${currentDistanceMeters}m)</span>`;
@@ -298,8 +320,18 @@
                         statusText.innerHTML = `<span class="text-yellow-400 font-medium">Di Luar Radius (${currentDistanceMeters}m)</span>`;
                     }
                 },
-                () => { statusText.innerHTML = `<span class="text-yellow-400 font-medium">GPS Off</span>`; },
-                { enableHighAccuracy: true, timeout: 5000 }
+                (error) => {
+                    // Penanganan error secara spesifik agar terdeteksi jika GPS dimatikan/permission ditolak
+                    let errorMsg = "GPS Dimatikan / Ditolak";
+                    if (error.code === error.TIMEOUT) {
+                        errorMsg = "GPS Timeout";
+                    } else if (error.code === error.POSITION_UNAVAILABLE) {
+                        errorMsg = "Lokasi Tidak Tersedia (GPS OFF)";
+                    }
+                    statusText.innerHTML = `<span class="text-red-400 font-medium">${errorMsg}</span>`;
+                    attendanceStatus = errorMsg;
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         }
 
@@ -420,17 +452,40 @@
             } catch (err) { alert("Ralat server."); }
         }
 
+        // =========================================================================
+        // FITUR UPLOAD MYKAD DARI KAMERA ATAU GALERI
+        // =========================================================================
+        function handleMyKadFileSelected(inputElement) {
+            if (inputElement.files && inputElement.files[0]) {
+                selectedMyKadFile = inputElement.files[0];
+                // Sinkronisasi: Kosongkan input form yang lain agar tidak bentrok
+                if (inputElement.id === 'mykad-camera-input') {
+                    document.getElementById('mykad-gallery-input').value = "";
+                } else {
+                    document.getElementById('mykad-camera-input').value = "";
+                }
+            }
+        }
+
         async function prosesMyKadOCR() {
-            const fileInput = document.getElementById('mykad-input');
-            if (fileInput.files.length === 0) { alert("Sila ambil gambar MyKad!"); return; }
+            if (!selectedMyKadFile) { 
+                alert("Sila ambil foto MyKad baru atau pilih gambar dari galeri terlebih dahulu!"); 
+                return; 
+            }
+
             const btn = document.getElementById('btn-ocr');
-            btn.innerText = "Menganalisis MyKad via AI..."; btn.disabled = true;
+            btn.innerText = "Menganalisis MyKad via AI..."; 
+            btn.disabled = true;
 
             const reader = new FileReader();
             reader.onloadend = async function() {
                 try {
-                    const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'process_mykad', imageBase64: reader.result }) });
+                    const response = await fetch(API_URL, { 
+                        method: 'POST', 
+                        body: JSON.stringify({ action: 'process_mykad', imageBase64: reader.result }) 
+                    });
                     const result = await response.json();
+                    
                     if (result.status === 'success') {
                         document.getElementById('ocr-section').classList.add('hidden');
                         document.getElementById('form-data-pelajar').classList.remove('hidden');
@@ -442,10 +497,17 @@
                         document.getElementById('reg-citizen').value = result.data.warganegara;
                         document.getElementById('reg-mykad-url').value = result.drive_url;
                         startCamera('reg-video-feed');
-                    } else { alert("Gagal membaca MyKad."); }
-                } catch (err) { alert("Ralat: " + err.message); } finally { btn.innerText = "Proses & Ekstrak MyKad"; btn.disabled = false; }
+                    } else { 
+                        alert("Gagal membaca MyKad. Pastikan gambar jelas."); 
+                    }
+                } catch (err) { 
+                    alert("Ralat: " + err.message); 
+                } finally { 
+                    btn.innerText = "Proses & Ekstrak MyKad"; 
+                    btn.disabled = false; 
+                }
             }
-            reader.readAsDataURL(fileInput.files[0]);
+            reader.readAsDataURL(selectedMyKadFile);
         }
 
         let currentPoseStep = 1;
@@ -495,6 +557,7 @@
         function resetRegistration() {
             currentPoseStep = 1;
             registeredFaceDescriptors = [];
+            selectedMyKadFile = null;
             document.getElementById('pose-instruction').innerText = poseDescriptions[0];
             document.getElementById('progress-bar').style.width = '0%';
         }
