@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Faceprint & Absensi Biometrik</title>
 
+    
+
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome CDN -->
@@ -178,8 +181,8 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // MASUKKAN URL WEB APP APPS SCRIPT ANDA DI SINI
-        const API_URL = "https://script.google.com/macros/s/AKfycbwtlWqDNRcSqhzSNWm_Q4FwE6FBMeGhHopUL-oKzlusGHp7eRcru__DLnhm51NH6KZWmA/exec";
+        // URL Apps Script Web App
+        const API_URL = "https://script.google.com/macros/s/AKfycbwJPbuPpg1-2-_fEwq7gsemgRPF1GO4U2QHIjVz4Isn3Be2cgxPgGR2Vc4Zrgh0mzQM/exec";
 
         // CDN Model Face-API.js
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
@@ -200,8 +203,8 @@
         
         let lastRecognizedId = null; 
         let faceLostTimeout = null;
-        let isDetecting = false; 
-        let ttsTimeoutId = null; 
+        let isDetecting = false; // Kill Switch
+        let ttsTimeoutId = null; // ID Pembersih Delay TTS
         
         let targetFps = 8;
         const MIN_FPS = 4;
@@ -215,6 +218,7 @@
             document.getElementById('real-time-clock').innerText = `${timeString} | ${dateString}`;
         }, 1000);
 
+        // --- FUNGSI FALLBACK SPEECH API NATIVE (JIKA RESPONSIVEVOICE OFF/GAGAL) ---
         function speakNativeFallback(text, lang = 'id-ID') {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -224,33 +228,40 @@
             window.speechSynthesis.speak(utterance);
         }
 
+        // --- FUNGSI PEMUTAR AUDIO UCAPAN DENGAN AUTO-SAPAAN RESPONSIVEVOICE ---
         function playVerifiedSound(userName = "") {
             if (!isDetecting) return; 
 
             stopAllAudio();
 
+            // 1. Tentukan Sapaan Berdasarkan Jam & Menit Lokal
             const now = new Date();
             const jam = now.getHours();
             const menit = now.getMinutes();
-            const totalMenit = jam * 60 + menit; 
+            const totalMenit = jam * 60 + menit; // Konversi ke total menit untuk perhitungan presisi
 
             let pesanSapaan = "";
 
+            // Jam 07:00 - 07:30 (420 menit - 450 menit)
             if (totalMenit >= 420 && totalMenit <= 450) {
                 pesanSapaan = `Terima kasih ${userName}, selamat bekerja.`;
             } 
+            // Tengah Hari / Jam Istirahat (11:30 - 13:30) (690 menit - 810 menit)
             else if (totalMenit >= 690 && totalMenit <= 810) {
                 pesanSapaan = `Terima kasih ${userName}, selamat istirahat.`;
             } 
+            // Jam Pulang Kerja (16:00 ke atas)
             else if (jam >= 16) {
                 pesanSapaan = `Terima kasih ${userName}, hati-hati di jalan.`;
             } 
+            // Sapaan Standar untuk jam operasional lainnya
             else {
                 pesanSapaan = `Terima kasih ${userName}, face print berhasil. Sila tekan butang hijau untuk melanjutkan.`;
             }
 
             const textEnglish = "Verified"; 
 
+            // 2. Eksekusi ResponsiveVoice
             if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
                 responsiveVoice.speak(textEnglish, "US English Female", {
                     pitch: 1,
@@ -267,6 +278,7 @@
                     }
                 });
             } else {
+                // Fallback Native Speech API jika ResponsiveVoice offline/gagal dimuat
                 speakNativeFallback(textEnglish, 'en-US');
                 if (userName && isDetecting) {
                     ttsTimeoutId = setTimeout(() => {
@@ -276,6 +288,7 @@
             }
         }
 
+        // --- FUNGSI PEMATIAN AUDIO INSTAN (Kill Switch Audio) ---
         function stopAllAudio() {
             if (ttsTimeoutId) {
                 clearTimeout(ttsTimeoutId);
@@ -426,23 +439,15 @@
             }
         }
 
-        // Disesuaikan untuk kompatibilitas penuh dengan Kamera GitHub Pages (HTTPS Natif)
         async function startCamera(elementId) {
-            const videoElement = document.getElementById(elementId);
             try {
-                activeStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } 
-                });
-            } catch (err1) {
-                try {
-                    activeStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                } catch (err2) {
-                    alert("Akses kamera ditolak! Sila benarkan akses kamera pada browser.");
-                    return;
-                }
+                activeStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+                const videoElement = document.getElementById(elementId);
+                videoElement.srcObject = activeStream;
+                return new Promise(resolve => { videoElement.onloadedmetadata = () => resolve(); });
+            } catch (err) {
+                alert("Gagal mengakses kamera.");
             }
-            videoElement.srcObject = activeStream;
-            return new Promise(resolve => { videoElement.onloadedmetadata = () => resolve(); });
         }
 
         function stopCamera() {
@@ -667,12 +672,13 @@
                     .withFaceLandmarks().withFaceDescriptor();
             if(!detection) { alert("Wajah tidak jelas!"); return; }
 
+            // === LOGIKA CEK DUPLIKASI WAJAH DI LANGKAH PERTAMA ===
             if (currentPoseStep === 1 && faceMatcher) {
                 const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
                 if (bestMatch.label !== 'unknown' && bestMatch.distance < 0.50) {
                     const registeredName = bestMatch.label.split('|')[1] || bestMatch.label;
                     alert(`❌ PENDAFTARAN DITOLAK!\n\nWajah ini sudah terdaftar di sistem atas nama:\n👉 ${registeredName}`);
-                    return; 
+                    return; // Menghentikan proses pendaftaran
                 }
             }
             
