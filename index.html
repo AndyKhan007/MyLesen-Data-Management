@@ -137,11 +137,9 @@
                     <i class="fa-solid fa-id-card mr-2"></i>Upload MyKad
                 </label>
                 
-                <!-- Input File Tersembunyi -->
                 <input type="file" id="mykad-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesMyKadFile(this)">
                 <input type="file" id="mykad-gallery" accept="image/*" class="hidden" onchange="prosesMyKadFile(this)">
 
-                <!-- 2 Tombol Pilihan -->
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow">
                         <i class="fa-solid fa-camera"></i>
@@ -164,7 +162,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">User ID / No. IC</label>
-                    <input type="text" id="reg-id" placeholder="User ID (Contoh: U001 atau No. IC)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
+                    <input type="text" id="reg-id" placeholder="User ID / No. IC" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Nama Lengkap User</label>
@@ -185,7 +183,6 @@
 
             <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-slate-700 shadow-inner flex items-center justify-center">
                 <video id="reg-video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
-                
                 <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-4 py-2 rounded-full text-center">
                     <span id="pose-instruction" class="text-sm font-semibold text-brand-accent">Langkah 1/7: Hadap Depan Lurus (Netral)</span>
                 </div>
@@ -219,7 +216,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbz40kQ9e9v6LGY4P1Or9ewqzrl-FVy6kvNyQkCNBnzpdduomFmBIt4CJ7GhwzHbKmpStA/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyoRghwajS2vjdGCCki-DQsSwh6cGeenDStafP63hrPQwVsQNkz8sBfIEyRv5YXi36Qzw/exec";
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
         const OFFICE_LAT = 5.350205443577465;
@@ -284,10 +281,8 @@
                 pesanSapaan = `Terima kasih ${userName}, face print berhasil. Sila tekan butang hijau untuk melanjutkan.`;
             }
 
-            const textEnglish = "Verified"; 
-
             if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
-                responsiveVoice.speak(textEnglish, "US English Female", {
+                responsiveVoice.speak("Verified", "US English Female", {
                     pitch: 1, rate: 0.35,
                     onend: function() {
                         if (userName && isDetecting) {
@@ -298,7 +293,7 @@
                     }
                 });
             } else {
-                speakNativeFallback(textEnglish, 'en-US');
+                speakNativeFallback('Verified', 'en-US');
                 if (userName && isDetecting) {
                     ttsTimeoutId = setTimeout(() => { speakNativeFallback(pesanSapaan, 'ms-MY'); }, 1250);
                 }
@@ -318,7 +313,7 @@
                 await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
                 modelsLoaded = true;
             } catch (error) {
-                alert("Gagal memuat model AI. Pastikan koneksi internet aktif.");
+                alert("Gagal memuat model AI.");
             }
         }
         window.addEventListener('load', loadFaceModels);
@@ -336,7 +331,8 @@
                             const parsedDesc = typeof desc === 'string' ? JSON.parse(desc) : desc;
                             return new Float32Array(Object.values(parsedDesc));
                         });
-                        return new faceapi.LabeledFaceDescriptors(`${person.id}|${person.name}`, descriptorsList);
+                        // Menyimpan ID, Nama, dan Role dalam label agar terbaca saat absensi
+                        return new faceapi.LabeledFaceDescriptors(`${person.id}|${person.name}|${person.role || 'user'}`, descriptorsList);
                     });
                     faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, FACE_MATCH_THRESHOLD);
                 } else { faceMatcher = null; }
@@ -352,7 +348,7 @@
             }
             let maxNum = 0;
             registeredFaceDatabase.forEach(person => {
-                const rawId = person.id || person.ID || person.userId || person.User_ID || (Array.isArray(person) ? person[0] : null);
+                const rawId = person.id || person.ID;
                 if (rawId) {
                     const extractedNum = String(rawId).trim().replace(/\D/g, ''); 
                     if (extractedNum) {
@@ -397,10 +393,8 @@
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371e3;
-            const p1 = lat1 * Math.PI / 180;
-            const p2 = lat2 * Math.PI / 180;
-            const dp = (lat2 - lat1) * Math.PI / 180;
-            const dl = (lon2 - lon1) * Math.PI / 180;
+            const p1 = lat1 * Math.PI / 180, p2 = lat2 * Math.PI / 180;
+            const dp = (lat2 - lat1) * Math.PI / 180, dl = (lon2 - lon1) * Math.PI / 180;
             const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
             return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
         }
@@ -412,20 +406,19 @@
             document.getElementById(viewId).classList.remove('hidden');
 
             stopCamera(); stopAllAudio();
-            
             lastRecognizedId = null;
             if (faceLostTimeout) { clearTimeout(faceLostTimeout); faceLostTimeout = null; }
             window.matchedUser = null;
             
             if (viewId === 'view-faceprint') {
-                if (!modelsLoaded) { alert("Model AI sedang dimuat dari server..."); switchView('view-home'); return; }
+                if (!modelsLoaded) { alert("Model AI sedang dimuat..."); switchView('view-home'); return; }
                 fetchFaceDatabase().then(() => {
                     startCamera('video-feed').then(() => {
                         checkLocation(); startFaceDetection('video-feed', 'overlay-canvas');
                     });
                 });
             } else if (viewId === 'view-registration') {
-                if (!modelsLoaded) { alert("Model AI sedang dimuat dari server..."); switchView('view-home'); return; }
+                if (!modelsLoaded) { alert("Model AI sedang dimuat..."); switchView('view-home'); return; }
                 startCamera('reg-video-feed');
                 resetRegistration();
                 fetchFaceDatabase().then(() => { generateNextUserId(); });
@@ -450,15 +443,12 @@
         const handleFaceLoss = () => {
             window.matchedUser = null;
             if (lastRecognizedId !== null && !faceLostTimeout) {
-                faceLostTimeout = setTimeout(() => {
-                    lastRecognizedId = null; faceLostTimeout = null;
-                }, 2500); 
+                faceLostTimeout = setTimeout(() => { lastRecognizedId = null; faceLostTimeout = null; }, 2500); 
             }
         };
 
         async function startFaceDetection(videoId, canvasId) {
             isDetecting = true; 
-            
             const video = document.getElementById(videoId);
             const canvas = document.getElementById(canvasId);
             const displaySize = { width: video.videoWidth || 640, height: video.videoHeight || 480 };
@@ -473,7 +463,6 @@
 
             const processLoop = async (now) => {
                 if (!isDetecting) return; 
-
                 detectAnimationId = requestAnimationFrame(processLoop);
 
                 const elapsed = now - lastFrameTime;
@@ -484,7 +473,6 @@
                 if (video.paused || video.ended || isProcessing) return;
                 isProcessing = true;
 
-                const startProc = Date.now();
                 try {
                     offCtx.drawImage(video, 0, 0, offCanvas.width, offCanvas.height);
                     const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.35 });
@@ -505,18 +493,18 @@
                         const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
 
                         if (bestMatch.label !== 'unknown') {
-                            const [id, name] = bestMatch.label.split('|');
+                            const [id, name, role] = bestMatch.label.split('|');
                             const similarity = Math.round((1 - bestMatch.distance) * 100);
 
                             ctx.strokeStyle = '#10b981';
-                            statusLabel.innerText = `Terdeteksi: [${id}] ${name} (${similarity}%)`;
+                            statusLabel.innerText = `Terdeteksi: [${id}] ${name} (${role}) (${similarity}%)`;
                             
                             if (faceLostTimeout) { clearTimeout(faceLostTimeout); faceLostTimeout = null; }
 
                             if (lastRecognizedId !== id) {
                                 lastRecognizedId = id; playVerifiedSound(name); 
                             }
-                            window.matchedUser = { id, name, distance: bestMatch.distance };
+                            window.matchedUser = { id, name, role: role || 'user', distance: bestMatch.distance };
                         } else {
                             ctx.strokeStyle = '#ef4444';
                             statusLabel.innerText = "Wajah Tidak Dikenal";
@@ -530,19 +518,12 @@
                         const scaleY = displaySize.height / offCanvas.height;
                         ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2;
                         ctx.strokeRect(box.x * scaleX, box.y * scaleY, box.width * scaleX, box.height * scaleY);
-                        statusLabel.innerText = "Database Kosong / Mencocokkan...";
+                        statusLabel.innerText = "Mencocokkan wajah...";
                         handleFaceLoss();
                     } else {
                         statusLabel.innerText = "Posisikan Wajah"; handleFaceLoss();
                     }
-
-                    const procTime = Date.now() - startProc;
-                    if (procTime > interval && targetFps > MIN_FPS) {
-                        targetFps = Math.max(MIN_FPS, Math.floor(targetFps * 0.85));
-                    } else if (procTime < interval * 0.6 && targetFps < MAX_FPS) {
-                        targetFps = Math.min(MAX_FPS, targetFps + 1);
-                    }
-                } catch (err) { console.error("Error AI detection:", err); } 
+                } catch (err) { console.error(err); } 
                 finally { isProcessing = false; }
             };
 
@@ -562,8 +543,13 @@
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify({
-                        action: 'absen', id: window.matchedUser.id, name: window.matchedUser.name,
-                        gps: currentGpsData, radius: `${currentDistanceMeters} meter`, status: attendanceStatus
+                        action: 'absen', 
+                        id: window.matchedUser.id, 
+                        name: window.matchedUser.name,
+                        role: window.matchedUser.role, // Mengirim role agar masuk ke tab log yang sesuai
+                        gps: currentGpsData, 
+                        radius: `${currentDistanceMeters} meter`, 
+                        status: attendanceStatus
                     })
                 });
                 await response.json();
@@ -576,6 +562,7 @@
                             <div style="text-align: left; font-size: 14px; line-height: 1.8; border-top: 1px solid #334155; padding-top: 12px; margin-top: 10px;">
                                 <p><strong style="color: #94a3b8;">User ID:</strong> <span style="font-family: monospace; color: #60a5fa; font-weight: bold;">${window.matchedUser.id}</span></p>
                                 <p><strong style="color: #94a3b8;">Nama Lengkap:</strong> <span style="color: #ffffff; font-weight: 600;">${window.matchedUser.name}</span></p>
+                                <p><strong style="color: #94a3b8;">Role / Jenis:</strong> <span style="color: #38bdf8; text-transform: uppercase; font-weight: bold;">${window.matchedUser.role}</span></p>
                                 <p><strong style="color: #94a3b8;">Status Kehadiran:</strong> <span style="color: ${attendanceStatus === 'Hadir' ? '#10b981' : '#f59e0b'}; font-weight: 600;">${attendanceStatus}</span></p>
                                 <p><strong style="color: #94a3b8;">Jarak Radius:</strong> <span style="color: #e2e8f0;">${currentDistanceMeters} Meter</span></p>
                                 <p><strong style="color: #94a3b8;">Waktu & Tanggal:</strong> <span style="color: #e2e8f0;">${waktuStr} | ${tanggalStr}</span></p>
@@ -583,7 +570,7 @@
                         `
                     });
                 } else {
-                    alert(`✅ ABSENSI BERHASIL!\n\nID: ${window.matchedUser.id}\nNama: ${window.matchedUser.name}\nStatus: ${attendanceStatus}\nRadius: ${currentDistanceMeters} Meter\nWaktu: ${waktuStr} | ${tanggalStr}`);
+                    alert(`✅ ABSENSI BERHASIL!\n\nID: ${window.matchedUser.id}\nNama: ${window.matchedUser.name}\nRole: ${window.matchedUser.role}\nStatus: ${attendanceStatus}`);
                 }
 
                 switchView('view-home');
@@ -621,9 +608,7 @@
         }
 
         async function kirimMyKadKeServer() {
-            if (!selectedMyKadFile) {
-                alert("Pilih atau ambil foto MyKad terlebih dahulu!"); return;
-            }
+            if (!selectedMyKadFile) { alert("Pilih foto MyKad terlebih dahulu!"); return; }
 
             const btn = document.getElementById('btn-ocr');
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Memproses OCR...</span>`;
@@ -648,7 +633,7 @@
                         document.getElementById('reg-id').value = result.ic;
                         document.getElementById('reg-name').value = result.name;
                         myKadDriveUrl = result.fileUrl; 
-                        alert("✅ MyKad berhasil diekstrak dan disimpan ke Drive!");
+                        alert("✅ MyKad berhasil diekstrak dan disimpan!");
                     } else {
                         alert("Gagal OCR: " + result.message);
                     }
@@ -681,13 +666,13 @@
             const video = document.getElementById('reg-video-feed');
             const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
                     .withFaceLandmarks().withFaceDescriptor();
-            if(!detection) { alert("Wajah tidak jelas!"); return; }
+            if(!detection) { alert("Wajah tidak terdeteksi dengan jelas!"); return; }
 
             if (currentPoseStep === 1 && faceMatcher) {
                 const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
                 if (bestMatch.label !== 'unknown' && bestMatch.distance < 0.50) {
                     const registeredName = bestMatch.label.split('|')[1] || bestMatch.label;
-                    alert(`❌ PENDAFTARAN DITOLAK!\n\nWajah ini sudah terdaftar di sistem atas nama:\n👉 ${registeredName}`);
+                    alert(`❌ PENDAFTARAN DITOLAK!\n\nWajah ini sudah terdaftar atas nama:\n👉 ${registeredName}`);
                     return; 
                 }
             }
