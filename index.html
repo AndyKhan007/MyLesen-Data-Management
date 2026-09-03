@@ -1,737 +1,220 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Faceprint & Absensi Biometrik</title>
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Face-API.js CDN -->
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-    <!-- SweetAlert2 CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- ResponsiveVoice.js CDN -->
-    <script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE_KEY"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { dark: '#0f172a', card: '#1e293b', accent: '#3b82f6', success: '#10b981' }
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Registrasi & OCR MyKad</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .card { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    #webcam { width: 100%; max-width: 400px; border-radius: 8px; transform: scaleX(-1); background-color: #000; }
+  </style>
 </head>
-<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col justify-between select-none">
+<body>
+  <div class="container py-4">
+    <h2 class="text-center mb-4 fw-bold text-primary">Sistem Registrasi & OCR MyKad</h2>
 
-    <!-- HEADER / STATUS BAR -->
-    <header class="w-full bg-brand-card border-b border-slate-800 p-4 flex justify-between items-center shadow-md">
-        <div class="flex items-center space-x-3">
-            <div class="w-3 h-3 bg-brand-success rounded-full animate-pulse"></div>
-            <span class="font-bold tracking-wider text-sm md:text-base">Mulyadi _ BIO ATTENDANCE SYSTEM</span>
+    <div class="row">
+      <!-- 1. Form OCR & Upload MyKad -->
+      <div class="col-md-6">
+        <div class="card p-4">
+          <h4 class="card-title mb-3">1. Upload & Ekstraksi MyKad</h4>
+          
+          <!-- Input Nomor Telepon Manual -->
+          <div class="mb-3">
+            <label for="inputTelpon" class="form-label fw-bold">Nomor Telepon (Wajib)</label>
+            <input type="tel" class="form-control" id="inputTelpon" placeholder="Contoh: 081234567890" required>
+          </div>
+
+          <!-- Input File Gambar MyKad -->
+          <div class="mb-3">
+            <label for="inputMyKad" class="form-label fw-bold">Pilih Foto MyKad / KTP</label>
+            <input type="file" class="form-control" id="inputMyKad" accept="image/*">
+          </div>
+
+          <button class="btn btn-primary w-100" id="btnUpload" onclick="prosesOCR()">
+            <span id="spinnerOcr" class="spinner-border spinner-border-sm d-none"></span>
+            Proses OCR MyKad
+          </button>
+
+          <!-- Tampilan Hasil Ekstraksi OCR -->
+          <div id="hasilOcrContainer" class="mt-4 d-none">
+            <h5 class="text-success fw-bold">Hasil Ekstraksi OCR:</h5>
+            <ul class="list-group list-group-flush border rounded">
+              <li class="list-group-item"><b>No. Urut:</b> <span id="resNoUrut">-</span></li>
+              <li class="list-group-item"><b>Nama:</b> <span id="resNama">-</span></li>
+              <li class="list-group-item"><b>No. IC:</b> <span id="resIC">-</span></li>
+              <li class="list-group-item"><b>Alamat Lengkap:</b> <span id="resAlamat">-</span></li>
+              <li class="list-group-item"><b>Warganegara:</b> <span id="resWarganegara">-</span></li>
+              <li class="list-group-item"><b>Gender:</b> <span id="resGender">-</span></li>
+              <li class="list-group-item"><b>No. Telepon:</b> <span id="resTelpon">-</span></li>
+              <li class="list-group-item"><b>Link Drive:</b> <a id="resLinkDrive" href="#" target="_blank">Buka File Foto</a></li>
+            </ul>
+          </div>
         </div>
-        <div id="real-time-clock" class="text-sm font-mono text-slate-400">00:00:00 | 00-00-0000</div>
-    </header>
+      </div>
 
-    <!-- MAIN CONTAINER -->
-    <main class="flex-grow flex items-center justify-center p-4">
+      <!-- 2. Pendaftaran Wajah -->
+      <div class="col-md-6">
+        <div class="card p-4">
+          <h4 class="card-title mb-3">2. Pendaftaran Wajah</h4>
+          <div class="text-center mb-3">
+            <video id="webcam" autoplay playsinline muted></video>
+          </div>
+          <button class="btn btn-success w-100" id="btnRegister" onclick="daftarWajah()">
+            <span id="spinnerReg" class="spinner-border spinner-border-sm d-none"></span>
+            Daftarkan Wajah & Simpan Data
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- 1. HOME VIEW -->
-        <section id="view-home" class="w-full max-w-md bg-brand-card border border-slate-700/50 rounded-2xl p-8 shadow-2xl text-center space-y-8">
-            <div>
-                <div class="w-20 h-20 bg-brand-accent/20 border border-brand-accent rounded-full flex items-center justify-center mx-auto mb-4 text-brand-accent text-3xl shadow-inner">
-                    <i class="fa-solid fa-fingerprint"></i>
-                </div>
-                <h1 class="text-2xl font-bold tracking-tight">Sistem Faceprint</h1>
-                <p class="text-slate-400 text-sm mt-1">Silakan pilih menu operasional di bawah ini</p>
-            </div>
+  <script>
+    // --- SESUAIKAN URL WEB APP APPS SCRIPT ANDA DI SINI ---
+    const API_URL = "https://script.google.com/macros/s/AKfycby6RymMw4Jb79WTuv09nBvUaYD1F5Ea-FbWHyRLmQOPc3ZaPpXmtrUZWD0KqXNtYsiCug/exec"; 
+    
+    let currentMyKadUrl = "";
+    let currentOcrData = {};
 
-            <div class="space-y-4">
-                <button onclick="switchView('view-faceprint')" class="w-full py-4 bg-blue-600 hover:bg-blue-500 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-lg group">
-                    <i class="fa-solid fa-camera group-hover:scale-110 transition-transform"></i>
-                    <span>Mulai Faceprint</span>
-                </button>
-                <button onclick="switchView('view-admin-login')" class="w-full py-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-lg text-slate-300">
-                    <i class="fa-solid fa-lock"></i>
-                    <span>Login Admin / Pendaftaran</span>
-                </button>
-            </div>
-        </section>
+    // Inisialisasi Akses Kamera/Webcam
+    async function setupWebcam() {
+      const video = document.getElementById('webcam');
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+      } catch (err) {
+        console.error("Gagal mengakses kamera:", err);
+      }
+    }
+    setupWebcam();
 
-        <!-- 2. FACEPRINT (ABSENSI) VIEW -->
-        <section id="view-faceprint" class="hidden w-full max-w-2xl bg-brand-card border border-slate-700/50 rounded-2xl p-6 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                <h2 class="text-xl font-bold flex items-center space-x-2">
-                    <i class="fa-solid fa-video text-brand-accent"></i>
-                    <span>Pemindaian Kehadiran (Faceprint)</span>
-                </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
+    // Fungsi Pembantu Konversi File ke Base64
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+      });
+    }
 
-            <div id="video-container" class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-brand-accent/50 shadow-inner flex items-center justify-center">
-                <video id="video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100 absolute inset-0"></video>
-                <canvas id="overlay-canvas" class="absolute inset-0 w-full h-full object-cover transform -scale-x-100"></canvas>
-                
-                <div class="absolute inset-0 border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
-                    <div class="w-64 h-64 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
-                        <span id="scan-status-label" class="text-xs bg-black/70 px-3 py-1.5 rounded text-brand-success font-mono font-semibold">Posisikan Wajah</span>
-                    </div>
-                </div>
-            </div>
+    // 1. Eksekusi Proses OCR MyKad
+    async function prosesOCR() {
+      const fileInput = document.getElementById('inputMyKad');
+      const telponInput = document.getElementById('inputTelpon').value.trim();
 
-            <div class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-sm">
-                <div>
-                    <p class="text-slate-400">Status GPS:</p>
-                    <p id="gps-status-text" class="text-brand-success font-medium"><i class="fa-solid fa-spinner fa-spin"></i> Memeriksa GPS...</p>
-                </div>
-                <button id="btn-proses-absen" onclick="prosesAbsen()" class="px-6 py-2.5 bg-brand-success hover:bg-emerald-600 font-bold rounded-lg shadow transition">
-                    Proses Absen
-                </button>
-            </div>
-        </section>
+      if (!telponInput) {
+        alert('Harap isi Nomor Telepon terlebih dahulu!');
+        return;
+      }
 
-        <!-- 3. ADMIN LOGIN VIEW -->
-        <section id="view-admin-login" class="hidden w-full max-w-md bg-brand-card border border-slate-700/50 rounded-2xl p-8 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                <h2 class="text-xl font-bold flex items-center space-x-2">
-                    <i class="fa-solid fa-shield-halved text-brand-accent"></i>
-                    <span>Login Administrator</span>
-                </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Harap pilih foto MyKad!');
+        return;
+      }
 
-            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">Username Admin</label>
-                    <input type="text" id="admin-user" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan username">
-                </div>
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">Password</label>
-                    <input type="password" id="admin-pass" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan password">
-                </div>
-                <button type="submit" id="btn-login-submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 transition font-semibold rounded-xl shadow-lg mt-2">
-                    Masuk ke Pendaftaran
-                </button>
-            </form>
-        </section>
+      const file = fileInput.files[0];
+      const btn = document.getElementById('btnUpload');
+      const spinner = document.getElementById('spinnerOcr');
 
-        <!-- 4. FACE REGISTRATION VIEW -->
-        <section id="view-registration" class="hidden w-full max-w-2xl bg-brand-card border border-slate-700/50 rounded-2xl p-6 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                <h2 class="text-xl font-bold flex items-center space-x-2">
-                    <i class="fa-solid fa-user-plus text-brand-accent"></i>
-                    <span>Pendaftaran Wajah Baru (7 Pose)</span>
-                </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
+      try {
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
 
-            <!-- MODUL UPLOAD MYKAD -->
-            <div class="bg-slate-900 border border-slate-700 rounded-xl p-5 mb-4 shadow-inner">
-                <label class="block text-sm font-semibold text-brand-accent mb-3">
-                    <i class="fa-solid fa-id-card mr-2"></i>Upload MyKad
-                </label>
-                
-                <!-- Input File Tersembunyi -->
-                <input type="file" id="mykad-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesMyKadFile(this)">
-                <input type="file" id="mykad-gallery" accept="image/*" class="hidden" onchange="prosesMyKadFile(this)">
+        const base64Data = await fileToBase64(file);
 
-                <!-- 2 Tombol Pilihan -->
-                <div class="grid grid-cols-2 gap-3 mb-3">
-                    <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow">
-                        <i class="fa-solid fa-camera"></i>
-                        <span>Ambil Kamera</span>
-                    </button>
-                    <button type="button" onclick="document.getElementById('mykad-gallery').click()" class="py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
-                        <i class="fa-solid fa-image"></i>
-                        <span>Pilih Galeri</span>
-                    </button>
-                </div>
-
-                <div id="file-selected-info" class="text-xs text-emerald-400 text-center font-mono hidden mb-3"></div>
-
-                <button type="button" onclick="kirimMyKadKeServer()" id="btn-ocr" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                    <i class="fa-solid fa-microchip"></i>
-                    <span>Scan MyKad & Ekstrak Data</span>
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">User ID / No. IC</label>
-                    <input type="text" id="reg-id" placeholder="User ID (Contoh: U001 atau No. IC)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Nama Lengkap User</label>
-                    <input type="text" id="reg-name" placeholder="Nama Lengkap User" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
-                </div>
-            </div>
-
-            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-slate-700 shadow-inner flex items-center justify-center">
-                <video id="reg-video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
-                
-                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-4 py-2 rounded-full text-center">
-                    <span id="pose-instruction" class="text-sm font-semibold text-brand-accent">Langkah 1/7: Hadap Depan Lurus (Netral)</span>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <div class="flex justify-between text-xs text-slate-400">
-                    <span id="progress-text">Progress Sampel: 0 / 7</span>
-                    <span id="progress-percentage">0%</span>
-                </div>
-                <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
-                    <div id="progress-bar" class="bg-brand-success h-full w-0 transition-all duration-300"></div>
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center pt-2">
-                <button onclick="resetRegistration()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-sm rounded-lg border border-slate-600 transition">Reset</button>
-                <button onclick="captureNextPose()" id="btn-capture" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg shadow transition flex items-center space-x-2">
-                    <i class="fa-solid fa-camera"></i>
-                    <span>Ambil Sampel Pose Ini</span>
-                </button>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-slate-800">
-        Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script
-    </footer>
-
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-        // URL Web App Google Apps Script
-        const API_URL = "https://script.google.com/macros/s/AKfycbwHr2Tjs8DKuiNakaEQNG6nALIJa5qoRQ8UcmoryMqDmweFlfGq2FFg4IGL7mmk792Hlw/exec";
-
-        // CDN Model Face-API.js
-        const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
-
-        const OFFICE_LAT = 5.350205443577465;
-        const OFFICE_LNG = 100.30359071228548;
-        const MAX_RADIUS_METERS = 500;
-        const FACE_MATCH_THRESHOLD = 0.60;
-
-        let activeStream = null;
-        let modelsLoaded = false;
-        let currentGpsData = "Tidak Terdeteksi";
-        let currentDistanceMeters = 0;
-        let attendanceStatus = "Di Luar Wilayah Kerja";
-        let detectAnimationId = null;
-        let registeredFaceDatabase = [];
-        let faceMatcher = null;
-        
-        let lastRecognizedId = null; 
-        let faceLostTimeout = null;
-        let isDetecting = false; 
-        let ttsTimeoutId = null; 
-        
-        let targetFps = 8;
-        const MIN_FPS = 4;
-        const MAX_FPS = 12;
-
-        let selectedMyKadFile = null;
-        let myKadDriveUrl = ""; // Menyimpan URL gambar Drive untuk pendaftaran
-
-        // Jam Real-time
-        setInterval(() => {
-            const now = new Date();
-            const timeString = now.toTimeString().split(' ')[0];
-            const dateString = String(now.getDate()).padStart(2, '0') + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + now.getFullYear();
-            document.getElementById('real-time-clock').innerText = `${timeString} | ${dateString}`;
-        }, 1000);
-
-        function speakNativeFallback(text, lang = 'id-ID') {
-            if (!('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
-            utterance.rate = 0.95;
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function playVerifiedSound(userName = "") {
-            if (!isDetecting) return; 
-            stopAllAudio();
-
-            const now = new Date();
-            const jam = now.getHours();
-            const menit = now.getMinutes();
-            const totalMenit = jam * 60 + menit; 
-
-            let pesanSapaan = "";
-            if (totalMenit >= 420 && totalMenit <= 450) {
-                pesanSapaan = `Terima kasih ${userName}, selamat bekerja.`;
-            } else if (totalMenit >= 690 && totalMenit <= 810) {
-                pesanSapaan = `Terima kasih ${userName}, selamat istirahat.`;
-            } else if (jam >= 16) {
-                pesanSapaan = `Terima kasih ${userName}, hati-hati di jalan.`;
-            } else {
-                pesanSapaan = `Terima kasih ${userName}, face print berhasil. Sila tekan butang hijau untuk melanjutkan.`;
-            }
-
-            const textEnglish = "Verified"; 
-
-            if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
-                responsiveVoice.speak(textEnglish, "US English Female", {
-                    pitch: 1, rate: 0.35,
-                    onend: function() {
-                        if (userName && isDetecting) {
-                            ttsTimeoutId = setTimeout(() => {
-                                responsiveVoice.speak(pesanSapaan, "Malay Female", { pitch: 1, rate: 0.95 });
-                            }, 150);
-                        }
-                    }
-                });
-            } else {
-                speakNativeFallback(textEnglish, 'en-US');
-                if (userName && isDetecting) {
-                    ttsTimeoutId = setTimeout(() => { speakNativeFallback(pesanSapaan, 'ms-MY'); }, 1250);
-                }
-            }
-        }
-
-        function stopAllAudio() {
-            if (ttsTimeoutId) { clearTimeout(ttsTimeoutId); ttsTimeoutId = null; }
-            if (typeof responsiveVoice !== 'undefined') { try { responsiveVoice.cancel(); } catch(e){} }
-            if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
-        }
-
-        async function loadFaceModels() {
-            try {
-                console.log("Memuat model AI...");
-                await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-                await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-                await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-                modelsLoaded = true;
-                console.log("Model AI berhasil dimuat!");
-            } catch (error) {
-                console.error("Gagal memuat model:", error);
-                alert("Gagal memuat model AI. Pastikan koneksi internet aktif.");
-            }
-        }
-        window.addEventListener('load', loadFaceModels);
-
-        async function fetchFaceDatabase() {
-            if (!API_URL || API_URL.includes("MASUKAN_URL")) return;
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                registeredFaceDatabase = data;
-
-                if (registeredFaceDatabase && registeredFaceDatabase.length > 0) {
-                    const labeledDescriptors = registeredFaceDatabase.map(person => {
-                        const descriptorsList = person.descriptors.map(desc => {
-                            const parsedDesc = typeof desc === 'string' ? JSON.parse(desc) : desc;
-                            return new Float32Array(Object.values(parsedDesc));
-                        });
-                        return new faceapi.LabeledFaceDescriptors(`${person.id}|${person.name}`, descriptorsList);
-                    });
-                    faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, FACE_MATCH_THRESHOLD);
-                } else { faceMatcher = null; }
-            } catch (err) { console.error("Gagal mengambil database wajah:", err); }
-        }
-
-        function generateNextUserId() {
-            const regIdInput = document.getElementById('reg-id');
-            if (regIdInput.value !== "") return;
-            
-            if (!registeredFaceDatabase || registeredFaceDatabase.length === 0) {
-                regIdInput.value = "U001"; return;
-            }
-            let maxNum = 0;
-            registeredFaceDatabase.forEach(person => {
-                const rawId = person.id || person.ID || person.userId || person.User_ID || (Array.isArray(person) ? person[0] : null);
-                if (rawId) {
-                    const extractedNum = String(rawId).trim().replace(/\D/g, ''); 
-                    if (extractedNum) {
-                        const num = parseInt(extractedNum, 10);
-                        if (!isNaN(num) && num > maxNum) maxNum = num;
-                    }
-                }
-            });
-            regIdInput.value = maxNum > 0 ? 'U' + String(maxNum + 1).padStart(3, '0') : "U001";
-        }
-
-        function checkLocation() {
-            const statusText = document.getElementById('gps-status-text');
-            const btnAbsen = document.getElementById('btn-proses-absen');
-            btnAbsen.disabled = false;
-
-            if (!navigator.geolocation) {
-                statusText.innerHTML = `<span class="text-yellow-400 font-medium">GPS Tidak Didukung</span>`; return;
-            }
-
-            statusText.innerHTML = `<span class="text-yellow-500"><i class="fa-solid fa-spinner fa-spin"></i> Memeriksa lokasi...</span>`;
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const userLat = position.coords.latitude;
-                    const userLng = position.coords.longitude;
-                    currentGpsData = `${userLat}, ${userLng}`;
-                    const distance = calculateDistance(OFFICE_LAT, OFFICE_LNG, userLat, userLng);
-                    currentDistanceMeters = Math.round(distance);
-                    
-                    if (distance <= MAX_RADIUS_METERS) {
-                        attendanceStatus = "Hadir";
-                        statusText.innerHTML = `<span class="text-brand-success font-medium">Dalam Radius (${currentDistanceMeters} meter)</span>`;
-                    } else {
-                        attendanceStatus = "Di Luar Wilayah Kerja";
-                        statusText.innerHTML = `<span class="text-yellow-400 font-medium">Di Luar Radius (${currentDistanceMeters} meter)</span>`;
-                    }
-                },
-                (error) => { statusText.innerHTML = `<span class="text-yellow-400 font-medium">GPS Off / Tidak Terdeteksi</span>`; },
-                { enableHighAccuracy: true, timeout: 5000 }
-            );
-        }
-
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371e3;
-            const p1 = lat1 * Math.PI / 180;
-            const p2 = lat2 * Math.PI / 180;
-            const dp = (lat2 - lat1) * Math.PI / 180;
-            const dl = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
-            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
-        }
-
-        function switchView(viewId) {
-            ['view-home', 'view-faceprint', 'view-admin-login', 'view-registration'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-            document.getElementById(viewId).classList.remove('hidden');
-
-            stopCamera(); stopAllAudio();
-            
-            lastRecognizedId = null;
-            if (faceLostTimeout) { clearTimeout(faceLostTimeout); faceLostTimeout = null; }
-            window.matchedUser = null;
-            
-            if (viewId === 'view-faceprint') {
-                if (!modelsLoaded) { alert("Model AI sedang dimuat dari server..."); switchView('view-home'); return; }
-                fetchFaceDatabase().then(() => {
-                    startCamera('video-feed').then(() => {
-                        checkLocation(); startFaceDetection('video-feed', 'overlay-canvas');
-                    });
-                });
-            } else if (viewId === 'view-registration') {
-                if (!modelsLoaded) { alert("Model AI sedang dimuat dari server..."); switchView('view-home'); return; }
-                startCamera('reg-video-feed');
-                resetRegistration();
-                fetchFaceDatabase().then(() => { generateNextUserId(); });
-            }
-        }
-
-        async function startCamera(elementId) {
-            try {
-                activeStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
-                const videoElement = document.getElementById(elementId);
-                videoElement.srcObject = activeStream;
-                return new Promise(resolve => { videoElement.onloadedmetadata = () => resolve(); });
-            } catch (err) { alert("Gagal mengakses kamera."); }
-        }
-
-        function stopCamera() {
-            isDetecting = false; 
-            if (activeStream) { activeStream.getTracks().forEach(track => track.stop()); activeStream = null; }
-            if (detectAnimationId) { cancelAnimationFrame(detectAnimationId); detectAnimationId = null; }
-        }
-
-        const handleFaceLoss = () => {
-            window.matchedUser = null;
-            if (lastRecognizedId !== null && !faceLostTimeout) {
-                faceLostTimeout = setTimeout(() => {
-                    lastRecognizedId = null; faceLostTimeout = null;
-                }, 2500); 
-            }
+        // Payload dikirim beserta Nomor Telepon
+        const payload = {
+          action: 'upload_mykad',
+          imageBase64: base64Data,
+          mimeType: file.type || 'image/jpeg',
+          noTelpon: telponInput
         };
 
-        async function startFaceDetection(videoId, canvasId) {
-            isDetecting = true; 
-            
-            const video = document.getElementById(videoId);
-            const canvas = document.getElementById(canvasId);
-            const displaySize = { width: video.videoWidth || 640, height: video.videoHeight || 480 };
-            faceapi.matchDimensions(canvas, displaySize);
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
 
-            const offCanvas = document.createElement('canvas');
-            offCanvas.width = 320; offCanvas.height = 240;
-            const offCtx = offCanvas.getContext('2d');
+        const result = await response.json();
 
-            let isProcessing = false;
-            let lastFrameTime = performance.now();
+        if (result.status === 'success') {
+          currentOcrData = result;
+          currentMyKadUrl = result.fileUrl;
 
-            const processLoop = async (now) => {
-                if (!isDetecting) return; 
+          // Render Data ke Tampilan UI
+          document.getElementById('resNoUrut').innerText = result.nomorUrut || '-';
+          document.getElementById('resNama').innerText = result.name || '-';
+          document.getElementById('resIC').innerText = result.ic || '-';
+          document.getElementById('resAlamat').innerText = result.alamat_lengkap || '-';
+          document.getElementById('resWarganegara').innerText = result.warganegara || '-';
+          document.getElementById('resGender').innerText = result.gender || '-';
+          document.getElementById('resTelpon').innerText = result.noTelpon || telponInput;
+          document.getElementById('resLinkDrive').href = result.fileUrl;
 
-                detectAnimationId = requestAnimationFrame(processLoop);
-
-                const elapsed = now - lastFrameTime;
-                const interval = 1000 / targetFps;
-                if (elapsed < interval) return;
-                lastFrameTime = now;
-
-                if (video.paused || video.ended || isProcessing) return;
-                isProcessing = true;
-
-                const startProc = Date.now();
-                try {
-                    offCtx.drawImage(video, 0, 0, offCanvas.width, offCanvas.height);
-                    const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.35 });
-                    const detection = await faceapi.detectSingleFace(offCanvas, options).withFaceLandmarks().withFaceDescriptor();
-
-                    if (!isDetecting) { isProcessing = false; return; }
-
-                    const ctx = canvas.getContext('2d');
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    const statusLabel = document.getElementById('scan-status-label');
-
-                    if (detection && faceMatcher) {
-                        const box = detection.detection.box; 
-                        const scaleX = displaySize.width / offCanvas.width;
-                        const scaleY = displaySize.height / offCanvas.height;
-                        const drawBox = { x: box.x * scaleX, y: box.y * scaleY, width: box.width * scaleX, height: box.height * scaleY };
-
-                        const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
-
-                        if (bestMatch.label !== 'unknown') {
-                            const [id, name] = bestMatch.label.split('|');
-                            const similarity = Math.round((1 - bestMatch.distance) * 100);
-
-                            ctx.strokeStyle = '#10b981';
-                            statusLabel.innerText = `Terdeteksi: [${id}] ${name} (${similarity}%)`;
-                            
-                            if (faceLostTimeout) { clearTimeout(faceLostTimeout); faceLostTimeout = null; }
-
-                            if (lastRecognizedId !== id) {
-                                lastRecognizedId = id; playVerifiedSound(name); 
-                            }
-                            window.matchedUser = { id, name, distance: bestMatch.distance };
-                        } else {
-                            ctx.strokeStyle = '#ef4444';
-                            statusLabel.innerText = "Wajah Tidak Dikenal";
-                            handleFaceLoss();
-                        }
-                        ctx.lineWidth = 3;
-                        ctx.strokeRect(drawBox.x, drawBox.y, drawBox.width, drawBox.height);
-                    } else if (detection) {
-                        const box = detection.detection.box;
-                        const scaleX = displaySize.width / offCanvas.width;
-                        const scaleY = displaySize.height / offCanvas.height;
-                        ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2;
-                        ctx.strokeRect(box.x * scaleX, box.y * scaleY, box.width * scaleX, box.height * scaleY);
-                        statusLabel.innerText = "Database Kosong / Mencocokkan...";
-                        handleFaceLoss();
-                    } else {
-                        statusLabel.innerText = "Posisikan Wajah"; handleFaceLoss();
-                    }
-
-                    const procTime = Date.now() - startProc;
-                    if (procTime > interval && targetFps > MIN_FPS) {
-                        targetFps = Math.max(MIN_FPS, Math.floor(targetFps * 0.85));
-                    } else if (procTime < interval * 0.6 && targetFps < MAX_FPS) {
-                        targetFps = Math.min(MAX_FPS, targetFps + 1);
-                    }
-                } catch (err) { console.error("Error AI detection:", err); } 
-                finally { isProcessing = false; }
-            };
-
-            detectAnimationId = requestAnimationFrame(processLoop);
+          document.getElementById('hasilOcrContainer').classList.remove('d-none');
+          alert('Proses OCR Berhasil!');
+        } else {
+          alert('Gagal OCR: ' + result.message);
         }
+      } catch (err) {
+        alert('Terjadi kesalahan: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+      }
+    }
 
-        async function prosesAbsen() {
-            if (!window.matchedUser) { alert("Wajah tidak dikenali!"); return; }
-            const btn = document.getElementById('btn-proses-absen');
-            btn.innerText = "Mengirim..."; btn.disabled = true;
+    // 2. Eksekusi Registrasi Wajah & Penyimpanan
+    async function daftarWajah() {
+      const telponInput = document.getElementById('inputTelpon').value.trim();
+      const nama = document.getElementById('resNama').innerText;
+      const ic = document.getElementById('resIC').innerText;
 
-            const now = new Date();
-            const waktuStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            const tanggalStr = String(now.getDate()).padStart(2, '0') + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + now.getFullYear();
+      if (!ic || ic === '-') {
+        alert('Harap lakukan proses OCR MyKad terlebih dahulu!');
+        return;
+      }
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        action: 'absen', id: window.matchedUser.id, name: window.matchedUser.name,
-                        gps: currentGpsData, radius: `${currentDistanceMeters} meter`, status: attendanceStatus
-                    })
-                });
-                await response.json();
+      const btn = document.getElementById('btnRegister');
+      const spinner = document.getElementById('spinnerReg');
 
-                if (typeof Swal !== 'undefined') {
-                    await Swal.fire({
-                        icon: 'success', title: 'Absensi Berhasil!', background: '#1e293b',
-                        color: '#f8fafc', confirmButtonColor: '#3b82f6', confirmButtonText: 'Selesai',
-                        html: `
-                            <div style="text-align: left; font-size: 14px; line-height: 1.8; border-top: 1px solid #334155; padding-top: 12px; margin-top: 10px;">
-                                <p><strong style="color: #94a3b8;">User ID:</strong> <span style="font-family: monospace; color: #60a5fa; font-weight: bold;">${window.matchedUser.id}</span></p>
-                                <p><strong style="color: #94a3b8;">Nama Lengkap:</strong> <span style="color: #ffffff; font-weight: 600;">${window.matchedUser.name}</span></p>
-                                <p><strong style="color: #94a3b8;">Status Kehadiran:</strong> <span style="color: ${attendanceStatus === 'Hadir' ? '#10b981' : '#f59e0b'}; font-weight: 600;">${attendanceStatus}</span></p>
-                                <p><strong style="color: #94a3b8;">Jarak Radius:</strong> <span style="color: #e2e8f0;">${currentDistanceMeters} Meter</span></p>
-                                <p><strong style="color: #94a3b8;">Waktu & Tanggal:</strong> <span style="color: #e2e8f0;">${waktuStr} | ${tanggalStr}</span></p>
-                            </div>
-                        `
-                    });
-                } else {
-                    alert(`✅ ABSENSI BERHASIL!\n\nID: ${window.matchedUser.id}\nNama: ${window.matchedUser.name}\nStatus: ${attendanceStatus}\nRadius: ${currentDistanceMeters} Meter\nWaktu: ${waktuStr} | ${tanggalStr}`);
-                }
+      // Contoh Descriptors Wajah (Sesuaikan dengan keluaran face-api.js project Anda)
+      const dummyDescriptors = [0.012, -0.045, 0.128, 0.092];
 
-                switchView('view-home');
-            } catch (err) { alert("Gagal mengirim absensi."); } 
-            finally { btn.innerText = "Proses Absen"; btn.disabled = false; }
+      const payload = {
+        action: 'register',
+        id: ic,
+        name: nama,
+        noTelpon: telponInput,
+        myKadUrl: currentMyKadUrl,
+        descriptors: dummyDescriptors
+      };
+
+      try {
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
+
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+          alert('Pendaftaran Wajah & Data Berhasil Disimpan ke Google Sheet!');
+        } else {
+          alert('Gagal Registrasi: ' + result.message);
         }
-
-        async function handleAdminLogin(event) {
-            event.preventDefault();
-            const u = document.getElementById('admin-user').value;
-            const p = document.getElementById('admin-pass').value;
-            const btn = document.getElementById('btn-login-submit');
-
-            btn.innerText = "Memverifikasi..."; btn.disabled = true;
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST', body: JSON.stringify({ action: 'admin_login', username: u, password: p })
-                });
-                const result = await response.json();
-                if (result.status === 'success') { alert("Login Berhasil!"); switchView('view-registration'); } 
-                else { alert(result.message); }
-            } catch (err) { alert("Kesalahan server."); } 
-            finally { btn.innerText = "Masuk ke Pendaftaran"; btn.disabled = false; }
-        }
-
-        // === FUNGSI PROSES MYKAD (2 OPTION INPUT) ===
-        function prosesMyKadFile(inputElement) {
-            if (inputElement.files && inputElement.files[0]) {
-                selectedMyKadFile = inputElement.files[0];
-                const infoDiv = document.getElementById('file-selected-info');
-                infoDiv.innerText = `✓ Foto Terpilih: ${selectedMyKadFile.name}`;
-                infoDiv.classList.remove('hidden');
-                document.getElementById('btn-ocr').disabled = false;
-            }
-        }
-
-        async function kirimMyKadKeServer() {
-            if (!selectedMyKadFile) {
-                alert("Pilih atau ambil foto MyKad terlebih dahulu!"); return;
-            }
-
-            const btn = document.getElementById('btn-ocr');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Memproses OCR...</span>`;
-            btn.disabled = true;
-
-            const reader = new FileReader();
-            reader.onloadend = async function() {
-                const base64String = reader.result.split(',')[1];
-                try {
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            action: 'upload_mykad',
-                            imageBase64: base64String,
-                            mimeType: selectedMyKadFile.type
-                        })
-                    });
-                    
-                    const result = await response.json();
-                    if (result.status === 'success') {
-                        document.getElementById('reg-id').value = result.ic;
-                        document.getElementById('reg-name').value = result.name;
-                        myKadDriveUrl = result.fileUrl; // Simpan URL Drive
-                        alert("✅ MyKad berhasil diekstrak dan disimpan ke Drive!");
-                    } else {
-                        alert("Gagal OCR: " + result.message);
-                    }
-                } catch (error) {
-                    alert("Kesalahan jaringan saat memproses MyKad.");
-                } finally {
-                    btn.innerHTML = `<i class="fa-solid fa-microchip"></i> <span>Scan MyKad & Ekstrak Data</span>`;
-                    btn.disabled = false;
-                }
-            };
-            reader.readAsDataURL(selectedMyKadFile);
-        }
-
-        let currentPoseStep = 1;
-        const totalPoses = 7;
-        let registeredFaceDescriptors = []; 
-        const poseDescriptions = [
-            "Langkah 1/7: Hadap Depan Lurus", "Langkah 2/7: Menoleh ke Kiri", "Langkah 3/7: Menoleh ke Kanan",
-            "Langkah 4/7: Menunduk ke Bawah", "Langkah 5/7: Mendongak ke Atas", "Langkah 6/7: Mata Tertutup Rapat", "Langkah 7/7: Mata Terbuka Lebar"
-        ];
-
-        async function captureNextPose() {
-            const id = document.getElementById('reg-id').value.trim();
-            const name = document.getElementById('reg-name').value.trim();
-            if(!id || !name) { alert("Isi User ID dan Nama Lengkap!"); return; }
-            
-            const video = document.getElementById('reg-video-feed');
-            const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
-                    .withFaceLandmarks().withFaceDescriptor();
-            if(!detection) { alert("Wajah tidak jelas!"); return; }
-
-            if (currentPoseStep === 1 && faceMatcher) {
-                const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
-                if (bestMatch.label !== 'unknown' && bestMatch.distance < 0.50) {
-                    const registeredName = bestMatch.label.split('|')[1] || bestMatch.label;
-                    alert(`❌ PENDAFTARAN DITOLAK!\n\nWajah ini sudah terdaftar di sistem atas nama:\n👉 ${registeredName}`);
-                    return; 
-                }
-            }
-            
-            registeredFaceDescriptors.push(Array.from(detection.descriptor));
-
-            if (currentPoseStep < totalPoses) {
-                currentPoseStep++; updateRegistrationUI();
-            } else {
-                const btn = document.getElementById('btn-capture');
-                btn.innerText = "Menyimpan ke Server..."; btn.disabled = true;
-
-                try {
-                    await fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            action: 'register', id: id, name: name, myKadUrl: myKadDriveUrl, descriptors: registeredFaceDescriptors
-                        })
-                    });
-                    alert("Pendaftaran wajah berhasil disimpan ke database!");
-                    document.getElementById('reg-name').value = '';
-                    myKadDriveUrl = ""; 
-                    selectedMyKadFile = null;
-                    document.getElementById('file-selected-info').classList.add('hidden');
-                    await fetchFaceDatabase();
-                    generateNextUserId();
-                    resetRegistration();
-                    switchView('view-home');
-                } catch (err) { alert("Gagal menyimpan data ke server."); } 
-                finally { btn.disabled = false; }
-            }
-        }
-
-        function updateRegistrationUI() {
-            document.getElementById('pose-instruction').innerText = poseDescriptions[currentPoseStep - 1];
-            let percent = (currentPoseStep / totalPoses) * 100;
-            document.getElementById('progress-text').innerText = `Progress Sampel: ${currentPoseStep} / ${totalPoses}`;
-            document.getElementById('progress-percentage').innerText = `${Math.round(percent)}%`;
-            document.getElementById('progress-bar').style.width = `${percent}%`;
-
-            if(currentPoseStep === totalPoses) {
-                document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-check"></i> <span>Simpan & Selesaikan</span>`;
-            }
-        }
-
-        function resetRegistration() {
-            currentPoseStep = 1;
-            registeredFaceDescriptors = [];
-            document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-camera"></i> <span>Ambil Sampel Pose Ini</span>`;
-            updateRegistrationUI();
-        }
-    </script>
+      } catch (err) {
+        alert('Terjadi kesalahan registrasi: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+      }
+    }
+  </script>
 </body>
 </html>
