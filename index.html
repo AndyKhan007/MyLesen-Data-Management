@@ -170,6 +170,11 @@
                     <label class="block text-xs text-slate-400 mb-1">Nama Lengkap User</label>
                     <input type="text" id="reg-name" placeholder="Nama Lengkap User" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
+                <!-- TAMBAHAN: UI Input Nomor Telepon -->
+                <div class="md:col-span-2">
+                    <label class="block text-xs text-slate-400 mb-1">Nomor Telepon</label>
+                    <input type="tel" id="reg-phone" placeholder="Contoh: 0123456789" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                </div>
             </div>
 
             <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-slate-700 shadow-inner flex items-center justify-center">
@@ -635,7 +640,8 @@
                         body: JSON.stringify({
                             action: 'upload_mykad',
                             imageBase64: base64String,
-                            mimeType: selectedMyKadFile.type
+                            mimeType: selectedMyKadFile.type,
+                            noTelpon: document.getElementById('reg-phone').value.trim() // TAMBAHAN
                         })
                     });
                     
@@ -669,6 +675,7 @@
         async function captureNextPose() {
             const id = document.getElementById('reg-id').value.trim();
             const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim(); // TAMBAHAN
             if(!id || !name) { alert("Isi User ID dan Nama Lengkap!"); return; }
             
             const video = document.getElementById('reg-video-feed');
@@ -697,11 +704,12 @@
                     await fetch(API_URL, {
                         method: 'POST',
                         body: JSON.stringify({
-                            action: 'register', id: id, name: name, myKadUrl: myKadDriveUrl, descriptors: registeredFaceDescriptors
+                            action: 'register', id: id, name: name, myKadUrl: myKadDriveUrl, descriptors: registeredFaceDescriptors, noTelpon: phone // TAMBAHAN
                         })
                     });
                     alert("Pendaftaran wajah berhasil disimpan ke database!");
                     document.getElementById('reg-name').value = '';
+                    document.getElementById('reg-phone').value = ''; // TAMBAHAN
                     myKadDriveUrl = ""; 
                     selectedMyKadFile = null;
                     document.getElementById('file-selected-info').classList.add('hidden');
