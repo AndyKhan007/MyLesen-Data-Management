@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Faceprint & Absensi Biometrik</title>
 
+    <!-- Google Fonts: Roboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
     <!-- Panggil File CSS Terpisah -->
     <link rel="stylesheet" href="themes.css">
 
@@ -23,6 +28,9 @@
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'sans-serif'], // Menggunakan Roboto sebagai font utama
+                    },
                     colors: {
                         brand: { 
                             dark: 'var(--bg-dark)', 
@@ -39,15 +47,15 @@
 <body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col justify-between select-none theme-dark">
 
     <!-- HEADER / STATUS BAR -->
-    <header class="w-full bg-brand-card border-b border-slate-800 p-4 flex justify-between items-center shadow-md">
+    <header class="w-full bg-brand-card border-b border-zinc-800 p-4 flex justify-between items-center shadow-md">
         <div class="flex items-center space-x-3">
-            <div class="w-3 h-3 bg-brand-success rounded-full animate-pulse"></div>
-            <span class="font-bold tracking-wider text-sm md:text-base text-slate-100">Mulyadi _ BIO ATTENDANCE SYSTEM</span>
+            <div class="w-3 h-3 bg-brand-success rounded-full animate-pulse shadow-[0_0_10px_#32DE84]"></div>
+            <span class="font-bold tracking-wider text-sm md:text-base text-brand-accent">Mulyadi _ BIO ATTENDANCE SYSTEM</span>
         </div>
         
         <div class="flex items-center space-x-4">
             <!-- Tombol Pengalih Tema -->
-            <button onclick="toggleTheme()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs font-medium text-slate-200 flex items-center space-x-2 transition shadow">
+            <button onclick="toggleTheme()" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-medium text-slate-200 flex items-center space-x-2 transition shadow">
                 <i class="fa-solid fa-palette text-brand-accent"></i>
                 <span id="theme-label">Ganti Tema</span>
             </button>
@@ -59,31 +67,31 @@
     <main class="flex-grow flex items-center justify-center p-4">
 
         <!-- 1. HOME VIEW -->
-        <section id="view-home" class="w-full max-w-md bg-brand-card border border-slate-700/50 rounded-2xl p-8 shadow-2xl text-center space-y-8">
+        <section id="view-home" class="w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-8 shadow-2xl text-center space-y-8">
             <div>
-                <div class="w-20 h-20 bg-brand-accent/20 border border-brand-accent rounded-full flex items-center justify-center mx-auto mb-4 text-brand-accent text-3xl shadow-inner">
+                <div class="w-20 h-20 bg-brand-accent/20 border border-brand-accent rounded-full flex items-center justify-center mx-auto mb-4 text-brand-accent text-3xl shadow-[0_0_15px_rgba(50,222,132,0.2)]">
                     <i class="fa-solid fa-fingerprint"></i>
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight">Sistem Faceprint</h1>
+                <h1 class="text-2xl font-bold tracking-tight text-white">Sistem Faceprint</h1>
                 <p class="text-slate-400 text-sm mt-1">Silakan pilih menu operasional di bawah ini</p>
             </div>
 
             <div class="space-y-4">
-                <button onclick="switchView('view-faceprint')" class="w-full py-4 bg-blue-600 hover:bg-blue-500 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-lg group text-white">
+                <button onclick="switchView('view-faceprint')" class="w-full py-4 bg-brand-accent hover:opacity-90 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-lg group text-black">
                     <i class="fa-solid fa-camera group-hover:scale-110 transition-transform"></i>
                     <span>Mulai Faceprint</span>
                 </button>
-                <button onclick="switchView('view-admin-login')" class="w-full py-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-lg text-slate-300">
-                    <i class="fa-solid fa-lock"></i>
+                <button onclick="switchView('view-admin-login')" class="w-full py-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-lg text-slate-300">
+                    <i class="fa-solid fa-lock text-brand-accent"></i>
                     <span>Login Admin / Pendaftaran</span>
                 </button>
             </div>
         </section>
 
         <!-- 2. FACEPRINT (ABSENSI) VIEW -->
-        <section id="view-faceprint" class="hidden w-full max-w-2xl bg-brand-card border border-slate-700/50 rounded-2xl p-6 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                <h2 class="text-xl font-bold flex items-center space-x-2">
+        <section id="view-faceprint" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-6 shadow-2xl space-y-6">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
+                <h2 class="text-xl font-bold flex items-center space-x-2 text-white">
                     <i class="fa-solid fa-video text-brand-accent"></i>
                     <span>Pemindaian Kehadiran (Faceprint)</span>
                 </h2>
@@ -96,26 +104,26 @@
                 
                 <div class="absolute inset-0 border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
                     <div class="w-64 h-64 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
-                        <span id="scan-status-label" class="text-xs bg-black/70 px-3 py-1.5 rounded text-brand-success font-mono font-semibold">Posisikan Wajah</span>
+                        <span id="scan-status-label" class="text-xs bg-black/80 px-3 py-1.5 rounded text-brand-success font-mono font-semibold">Posisikan Wajah</span>
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-sm">
+            <div class="flex justify-between items-center bg-zinc-900/80 p-4 rounded-xl border border-zinc-800 text-sm">
                 <div>
                     <p class="text-slate-400">Status GPS:</p>
                     <p id="gps-status-text" class="text-brand-success font-medium"><i class="fa-solid fa-spinner fa-spin"></i> Memeriksa GPS...</p>
                 </div>
-                <button id="btn-proses-absen" onclick="prosesAbsen()" class="px-6 py-2.5 bg-brand-success hover:bg-emerald-600 font-bold rounded-lg shadow transition text-white">
+                <button id="btn-proses-absen" onclick="prosesAbsen()" class="px-6 py-2.5 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow transition text-black">
                     Proses Absen
                 </button>
             </div>
         </section>
 
         <!-- 3. ADMIN LOGIN VIEW -->
-        <section id="view-admin-login" class="hidden w-full max-w-md bg-brand-card border border-slate-700/50 rounded-2xl p-8 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                <h2 class="text-xl font-bold flex items-center space-x-2">
+        <section id="view-admin-login" class="hidden w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-8 shadow-2xl space-y-6">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
+                <h2 class="text-xl font-bold flex items-center space-x-2 text-white">
                     <i class="fa-solid fa-shield-halved text-brand-accent"></i>
                     <span>Login Administrator</span>
                 </h2>
@@ -125,22 +133,22 @@
             <form onsubmit="handleAdminLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm text-slate-400 mb-1">Username Admin</label>
-                    <input type="text" id="admin-user" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan username">
+                    <input type="text" id="admin-user" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan username">
                 </div>
                 <div>
                     <label class="block text-sm text-slate-400 mb-1">Password</label>
-                    <input type="password" id="admin-pass" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan password">
+                    <input type="password" id="admin-pass" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan password">
                 </div>
-                <button type="submit" id="btn-login-submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 transition font-semibold rounded-xl shadow-lg mt-2 text-white">
+                <button type="submit" id="btn-login-submit" class="w-full py-3.5 bg-brand-accent hover:opacity-90 transition font-semibold rounded-xl shadow-lg mt-2 text-black">
                     Masuk ke Pendaftaran
                 </button>
             </form>
         </section>
 
         <!-- 4. FACE REGISTRATION VIEW -->
-        <section id="view-registration" class="hidden w-full max-w-2xl bg-brand-card border border-slate-700/50 rounded-2xl p-6 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                <h2 class="text-xl font-bold flex items-center space-x-2">
+        <section id="view-registration" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-6 shadow-2xl space-y-6">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
+                <h2 class="text-xl font-bold flex items-center space-x-2 text-white">
                     <i class="fa-solid fa-user-plus text-brand-accent"></i>
                     <span>Pendaftaran Wajah Baru (7 Pose)</span>
                 </h2>
@@ -148,7 +156,7 @@
             </div>
 
             <!-- MODUL UPLOAD MYKAD -->
-            <div class="bg-slate-900 border border-slate-700 rounded-xl p-5 mb-4 shadow-inner">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mb-4 shadow-inner">
                 <label class="block text-sm font-semibold text-brand-accent mb-3">
                     <i class="fa-solid fa-id-card mr-2"></i>Upload MyKad
                 </label>
@@ -157,19 +165,19 @@
                 <input type="file" id="mykad-gallery" accept="image/*" class="hidden" onchange="prosesMyKadFile(this)">
 
                 <div class="grid grid-cols-2 gap-3 mb-3">
-                    <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-white">
+                    <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-3 bg-brand-accent hover:opacity-90 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-black">
                         <i class="fa-solid fa-camera"></i>
                         <span>Ambil Kamera</span>
                     </button>
-                    <button type="button" onclick="document.getElementById('mykad-gallery').click()" class="py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
+                    <button type="button" onclick="document.getElementById('mykad-gallery').click()" class="py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
                         <i class="fa-solid fa-image"></i>
                         <span>Pilih Galeri</span>
                     </button>
                 </div>
 
-                <div id="file-selected-info" class="text-xs text-emerald-400 text-center font-mono hidden mb-3"></div>
+                <div id="file-selected-info" class="text-xs text-brand-success text-center font-mono hidden mb-3"></div>
 
-                <button type="button" onclick="kirimMyKadKeServer()" id="btn-ocr" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-white" disabled>
+                <button type="button" onclick="kirimMyKadKeServer()" id="btn-ocr" class="w-full py-3 bg-brand-success hover:opacity-90 font-bold rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-black" disabled>
                     <i class="fa-solid fa-microchip"></i>
                     <span>Scan MyKad & Ekstrak Data</span>
                 </button>
@@ -178,26 +186,26 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">User ID / No. IC</label>
-                    <input type="text" id="reg-id" placeholder="User ID / No. IC" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
+                    <input type="text" id="reg-id" placeholder="User ID / No. IC" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Nama Lengkap User</label>
-                    <input type="text" id="reg-name" placeholder="Nama Lengkap User" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                    <input type="text" id="reg-name" placeholder="Nama Lengkap User" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Nomor Telepon</label>
-                    <input type="tel" id="reg-phone" placeholder="Contoh: 0123456789" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                    <input type="tel" id="reg-phone" placeholder="Contoh: 0123456789" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Jenis User / Role</label>
-                    <select id="reg-role" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                    <select id="reg-role" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>
             </div>
 
-            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-slate-700 shadow-inner flex items-center justify-center">
+            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-zinc-800 shadow-inner flex items-center justify-center">
                 <video id="reg-video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
                 <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-4 py-2 rounded-full text-center">
                     <span id="pose-instruction" class="text-sm font-semibold text-brand-accent">Langkah 1/7: Hadap Depan Lurus (Netral)</span>
@@ -209,14 +217,14 @@
                     <span id="progress-text">Progress Sampel: 0 / 7</span>
                     <span id="progress-percentage">0%</span>
                 </div>
-                <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
+                <div class="w-full bg-zinc-900 h-2.5 rounded-full overflow-hidden border border-zinc-800">
                     <div id="progress-bar" class="bg-brand-success h-full w-0 transition-all duration-300"></div>
                 </div>
             </div>
 
             <div class="flex justify-between items-center pt-2">
-                <button onclick="resetRegistration()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-sm rounded-lg border border-slate-600 transition text-slate-200">Reset</button>
-                <button onclick="captureNextPose()" id="btn-capture" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg shadow transition flex items-center space-x-2 text-white">
+                <button onclick="resetRegistration()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-sm rounded-lg border border-zinc-600 transition text-slate-200">Reset</button>
+                <button onclick="captureNextPose()" id="btn-capture" class="px-6 py-2.5 bg-brand-accent hover:opacity-90 font-bold rounded-lg shadow transition flex items-center space-x-2 text-black">
                     <i class="fa-solid fa-camera"></i>
                     <span>Ambil Sampel Pose Ini</span>
                 </button>
@@ -226,7 +234,7 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-slate-800">
+    <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-zinc-800">
         Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script
     </footer>
 
@@ -268,12 +276,12 @@
             if (body.classList.contains('theme-green')) {
                 body.classList.remove('theme-green');
                 body.classList.add('theme-dark');
-                if(themeLabel) themeLabel.innerText = "Tema Hijau";
+                if(themeLabel) themeLabel.innerText = "Tema Android";
                 localStorage.setItem('app_theme', 'theme-dark');
             } else {
                 body.classList.remove('theme-dark');
                 body.classList.add('theme-green');
-                if(themeLabel) themeLabel.innerText = "Tema Dark";
+                if(themeLabel) themeLabel.innerText = "Tema Default";
                 localStorage.setItem('app_theme', 'theme-green');
             }
         }
@@ -285,7 +293,7 @@
             document.body.classList.add(savedTheme);
             const themeLabel = document.getElementById('theme-label');
             if(themeLabel) {
-                themeLabel.innerText = savedTheme === 'theme-green' ? 'Tema Dark' : 'Tema Hijau';
+                themeLabel.innerText = savedTheme === 'theme-green' ? 'Tema Default' : 'Tema Android';
             }
         });
 
@@ -305,7 +313,6 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // Fungsi helper untuk merapikan kapitalisasi nama agar dibaca utuh, bukan dieja
         function formatTitleCase(str) {
             if (!str) return "";
             return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
@@ -317,16 +324,13 @@
             if (!isDetecting) return; 
 
             stopAllAudio();
-
             const userName = formatTitleCase(rawUserName);
-
             const now = new Date();
             const jam = now.getHours();
             const menit = now.getMinutes();
             const totalMenit = jam * 60 + menit; 
 
             let pesanSapaan = "";
-
             if (totalMenit >= 420 && totalMenit <= 450) {
                 pesanSapaan = `Good Morning, ${userName}, selamat bekerja.`;
             } else if (totalMenit >= 690 && totalMenit <= 810) {
@@ -341,15 +345,11 @@
 
             if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
                 responsiveVoice.speak(textEnglish, "US English Female", {
-                    pitch: 1,
-                    rate: 0.35,
+                    pitch: 1, rate: 0.35,
                     onend: function() {
                         if (userName && isDetecting) {
                             ttsTimeoutId = setTimeout(() => {
-                                responsiveVoice.speak(pesanSapaan, "Malay Female", {
-                                    pitch: 1,
-                                    rate: 0.95
-                                });
+                                responsiveVoice.speak(pesanSapaan, "Malay Female", { pitch: 1, rate: 0.95 });
                             }, 150);
                         }
                     }
@@ -559,7 +559,7 @@
                             const [id, name, role] = bestMatch.label.split('|');
                             const similarity = Math.round((1 - bestMatch.distance) * 100);
 
-                            ctx.strokeStyle = '#10b981';
+                            ctx.strokeStyle = '#32DE84';
                             statusLabel.innerText = `Terdeteksi: [${id}] ${name} (${role}) (${similarity}%)`;
                             
                             if (faceLostTimeout) { clearTimeout(faceLostTimeout); faceLostTimeout = null; }
@@ -579,7 +579,7 @@
                         const box = detection.detection.box;
                         const scaleX = displaySize.width / offCanvas.width;
                         const scaleY = displaySize.height / offCanvas.height;
-                        ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2;
+                        ctx.strokeStyle = '#32DE84'; ctx.lineWidth = 2;
                         ctx.strokeRect(box.x * scaleX, box.y * scaleY, box.width * scaleX, box.height * scaleY);
                         statusLabel.innerText = "Mencocokkan wajah...";
                         handleFaceLoss();
@@ -619,16 +619,16 @@
 
                 if (typeof Swal !== 'undefined') {
                     await Swal.fire({
-                        icon: 'success', title: 'Absensi Berhasil!', background: '#1e293b',
-                        color: '#f8fafc', confirmButtonColor: '#3b82f6', confirmButtonText: 'Selesai',
+                        icon: 'success', title: 'Absensi Berhasil!', background: '#1C1C1E',
+                        color: '#FFFFFF', confirmButtonColor: '#32DE84', confirmButtonText: 'Selesai',
                         html: `
-                            <div style="text-align: left; font-size: 14px; line-height: 1.8; border-top: 1px solid #334155; padding-top: 12px; margin-top: 10px;">
-                                <p><strong style="color: #94a3b8;">User ID:</strong> <span style="font-family: monospace; color: #60a5fa; font-weight: bold;">${window.matchedUser.id}</span></p>
-                                <p><strong style="color: #94a3b8;">Nama Lengkap:</strong> <span style="color: #ffffff; font-weight: 600;">${window.matchedUser.name}</span></p>
-                                <p><strong style="color: #94a3b8;">Role / Jenis:</strong> <span style="color: #38bdf8; text-transform: uppercase; font-weight: bold;">${window.matchedUser.role}</span></p>
-                                <p><strong style="color: #94a3b8;">Status Kehadiran:</strong> <span style="color: ${attendanceStatus === 'Hadir' ? '#10b981' : '#f59e0b'}; font-weight: 600;">${attendanceStatus}</span></p>
-                                <p><strong style="color: #94a3b8;">Jarak Radius:</strong> <span style="color: #e2e8f0;">${currentDistanceMeters} Meter</span></p>
-                                <p><strong style="color: #94a3b8;">Waktu & Tanggal:</strong> <span style="color: #e2e8f0;">${waktuStr} | ${tanggalStr}</span></p>
+                            <div style="text-align: left; font-size: 14px; line-height: 1.8; border-top: 1px solid #27272a; padding-top: 12px; margin-top: 10px;">
+                                <p><strong style="color: #a1a1aa;">User ID:</strong> <span style="font-family: monospace; color: #32DE84; font-weight: bold;">${window.matchedUser.id}</span></p>
+                                <p><strong style="color: #a1a1aa;">Nama Lengkap:</strong> <span style="color: #ffffff; font-weight: 600;">${window.matchedUser.name}</span></p>
+                                <p><strong style="color: #a1a1aa;">Role / Jenis:</strong> <span style="color: #32DE84; text-transform: uppercase; font-weight: bold;">${window.matchedUser.role}</span></p>
+                                <p><strong style="color: #a1a1aa;">Status Kehadiran:</strong> <span style="color: ${attendanceStatus === 'Hadir' ? '#32DE84' : '#f59e0b'}; font-weight: 600;">${attendanceStatus}</span></p>
+                                <p><strong style="color: #a1a1aa;">Jarak Radius:</strong> <span style="color: #e2e8f0;">${currentDistanceMeters} Meter</span></p>
+                                <p><strong style="color: #a1a1aa;">Waktu & Tanggal:</strong> <span style="color: #e2e8f0;">${waktuStr} | ${tanggalStr}</span></p>
                             </div>
                         `
                     });
