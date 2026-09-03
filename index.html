@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Faceprint & Absensi Biometrik</title>
 
+    <!-- Panggil File CSS Terpisah -->
+    <link rel="stylesheet" href="themes.css">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome CDN -->
@@ -21,22 +24,35 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: { dark: '#0f172a', card: '#1e293b', accent: '#3b82f6', success: '#10b981' }
+                        brand: { 
+                            dark: 'var(--bg-dark)', 
+                            card: 'var(--bg-card)', 
+                            accent: 'var(--brand-accent)', 
+                            success: 'var(--brand-success)' 
+                        }
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col justify-between select-none">
+<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col justify-between select-none theme-dark">
 
     <!-- HEADER / STATUS BAR -->
     <header class="w-full bg-brand-card border-b border-slate-800 p-4 flex justify-between items-center shadow-md">
         <div class="flex items-center space-x-3">
             <div class="w-3 h-3 bg-brand-success rounded-full animate-pulse"></div>
-            <span class="font-bold tracking-wider text-sm md:text-base">Mulyadi _ BIO ATTENDANCE SYSTEM</span>
+            <span class="font-bold tracking-wider text-sm md:text-base text-slate-100">Mulyadi _ BIO ATTENDANCE SYSTEM</span>
         </div>
-        <div id="real-time-clock" class="text-sm font-mono text-slate-400">00:00:00 | 00-00-0000</div>
+        
+        <div class="flex items-center space-x-4">
+            <!-- Tombol Pengalih Tema -->
+            <button onclick="toggleTheme()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs font-medium text-slate-200 flex items-center space-x-2 transition shadow">
+                <i class="fa-solid fa-palette text-brand-accent"></i>
+                <span id="theme-label">Ganti Tema</span>
+            </button>
+            <div id="real-time-clock" class="text-sm font-mono text-slate-400 hidden sm:block">00:00:00 | 00-00-0000</div>
+        </div>
     </header>
 
     <!-- MAIN CONTAINER -->
@@ -53,7 +69,7 @@
             </div>
 
             <div class="space-y-4">
-                <button onclick="switchView('view-faceprint')" class="w-full py-4 bg-blue-600 hover:bg-blue-500 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-lg group">
+                <button onclick="switchView('view-faceprint')" class="w-full py-4 bg-blue-600 hover:bg-blue-500 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-lg group text-white">
                     <i class="fa-solid fa-camera group-hover:scale-110 transition-transform"></i>
                     <span>Mulai Faceprint</span>
                 </button>
@@ -90,7 +106,7 @@
                     <p class="text-slate-400">Status GPS:</p>
                     <p id="gps-status-text" class="text-brand-success font-medium"><i class="fa-solid fa-spinner fa-spin"></i> Memeriksa GPS...</p>
                 </div>
-                <button id="btn-proses-absen" onclick="prosesAbsen()" class="px-6 py-2.5 bg-brand-success hover:bg-emerald-600 font-bold rounded-lg shadow transition">
+                <button id="btn-proses-absen" onclick="prosesAbsen()" class="px-6 py-2.5 bg-brand-success hover:bg-emerald-600 font-bold rounded-lg shadow transition text-white">
                     Proses Absen
                 </button>
             </div>
@@ -115,7 +131,7 @@
                     <label class="block text-sm text-slate-400 mb-1">Password</label>
                     <input type="password" id="admin-pass" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan password">
                 </div>
-                <button type="submit" id="btn-login-submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 transition font-semibold rounded-xl shadow-lg mt-2">
+                <button type="submit" id="btn-login-submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 transition font-semibold rounded-xl shadow-lg mt-2 text-white">
                     Masuk ke Pendaftaran
                 </button>
             </form>
@@ -141,7 +157,7 @@
                 <input type="file" id="mykad-gallery" accept="image/*" class="hidden" onchange="prosesMyKadFile(this)">
 
                 <div class="grid grid-cols-2 gap-3 mb-3">
-                    <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow">
+                    <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-white">
                         <i class="fa-solid fa-camera"></i>
                         <span>Ambil Kamera</span>
                     </button>
@@ -153,7 +169,7 @@
 
                 <div id="file-selected-info" class="text-xs text-emerald-400 text-center font-mono hidden mb-3"></div>
 
-                <button type="button" onclick="kirimMyKadKeServer()" id="btn-ocr" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <button type="button" onclick="kirimMyKadKeServer()" id="btn-ocr" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-white" disabled>
                     <i class="fa-solid fa-microchip"></i>
                     <span>Scan MyKad & Ekstrak Data</span>
                 </button>
@@ -199,8 +215,8 @@
             </div>
 
             <div class="flex justify-between items-center pt-2">
-                <button onclick="resetRegistration()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-sm rounded-lg border border-slate-600 transition">Reset</button>
-                <button onclick="captureNextPose()" id="btn-capture" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg shadow transition flex items-center space-x-2">
+                <button onclick="resetRegistration()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-sm rounded-lg border border-slate-600 transition text-slate-200">Reset</button>
+                <button onclick="captureNextPose()" id="btn-capture" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg shadow transition flex items-center space-x-2 text-white">
                     <i class="fa-solid fa-camera"></i>
                     <span>Ambil Sampel Pose Ini</span>
                 </button>
@@ -244,6 +260,35 @@
         let myKadDriveUrl = ""; 
         let ocrResultData = null; 
 
+        // Fungsi Pengalih Tema (Theme Switcher)
+        function toggleTheme() {
+            const body = document.body;
+            const themeLabel = document.getElementById('theme-label');
+            
+            if (body.classList.contains('theme-green')) {
+                body.classList.remove('theme-green');
+                body.classList.add('theme-dark');
+                if(themeLabel) themeLabel.innerText = "Tema Hijau";
+                localStorage.setItem('app_theme', 'theme-dark');
+            } else {
+                body.classList.remove('theme-dark');
+                body.classList.add('theme-green');
+                if(themeLabel) themeLabel.innerText = "Tema Dark";
+                localStorage.setItem('app_theme', 'theme-green');
+            }
+        }
+
+        // Muat preferensi tema saat halaman dibuka
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('app_theme') || 'theme-dark';
+            document.body.classList.remove('theme-dark', 'theme-green');
+            document.body.classList.add(savedTheme);
+            const themeLabel = document.getElementById('theme-label');
+            if(themeLabel) {
+                themeLabel.innerText = savedTheme === 'theme-green' ? 'Tema Dark' : 'Tema Hijau';
+            }
+        });
+
         setInterval(() => {
             const now = new Date();
             const timeString = now.toTimeString().split(' ')[0];
@@ -273,10 +318,8 @@
 
             stopAllAudio();
 
-            // Ubah format nama menjadi Title Case (misal: MULYADI -> Mulyadi)
             const userName = formatTitleCase(rawUserName);
 
-            // 1. Tentukan Sapaan Berdasarkan Jam & Menit Lokal
             const now = new Date();
             const jam = now.getHours();
             const menit = now.getMinutes();
@@ -284,26 +327,18 @@
 
             let pesanSapaan = "";
 
-            // Jam 07:00 - 07:30 (420 menit - 450 menit)
             if (totalMenit >= 420 && totalMenit <= 450) {
                 pesanSapaan = `Good Morning, ${userName}, selamat bekerja.`;
-            } 
-            // Tengah Hari / Jam Istirahat (11:30 - 13:30) (690 menit - 810 menit)
-            else if (totalMenit >= 690 && totalMenit <= 810) {
+            } else if (totalMenit >= 690 && totalMenit <= 810) {
                 pesanSapaan = `Hello, ${userName}, face print berjaya.`;
-            } 
-            // Jam Pulang Kerja (16:00 ke atas)
-            else if (jam >= 16) {
+            } else if (jam >= 16) {
                 pesanSapaan = `Terima kasih, ${userName}, Selamat Berehat.`;
-            } 
-            // Sapaan Standar untuk jam operasional lainnya
-            else {
+            } else {
                 pesanSapaan = `Terima kasih, ${userName}, face print berjaya.`;
             }
 
             const textEnglish = "Verified"; 
 
-            // 2. Eksekusi ResponsiveVoice
             if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
                 responsiveVoice.speak(textEnglish, "US English Female", {
                     pitch: 1,
