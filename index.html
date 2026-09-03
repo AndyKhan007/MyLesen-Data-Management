@@ -170,10 +170,16 @@
                     <label class="block text-xs text-slate-400 mb-1">Nama Lengkap User</label>
                     <input type="text" id="reg-name" placeholder="Nama Lengkap User" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
-                <!-- TAMBAHAN: UI Input Nomor Telepon -->
-                <div class="md:col-span-2">
+                <div>
                     <label class="block text-xs text-slate-400 mb-1">Nomor Telepon</label>
                     <input type="tel" id="reg-phone" placeholder="Contoh: 0123456789" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Jenis User / Role</label>
+                    <select id="reg-role" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
                 </div>
             </div>
 
@@ -213,10 +219,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // URL Web App Google Apps Script
-        const API_URL = "https://script.google.com/macros/s/AKfycby6RymMw4Jb79WTuv09nBvUaYD1F5Ea-FbWHyRLmQOPc3ZaPpXmtrUZWD0KqXNtYsiCug/exec";
-
-        // CDN Model Face-API.js
+        const API_URL = "https://script.google.com/macros/s/AKfycbz40kQ9e9v6LGY4P1Or9ewqzrl-FVy6kvNyQkCNBnzpdduomFmBIt4CJ7GhwzHbKmpStA/exec";
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
         const OFFICE_LAT = 5.350205443577465;
@@ -243,9 +246,8 @@
         const MAX_FPS = 12;
 
         let selectedMyKadFile = null;
-        let myKadDriveUrl = ""; // Menyimpan URL gambar Drive untuk pendaftaran
+        let myKadDriveUrl = ""; 
 
-        // Jam Real-time
         setInterval(() => {
             const now = new Date();
             const timeString = now.toTimeString().split(' ')[0];
@@ -311,14 +313,11 @@
 
         async function loadFaceModels() {
             try {
-                console.log("Memuat model AI...");
                 await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
                 await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
                 await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
                 modelsLoaded = true;
-                console.log("Model AI berhasil dimuat!");
             } catch (error) {
-                console.error("Gagal memuat model:", error);
                 alert("Gagal memuat model AI. Pastikan koneksi internet aktif.");
             }
         }
@@ -611,7 +610,6 @@
             finally { btn.innerText = "Masuk ke Pendaftaran"; btn.disabled = false; }
         }
 
-        // === FUNGSI PROSES MYKAD (2 OPTION INPUT) ===
         function prosesMyKadFile(inputElement) {
             if (inputElement.files && inputElement.files[0]) {
                 selectedMyKadFile = inputElement.files[0];
@@ -641,7 +639,7 @@
                             action: 'upload_mykad',
                             imageBase64: base64String,
                             mimeType: selectedMyKadFile.type,
-                            noTelpon: document.getElementById('reg-phone').value.trim() // TAMBAHAN
+                            noTelpon: document.getElementById('reg-phone').value.trim()
                         })
                     });
                     
@@ -649,7 +647,7 @@
                     if (result.status === 'success') {
                         document.getElementById('reg-id').value = result.ic;
                         document.getElementById('reg-name').value = result.name;
-                        myKadDriveUrl = result.fileUrl; // Simpan URL Drive
+                        myKadDriveUrl = result.fileUrl; 
                         alert("✅ MyKad berhasil diekstrak dan disimpan ke Drive!");
                     } else {
                         alert("Gagal OCR: " + result.message);
@@ -675,7 +673,9 @@
         async function captureNextPose() {
             const id = document.getElementById('reg-id').value.trim();
             const name = document.getElementById('reg-name').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim(); // TAMBAHAN
+            const phone = document.getElementById('reg-phone').value.trim();
+            const role = document.getElementById('reg-role').value;
+            
             if(!id || !name) { alert("Isi User ID dan Nama Lengkap!"); return; }
             
             const video = document.getElementById('reg-video-feed');
@@ -704,12 +704,18 @@
                     await fetch(API_URL, {
                         method: 'POST',
                         body: JSON.stringify({
-                            action: 'register', id: id, name: name, myKadUrl: myKadDriveUrl, descriptors: registeredFaceDescriptors, noTelpon: phone // TAMBAHAN
+                            action: 'register', 
+                            id: id, 
+                            name: name, 
+                            role: role, 
+                            myKadUrl: myKadDriveUrl, 
+                            descriptors: registeredFaceDescriptors, 
+                            noTelpon: phone
                         })
                     });
                     alert("Pendaftaran wajah berhasil disimpan ke database!");
                     document.getElementById('reg-name').value = '';
-                    document.getElementById('reg-phone').value = ''; // TAMBAHAN
+                    document.getElementById('reg-phone').value = '';
                     myKadDriveUrl = ""; 
                     selectedMyKadFile = null;
                     document.getElementById('file-selected-info').classList.add('hidden');
