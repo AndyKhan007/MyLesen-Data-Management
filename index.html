@@ -133,11 +133,29 @@
 
             <!-- MODUL UPLOAD MYKAD -->
             <div class="bg-slate-900 border border-slate-700 rounded-xl p-5 mb-4 shadow-inner">
-                <label class="block text-sm font-semibold text-brand-accent mb-2">
-                    <i class="fa-solid fa-id-card mr-2"></i>Upload MyKad (Kamera / Galeri)
+                <label class="block text-sm font-semibold text-brand-accent mb-3">
+                    <i class="fa-solid fa-id-card mr-2"></i>Upload MyKad
                 </label>
-                <input type="file" id="mykad-upload" accept="image/*" class="w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-600/20 file:text-brand-accent hover:file:bg-blue-600/30 transition mb-3 cursor-pointer">
-                <button type="button" onclick="prosesMyKad()" id="btn-ocr" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2">
+                
+                <!-- Input File Tersembunyi -->
+                <input type="file" id="mykad-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesMyKadFile(this)">
+                <input type="file" id="mykad-gallery" accept="image/*" class="hidden" onchange="prosesMyKadFile(this)">
+
+                <!-- 2 Tombol Pilihan -->
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Ambil Kamera</span>
+                    </button>
+                    <button type="button" onclick="document.getElementById('mykad-gallery').click()" class="py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Pilih Galeri</span>
+                    </button>
+                </div>
+
+                <div id="file-selected-info" class="text-xs text-emerald-400 text-center font-mono hidden mb-3"></div>
+
+                <button type="button" onclick="kirimMyKadKeServer()" id="btn-ocr" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                     <i class="fa-solid fa-microchip"></i>
                     <span>Scan MyKad & Ekstrak Data</span>
                 </button>
@@ -190,8 +208,8 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // URL Apps Script Web App
-        const API_URL = "https://script.google.com/macros/s/AKfycbzTAMvH3xu3uUfJiWnb5jRCOcO-sIaat4GP1xvMH_vxTXM3oLRGGjIHT-64av6EwTOdNw/exec";
+        // URL Web App Google Apps Script
+        const API_URL = "https://script.google.com/macros/s/AKfycbwGD1yRkgVeuFh54sAvpGwmvX2lTJGHOTEwDdnhio7lPvzNEfNXFN7VLC3yWggFkvdfCQ/exec";
 
         // CDN Model Face-API.js
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
@@ -219,7 +237,8 @@
         const MIN_FPS = 4;
         const MAX_FPS = 12;
 
-        let myKadDriveUrl = ""; // Menyimpan URL gambar untuk pendaftaran
+        let selectedMyKadFile = null;
+        let myKadDriveUrl = ""; // Menyimpan URL gambar Drive untuk pendaftaran
 
         // Jam Real-time
         setInterval(() => {
@@ -301,7 +320,7 @@
         window.addEventListener('load', loadFaceModels);
 
         async function fetchFaceDatabase() {
-            if (!API_URL) return;
+            if (!API_URL || API_URL.includes("MASUKAN_URL")) return;
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
@@ -322,7 +341,7 @@
 
         function generateNextUserId() {
             const regIdInput = document.getElementById('reg-id');
-            if (regIdInput.value !== "") return; // Jangan timpa jika hasil OCR MyKad sudah masuk
+            if (regIdInput.value !== "") return;
             
             if (!registeredFaceDatabase || registeredFaceDatabase.length === 0) {
                 regIdInput.value = "U001"; return;
@@ -587,10 +606,19 @@
             finally { btn.innerText = "Masuk ke Pendaftaran"; btn.disabled = false; }
         }
 
-        // === FUNGSI PROSES MYKAD ===
-        async function prosesMyKad() {
-            const fileInput = document.getElementById('mykad-upload');
-            if (!fileInput.files || fileInput.files.length === 0) {
+        // === FUNGSI PROSES MYKAD (2 OPTION INPUT) ===
+        function prosesMyKadFile(inputElement) {
+            if (inputElement.files && inputElement.files[0]) {
+                selectedMyKadFile = inputElement.files[0];
+                const infoDiv = document.getElementById('file-selected-info');
+                infoDiv.innerText = `✓ Foto Terpilih: ${selectedMyKadFile.name}`;
+                infoDiv.classList.remove('hidden');
+                document.getElementById('btn-ocr').disabled = false;
+            }
+        }
+
+        async function kirimMyKadKeServer() {
+            if (!selectedMyKadFile) {
                 alert("Pilih atau ambil foto MyKad terlebih dahulu!"); return;
             }
 
@@ -598,9 +626,7 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Memproses OCR...</span>`;
             btn.disabled = true;
 
-            const file = fileInput.files[0];
             const reader = new FileReader();
-
             reader.onloadend = async function() {
                 const base64String = reader.result.split(',')[1];
                 try {
@@ -609,7 +635,7 @@
                         body: JSON.stringify({
                             action: 'upload_mykad',
                             imageBase64: base64String,
-                            mimeType: file.type
+                            mimeType: selectedMyKadFile.type
                         })
                     });
                     
@@ -629,7 +655,7 @@
                     btn.disabled = false;
                 }
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(selectedMyKadFile);
         }
 
         let currentPoseStep = 1;
@@ -676,7 +702,9 @@
                     });
                     alert("Pendaftaran wajah berhasil disimpan ke database!");
                     document.getElementById('reg-name').value = '';
-                    myKadDriveUrl = ""; // Reset URL Drive setelah berhasil daftar
+                    myKadDriveUrl = ""; 
+                    selectedMyKadFile = null;
+                    document.getElementById('file-selected-info').classList.add('hidden');
                     await fetchFaceDatabase();
                     generateNextUserId();
                     resetRegistration();
