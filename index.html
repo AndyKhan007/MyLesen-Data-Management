@@ -260,16 +260,27 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        function playVerifiedSound(userName = "") {
+        // Fungsi helper untuk merapikan kapitalisasi nama agar dibaca utuh, bukan dieja
+        function formatTitleCase(str) {
+            if (!str) return "";
+            return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
+                return a.toUpperCase();
+            });
+        }
+
+        function playVerifiedSound(rawUserName = "") {
             if (!isDetecting) return; 
 
             stopAllAudio();
+
+            // Ubah format nama menjadi Title Case (misal: MULYADI -> Mulyadi)
+            const userName = formatTitleCase(rawUserName);
 
             // 1. Tentukan Sapaan Berdasarkan Jam & Menit Lokal
             const now = new Date();
             const jam = now.getHours();
             const menit = now.getMinutes();
-            const totalMenit = jam * 60 + menit; // Konversi ke total menit untuk perhitungan presisi
+            const totalMenit = jam * 60 + menit; 
 
             let pesanSapaan = "";
 
@@ -279,7 +290,7 @@
             } 
             // Tengah Hari / Jam Istirahat (11:30 - 13:30) (690 menit - 810 menit)
             else if (totalMenit >= 690 && totalMenit <= 810) {
-                pesanSapaan = `Hello, ${userName},face print berjaya.`;
+                pesanSapaan = `Hello, ${userName}, face print berjaya.`;
             } 
             // Jam Pulang Kerja (16:00 ke atas)
             else if (jam >= 16) {
@@ -309,7 +320,6 @@
                     }
                 });
             } else {
-                // Fallback Native Speech API jika ResponsiveVoice offline/gagal dimuat
                 speakNativeFallback(textEnglish, 'en-US');
                 if (userName && isDetecting) {
                     ttsTimeoutId = setTimeout(() => {
