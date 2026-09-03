@@ -216,7 +216,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwtB7xJFHviJgsPCZNzZBd_lC53Scu_yqJ2ogYovnQZLOgoUGcTsr47QVd9mPW7rzZJkA/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzkhhj7uu_z1jwPDFWqGAL9bzv8fWzTiv6PrPBTka0TvWujeqTz2DNI4dOQYEgzdoL_dA/exec";
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
         const OFFICE_LAT = 5.350205443577465;
@@ -239,11 +239,10 @@
         let ttsTimeoutId = null; 
         
         let targetFps = 8;
-        const MIN_FPS = 4;
-        const MAX_FPS = 12;
 
         let selectedMyKadFile = null;
         let myKadDriveUrl = ""; 
+        let ocrResultData = null; // Menyimpan data lengkap hasil OCR agar terkirim akurat saat register
 
         setInterval(() => {
             const now = new Date();
@@ -331,7 +330,6 @@
                             const parsedDesc = typeof desc === 'string' ? JSON.parse(desc) : desc;
                             return new Float32Array(Object.values(parsedDesc));
                         });
-                        // Menyimpan ID, Nama, dan Role dalam label agar terbaca saat absensi
                         return new faceapi.LabeledFaceDescriptors(`${person.id}|${person.name}|${person.role || 'user'}`, descriptorsList);
                     });
                     faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, FACE_MATCH_THRESHOLD);
@@ -546,7 +544,7 @@
                         action: 'absen', 
                         id: window.matchedUser.id, 
                         name: window.matchedUser.name,
-                        role: window.matchedUser.role, // Mengirim role agar masuk ke tab log yang sesuai
+                        role: window.matchedUser.role, // Mengirim role secara akurat
                         gps: currentGpsData, 
                         radius: `${currentDistanceMeters} meter`, 
                         status: attendanceStatus
@@ -630,6 +628,7 @@
                     
                     const result = await response.json();
                     if (result.status === 'success') {
+                        ocrResultData = result; // Simpan data lengkap OCR
                         document.getElementById('reg-id').value = result.ic;
                         document.getElementById('reg-name').value = result.name;
                         myKadDriveUrl = result.fileUrl; 
@@ -694,6 +693,9 @@
                             name: name, 
                             role: role, 
                             myKadUrl: myKadDriveUrl, 
+                            alamat_lengkap: ocrResultData ? ocrResultData.alamat_lengkap : "-",
+                            warganegara: ocrResultData ? ocrResultData.warganegara : "-",
+                            gender: ocrResultData ? ocrResultData.gender : "-",
                             descriptors: registeredFaceDescriptors, 
                             noTelpon: phone
                         })
@@ -702,6 +704,7 @@
                     document.getElementById('reg-name').value = '';
                     document.getElementById('reg-phone').value = '';
                     myKadDriveUrl = ""; 
+                    ocrResultData = null;
                     selectedMyKadFile = null;
                     document.getElementById('file-selected-info').classList.add('hidden');
                     await fetchFaceDatabase();
@@ -728,6 +731,7 @@
         function resetRegistration() {
             currentPoseStep = 1;
             registeredFaceDescriptors = [];
+            ocrResultData = null;
             document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-camera"></i> <span>Ambil Sampel Pose Ini</span>`;
             updateRegistrationUI();
         }
