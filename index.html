@@ -117,12 +117,12 @@
                 </div>
             </div>
 
-            <div class="flex justify-between items-center bg-zinc-900/80 p-4 rounded-xl border border-zinc-800 text-sm">
-                <div>
+            <div class="flex flex-col sm:flex-row justify-between items-center bg-zinc-900/80 p-4 rounded-xl border border-zinc-800 text-sm gap-3">
+                <div class="w-full sm:w-auto text-center sm:text-left">
                     <p class="text-slate-400">Status GPS:</p>
                     <p id="gps-status-text" class="text-brand-success font-medium"><i class="fa-solid fa-spinner fa-spin"></i> Memeriksa GPS...</p>
                 </div>
-                <button id="btn-proses-absen" onclick="prosesAbsen()" class="px-6 py-2.5 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow transition text-black">
+                <button id="btn-proses-absen" onclick="prosesAbsen()" class="w-full sm:w-auto px-6 py-2.5 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow transition text-black">
                     Proses Absen
                 </button>
             </div>
@@ -172,7 +172,7 @@
                 <input type="file" id="mykad-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesMyKadFile(this)">
                 <input type="file" id="mykad-gallery" accept="image/*" class="hidden" onchange="prosesMyKadFile(this)">
 
-                <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                     <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-3 bg-brand-accent hover:opacity-90 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-black">
                         <i class="fa-solid fa-camera"></i>
                         <span>Ambil Kamera</span>
@@ -200,7 +200,7 @@
                 <input type="file" id="second-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesSecondFile(this)">
                 <input type="file" id="second-gallery" accept="image/*" class="hidden" onchange="prosesSecondFile(this)">
 
-                <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                     <button type="button" onclick="document.getElementById('second-camera').click()" class="py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
                         <i class="fa-solid fa-camera"></i>
                         <span>Ambil Kamera</span>
@@ -248,8 +248,8 @@
 
             <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-zinc-800 shadow-inner flex items-center justify-center">
                 <video id="reg-video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
-                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-4 py-2 rounded-full text-center">
-                    <span id="pose-instruction" class="text-sm font-semibold text-brand-accent">Langkah 1/7: Hadap Depan Lurus (Netral)</span>
+                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-4 py-2 rounded-full text-center max-w-[90%]">
+                    <span id="pose-instruction" class="text-xs sm:text-sm font-semibold text-brand-accent">Langkah 1/7: Hadap Depan Lurus (Netral)</span>
                 </div>
             </div>
 
@@ -263,35 +263,45 @@
                 </div>
             </div>
 
-            <div class="flex justify-between items-center pt-2">
-                <button onclick="resetRegistration()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-sm rounded-lg border border-zinc-600 transition text-slate-200">Reset</button>
-                <button onclick="captureNextPose()" id="btn-capture" class="px-6 py-2.5 bg-brand-accent hover:opacity-90 font-bold rounded-lg shadow transition flex items-center space-x-2 text-black">
+            <div class="flex flex-col sm:flex-row justify-between items-center pt-2 gap-2">
+                <button onclick="resetRegistration()" class="w-full sm:w-auto px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-sm rounded-lg border border-zinc-600 transition text-slate-200">Reset</button>
+                <button onclick="captureNextPose()" id="btn-capture" class="w-full sm:w-auto px-6 py-2.5 bg-brand-accent hover:opacity-90 font-bold rounded-lg shadow transition flex items-center justify-center space-x-2 text-black">
                     <i class="fa-solid fa-camera"></i>
                     <span>Ambil Sampel Pose Ini</span>
                 </button>
             </div>
         </section>
 
-        <!-- 5. UPDATE DOKUMEN & DATA VIEW -->
-        <section id="view-update-document" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-6 shadow-2xl space-y-6">
+        <!-- 5. UPDATE DOKUMEN & DATA VIEW (RESPONSIF DIPERBAIKI) -->
+        <section id="view-update-document" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
-                <h2 class="text-xl font-bold flex items-center space-x-2 text-white">
+                <h2 class="text-lg sm:text-xl font-bold flex items-center space-x-2 text-white">
                     <i class="fa-solid fa-file-pen text-brand-accent"></i>
                     <span>Update Dokumen & Data</span>
                 </h2>
                 <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <!-- Kolom Pencarian IC -->
+            <!-- Kolom Pencarian IC (Responsif & Error Handling / Loading Ditambahkan) -->
             <div class="space-y-3 bg-zinc-900 p-4 rounded-xl border border-zinc-800">
                 <label class="block text-sm font-semibold text-brand-accent">Masukkan Nomor IC / MyKad</label>
-                <div class="flex space-x-2">
-                    <input type="text" id="update-search-ic" placeholder="Contoh: 950101015001" class="flex-grow bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
-                    <button onclick="cariDataUpdate()" class="px-6 py-2.5 bg-brand-accent hover:opacity-90 font-bold rounded-xl text-black transition text-sm flex items-center space-x-2">
+                
+                <!-- Layout Flex Responsif untuk mobile dan desktop -->
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="update-search-ic" placeholder="Contoh: 950101015001" class="w-full sm:flex-grow bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
+                    
+                    <button id="btn-cari-update" onclick="cariDataUpdate()" class="w-full sm:w-auto px-6 py-2.5 bg-brand-accent hover:opacity-90 font-bold rounded-xl text-black transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <span>Cari</span>
                     </button>
                 </div>
+
+                <!-- Indikator Loading & Pesan Error Pencarian -->
+                <div id="search-loading-msg" class="text-xs text-brand-accent font-medium hidden flex items-center space-x-2 mt-2">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <span>Sedang mencari data, silakan tunggu...</span>
+                </div>
+                <div id="search-error-msg" class="text-xs text-red-400 font-medium hidden mt-2"></div>
             </div>
 
             <!-- Konten Informasi Data (Read-Only & Edit Telepon & 2 Kolom Upload) -->
@@ -321,7 +331,7 @@
                     <input type="tel" id="up-edit-phone" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan nomor telepon baru">
                 </div>
 
-                <!-- 2 Kolom Upload Gambar Baru -->
+                <!-- 2 Kolom Upload Gambar Baru (Responsif) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                     <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2">
                         <label class="block text-xs font-semibold text-brand-accent"><i class="fa-solid fa-image mr-1"></i> Upload Gambar 1 Baru</label>
@@ -334,7 +344,7 @@
                 </div>
 
                 <div class="flex justify-end pt-4">
-                    <button onclick="simpanUpdateDokumen()" id="btn-simpan-update" class="px-6 py-3 bg-brand-success hover:opacity-90 font-bold rounded-xl text-black transition shadow flex items-center space-x-2">
+                    <button onclick="simpanUpdateDokumen()" id="btn-simpan-update" class="w-full sm:w-auto px-6 py-3 bg-brand-success hover:opacity-90 font-bold rounded-xl text-black transition shadow flex items-center justify-center space-x-2">
                         <i class="fa-solid fa-floppy-disk"></i>
                         <span>Simpan Perubahan</span>
                     </button>
@@ -615,6 +625,8 @@
             } else if (viewId === 'view-update-document') {
                 document.getElementById('update-search-ic').value = '';
                 document.getElementById('update-form-container').classList.add('hidden');
+                document.getElementById('search-error-msg').classList.add('hidden');
+                document.getElementById('search-loading-msg').classList.add('hidden');
                 currentUpdateUserData = null;
             }
         }
@@ -794,19 +806,41 @@
             finally { btn.innerText = "Masuk ke Pendaftaran"; btn.disabled = false; }
         }
 
-        // Fungsi Fitur Update Dokumen & Data
+        // =========================================================================
+        // PERBAIKAN: FITUR CARI DATA UPDATE DENGAN ERROR HANDLING & LOADING PROGRESS
+        // =========================================================================
         async function cariDataUpdate() {
             const icInput = document.getElementById('update-search-ic').value.trim();
+            const errorMsgEl = document.getElementById('search-error-msg');
+            const loadingMsgEl = document.getElementById('search-loading-msg');
+            const searchBtn = document.getElementById('btn-cari-update');
+            const formContainer = document.getElementById('update-form-container');
+
+            // Reset pesan error & form sebelumnya
+            errorMsgEl.classList.add('hidden');
+            errorMsgEl.innerText = '';
+            formContainer.classList.add('hidden');
+
             if (!icInput) {
-                alert("Silakan masukkan Nomor IC terlebih dahulu!");
+                errorMsgEl.innerText = "Silakan masukkan Nomor IC terlebih dahulu!";
+                errorMsgEl.classList.remove('hidden');
                 return;
             }
+
+            // Aktifkan state loading & nonaktifkan tombol
+            searchBtn.disabled = true;
+            loadingMsgEl.classList.remove('hidden');
 
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'search_by_ic', ic: icInput })
                 });
+
+                if (!response.ok) {
+                    throw new Error("Gagal terhubung ke server (HTTP error: " + response.status + ")");
+                }
+
                 const result = await response.json();
 
                 if (result.status === 'success') {
@@ -822,15 +856,23 @@
                     document.getElementById('up-file-1').value = '';
                     document.getElementById('up-file-2').value = '';
 
-                    document.getElementById('update-form-container').classList.remove('hidden');
+                    formContainer.classList.remove('hidden');
                 } else {
-                    document.getElementById('update-form-container').classList.add('hidden');
+                    formContainer.classList.add('hidden');
                     currentUpdateUserData = null;
-                    alert(result.message || "Data dengan No. IC tersebut tidak ditemukan.");
+                    errorMsgEl.innerText = result.message || "Data dengan No. IC tersebut tidak ditemukan.";
+                    errorMsgEl.classList.remove('hidden');
                 }
             } catch (err) {
-                alert("Terjadi kesalahan jaringan saat mencari data.");
+                formContainer.classList.add('hidden');
+                currentUpdateUserData = null;
+                errorMsgEl.innerText = "Terjadi kesalahan jaringan atau sistem saat mencari data: " + err.message;
+                errorMsgEl.classList.remove('hidden');
                 console.error(err);
+            } finally {
+                // Matikan state loading & aktifkan kembali tombol
+                searchBtn.disabled = false;
+                loadingMsgEl.classList.add('hidden');
             }
         }
 
