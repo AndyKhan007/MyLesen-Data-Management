@@ -66,7 +66,7 @@
     <!-- MAIN CONTAINER -->
     <main class="flex-grow flex items-center justify-center p-4">
 
-        <!-- 1. HOME VIEW (Dipebarui dengan 2 Tombol FacePrint In & Out) -->
+        <!-- 1. HOME VIEW -->
         <section id="view-home" class="w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-8 shadow-2xl text-center space-y-8">
             <div>
                 <div class="w-20 h-20 bg-brand-accent/20 border border-brand-accent rounded-full flex items-center justify-center mx-auto mb-4 text-brand-accent text-3xl shadow-[0_0_15px_rgba(50,222,132,0.2)]">
@@ -159,10 +159,10 @@
                 <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <!-- MODUL UPLOAD MYKAD -->
+            <!-- MODUL 1: UPLOAD MYKAD (UNTUK OCR & DISIMPAN) -->
             <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mb-4 shadow-inner">
                 <label class="block text-sm font-semibold text-brand-accent mb-3">
-                    <i class="fa-solid fa-id-card mr-2"></i>Upload MyKad
+                    <i class="fa-solid fa-id-card mr-2"></i>1. Upload MyKad (Untuk OCR & Disimpan)
                 </label>
                 
                 <input type="file" id="mykad-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesMyKadFile(this)">
@@ -187,6 +187,35 @@
                 </button>
             </div>
 
+            <!-- MODUL 2: UPLOAD GAMBAR KEDUA (HANYA DISIMPAN) -->
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mb-4 shadow-inner">
+                <label class="block text-sm font-semibold text-brand-accent mb-3">
+                    <i class="fa-solid id-card-clip mr-2"></i><i class="fa-solid fa-image mr-2"></i>2. Upload Gambar Kedua (Hanya Disimpan Saja)
+                </label>
+                
+                <input type="file" id="second-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesSecondFile(this)">
+                <input type="file" id="second-gallery" accept="image/*" class="hidden" onchange="prosesSecondFile(this)">
+
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <button type="button" onclick="document.getElementById('second-camera').click()" class="py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Ambil Kamera</span>
+                    </button>
+                    <button type="button" onclick="document.getElementById('second-gallery').click()" class="py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Pilih Galeri</span>
+                    </button>
+                </div>
+
+                <div id="second-file-info" class="text-xs text-brand-success text-center font-mono hidden mb-3"></div>
+
+                <button type="button" onclick="kirimSecondImageKeServer()" id="btn-upload-second" class="w-full py-3 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow-lg transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-black" disabled>
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Simpan Gambar Kedua ke Drive</span>
+                </button>
+            </div>
+
+            <!-- FORMULIR INPUT DATA -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">User ID / No. IC</label>
@@ -197,10 +226,14 @@
                     <input type="text" id="reg-name" placeholder="Nama Lengkap User" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Nomor Telepon</label>
+                    <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Utama</label>
                     <input type="tel" id="reg-phone" placeholder="Contoh: 0123456789" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
                 <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Kedua (Opsional)</label>
+                    <input type="tel" id="reg-phone-2" placeholder="Contoh: 0187654321" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                </div>
+                <div class="md:col-span-2">
                     <label class="block text-xs text-slate-400 mb-1">Jenis User / Role</label>
                     <select id="reg-role" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
                         <option value="user">User</option>
@@ -244,7 +277,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx7dUtX-Po6UE7BNO5NiQ-MrB7a0sNKdQXACJ2M2sNuOCe7Vs_JeJ9aQTDmDXCy66uOLQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzvzwQQpQEkr2wV0F1q4YAbx3I0B0lgt1stu9CIxtqEcLXcB1OrkEPe11kXyVXjo2NLVA/exec";
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
         const OFFICE_LAT = 5.350205443577465;
@@ -272,7 +305,11 @@
         let myKadDriveUrl = ""; 
         let ocrResultData = null; 
 
-        let currentAttendanceType = 'in'; // Menyimpan status 'in' atau 'out'
+        // Variabel untuk Gambar Kedua (Hanya Disimpan)
+        let selectedSecondFile = null;
+        let secondImageDriveUrl = "";
+
+        let currentAttendanceType = 'in';
 
         // Fungsi Pengalih Tema (Theme Switcher)
         function toggleTheme() {
@@ -467,7 +504,6 @@
             return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
         }
 
-        // Handler tombol FacePrint In & Out dari Home View
         function startFaceprint(type) {
             currentAttendanceType = type;
             const headingEl = document.getElementById('faceprint-heading');
@@ -627,7 +663,7 @@
                         id: window.matchedUser.id, 
                         name: window.matchedUser.name,
                         role: window.matchedUser.role, 
-                        attendanceType: currentAttendanceType, // Mengirim status In atau Out ke backend
+                        attendanceType: currentAttendanceType,
                         gps: currentGpsData, 
                         radius: `${currentDistanceMeters} meter`, 
                         status: attendanceStatus
@@ -683,14 +719,14 @@
             if (inputElement.files && inputElement.files[0]) {
                 selectedMyKadFile = inputElement.files[0];
                 const infoDiv = document.getElementById('file-selected-info');
-                infoDiv.innerText = `✓ Foto Terpilih: ${selectedMyKadFile.name}`;
+                infoDiv.innerText = `✓ MyKad Terpilih: ${selectedMyKadFile.name}`;
                 infoDiv.classList.remove('hidden');
                 document.getElementById('btn-ocr').disabled = false;
             }
         }
 
         async function kirimMyKadKeServer() {
-            if (!selectedMyKadFile) { alert("Pilih foto MyKad terlebih dahulu!"); return; }
+            if (!selectedMyKadFile) { alert("Pilih file MyKad terlebih dahulu!"); return; }
 
             const btn = document.getElementById('btn-ocr');
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Memproses OCR...</span>`;
@@ -730,6 +766,54 @@
             reader.readAsDataURL(selectedMyKadFile);
         }
 
+        // Fungsi Handler untuk Gambar Kedua (Hanya Simpan)
+        function prosesSecondFile(inputElement) {
+            if (inputElement.files && inputElement.files[0]) {
+                selectedSecondFile = inputElement.files[0];
+                const infoDiv = document.getElementById('second-file-info');
+                infoDiv.innerText = `✓ Gambar Kedua Terpilih: ${selectedSecondFile.name}`;
+                infoDiv.classList.remove('hidden');
+                document.getElementById('btn-upload-second').disabled = false;
+            }
+        }
+
+        async function kirimSecondImageKeServer() {
+            if (!selectedSecondFile) { alert("Pilih gambar kedua terlebih dahulu!"); return; }
+
+            const btn = document.getElementById('btn-upload-second');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Menyimpan ke Drive...</span>`;
+            btn.disabled = true;
+
+            const reader = new FileReader();
+            reader.onloadend = async function() {
+                const base64String = reader.result.split(',')[1];
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            action: 'upload_secondary_image',
+                            imageBase64: base64String,
+                            mimeType: selectedSecondFile.type
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        secondImageDriveUrl = result.fileUrl; 
+                        alert("✅ Gambar kedua berhasil disimpan ke Drive!");
+                    } else {
+                        alert("Gagal menyimpan: " + result.message);
+                    }
+                } catch (error) {
+                    alert("Kesalahan jaringan saat mengunggah gambar kedua.");
+                } finally {
+                    btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Simpan Gambar Kedua ke Drive</span>`;
+                    btn.disabled = false;
+                }
+            };
+            reader.readAsDataURL(selectedSecondFile);
+        }
+
         let currentPoseStep = 1;
         const totalPoses = 7;
         let registeredFaceDescriptors = []; 
@@ -742,6 +826,7 @@
             const id = document.getElementById('reg-id').value.trim();
             const name = document.getElementById('reg-name').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
+            const phone2 = document.getElementById('reg-phone-2').value.trim();
             const role = document.getElementById('reg-role').value;
             
             if(!id || !name) { alert("Isi User ID dan Nama Lengkap!"); return; }
@@ -777,20 +862,26 @@
                             name: name, 
                             role: role, 
                             myKadUrl: myKadDriveUrl, 
+                            secondImageUrl: secondImageDriveUrl, // Kirim URL gambar kedua
                             alamat_lengkap: ocrResultData ? ocrResultData.alamat_lengkap : "-",
                             warganegara: ocrResultData ? ocrResultData.warganegara : "-",
                             gender: ocrResultData ? ocrResultData.gender : "-",
                             descriptors: registeredFaceDescriptors, 
-                            noTelpon: phone
+                            noTelpon: phone,
+                            noTelpon2: phone2 // Kirim nomor telepon kedua
                         })
                     });
                     alert("Pendaftaran wajah berhasil disimpan ke database!");
                     document.getElementById('reg-name').value = '';
                     document.getElementById('reg-phone').value = '';
+                    document.getElementById('reg-phone-2').value = '';
                     myKadDriveUrl = ""; 
+                    secondImageDriveUrl = "";
                     ocrResultData = null;
                     selectedMyKadFile = null;
+                    selectedSecondFile = null;
                     document.getElementById('file-selected-info').classList.add('hidden');
+                    document.getElementById('second-file-info').classList.add('hidden');
                     await fetchFaceDatabase();
                     generateNextUserId();
                     resetRegistration();
@@ -816,6 +907,10 @@
             currentPoseStep = 1;
             registeredFaceDescriptors = [];
             ocrResultData = null;
+            selectedSecondFile = null;
+            secondImageDriveUrl = "";
+            document.getElementById('second-file-info').classList.add('hidden');
+            document.getElementById('btn-upload-second').disabled = true;
             document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-camera"></i> <span>Ambil Sampel Pose Ini</span>`;
             updateRegistrationUI();
         }
