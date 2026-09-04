@@ -85,6 +85,10 @@
                     <i class="fa-solid fa-right-from-bracket group-hover:scale-110 transition-transform text-brand-accent"></i>
                     <span>FacePrint Out</span>
                 </button>
+                <button onclick="switchView('view-update-document')" class="w-full py-3.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-base text-slate-200 group">
+                    <i class="fa-solid fa-file-pen group-hover:scale-110 transition-transform text-brand-accent"></i>
+                    <span>Update Dokumen & Data</span>
+                </button>
                 <button onclick="switchView('view-admin-login')" class="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-base text-slate-300">
                     <i class="fa-solid fa-lock text-brand-accent"></i>
                     <span>Login Admin / Pendaftaran</span>
@@ -190,7 +194,7 @@
             <!-- MODUL 2: UPLOAD GAMBAR KEDUA (HANYA DISIMPAN) -->
             <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mb-4 shadow-inner">
                 <label class="block text-sm font-semibold text-brand-accent mb-3">
-                    <i class="fa-solid id-card-clip mr-2"></i><i class="fa-solid fa-image mr-2"></i>2. Upload Gambar Kedua (Hanya Disimpan Saja)
+                    <i class="fa-solid fa-image mr-2"></i>2. Upload Gambar Kedua (Hanya Disimpan Saja)
                 </label>
                 
                 <input type="file" id="second-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesSecondFile(this)">
@@ -268,6 +272,76 @@
             </div>
         </section>
 
+        <!-- 5. UPDATE DOKUMEN & DATA VIEW -->
+        <section id="view-update-document" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-6 shadow-2xl space-y-6">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
+                <h2 class="text-xl font-bold flex items-center space-x-2 text-white">
+                    <i class="fa-solid fa-file-pen text-brand-accent"></i>
+                    <span>Update Dokumen & Data</span>
+                </h2>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <!-- Kolom Pencarian IC -->
+            <div class="space-y-3 bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+                <label class="block text-sm font-semibold text-brand-accent">Masukkan Nomor IC / MyKad</label>
+                <div class="flex space-x-2">
+                    <input type="text" id="update-search-ic" placeholder="Contoh: 950101015001" class="flex-grow bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
+                    <button onclick="cariDataUpdate()" class="px-6 py-2.5 bg-brand-accent hover:opacity-90 font-bold rounded-xl text-black transition text-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>Cari</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Konten Informasi Data (Read-Only & Edit Telepon & 2 Kolom Upload) -->
+            <div id="update-form-container" class="hidden space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 text-sm">
+                    <div>
+                        <span class="block text-xs text-slate-400">Nomor IC / ID</span>
+                        <p id="up-display-ic" class="font-mono font-bold text-white mt-1">-</p>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-400">Nama Lengkap</span>
+                        <p id="up-display-name" class="font-semibold text-white mt-1">-</p>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-400">Alamat Lengkap</span>
+                        <p id="up-display-alamat" class="text-slate-200 mt-1">-</p>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-400">Warganegara & Gender</span>
+                        <p id="up-display-info" class="text-slate-200 mt-1">-</p>
+                    </div>
+                </div>
+
+                <!-- Field yang DAPAT diedit: Nomor Telepon -->
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nomor Telepon (Dapat Diubah)</label>
+                    <input type="tel" id="up-edit-phone" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan nomor telepon baru">
+                </div>
+
+                <!-- 2 Kolom Upload Gambar Baru -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2">
+                        <label class="block text-xs font-semibold text-brand-accent"><i class="fa-solid fa-image mr-1"></i> Upload Gambar 1 Baru</label>
+                        <input type="file" id="up-file-1" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-black hover:file:opacity-90 cursor-pointer">
+                    </div>
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2">
+                        <label class="block text-xs font-semibold text-brand-accent"><i class="fa-solid fa-image mr-1"></i> Upload Gambar 2 Baru</label>
+                        <input type="file" id="up-file-2" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-black hover:file:opacity-90 cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-4">
+                    <button onclick="simpanUpdateDokumen()" id="btn-simpan-update" class="px-6 py-3 bg-brand-success hover:opacity-90 font-bold rounded-xl text-black transition shadow flex items-center space-x-2">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Simpan Perubahan</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- FOOTER -->
@@ -277,7 +351,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxTvUOD0vsSJpVMn9PBnMiZhUgVku5iJrRyZYoOn1OtbEsuGp4633eSfOjkKd7IHovL3A/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw6PJ-IqVT2jl11wniVznlPfGeriG_cQ_abHf7lbw8SHIPjVOGNzMEv4pJkEzd6Ba5zmg/exec";
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
         const OFFICE_LAT = 5.350205443577465;
@@ -310,6 +384,7 @@
         let secondImageDriveUrl = "";
 
         let currentAttendanceType = 'in';
+        let currentUpdateUserData = null;
 
         // Fungsi Pengalih Tema (Theme Switcher)
         function toggleTheme() {
@@ -515,7 +590,7 @@
         }
 
         function switchView(viewId) {
-            ['view-home', 'view-faceprint', 'view-admin-login', 'view-registration'].forEach(id => {
+            ['view-home', 'view-faceprint', 'view-admin-login', 'view-registration', 'view-update-document'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(viewId).classList.remove('hidden');
@@ -537,6 +612,10 @@
                 startCamera('reg-video-feed');
                 resetRegistration();
                 fetchFaceDatabase().then(() => { generateNextUserId(); });
+            } else if (viewId === 'view-update-document') {
+                document.getElementById('update-search-ic').value = '';
+                document.getElementById('update-form-container').classList.add('hidden');
+                currentUpdateUserData = null;
             }
         }
 
@@ -715,6 +794,111 @@
             finally { btn.innerText = "Masuk ke Pendaftaran"; btn.disabled = false; }
         }
 
+        // Fungsi Fitur Update Dokumen & Data
+        async function cariDataUpdate() {
+            const icInput = document.getElementById('update-search-ic').value.trim();
+            if (!icInput) {
+                alert("Silakan masukkan Nomor IC terlebih dahulu!");
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'search_by_ic', ic: icInput })
+                });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    currentUpdateUserData = result.data;
+                    
+                    document.getElementById('up-display-ic').innerText = result.data.ic;
+                    document.getElementById('up-display-name').innerText = result.data.name;
+                    document.getElementById('up-display-alamat').innerText = result.data.alamat;
+                    document.getElementById('up-display-info').innerText = `${result.data.warganegara} | ${result.data.gender} (${result.data.role.toUpperCase()})`;
+                    
+                    document.getElementById('up-edit-phone').value = result.data.noTelpon !== '-' ? result.data.noTelpon : '';
+                    
+                    document.getElementById('up-file-1').value = '';
+                    document.getElementById('up-file-2').value = '';
+
+                    document.getElementById('update-form-container').classList.remove('hidden');
+                } else {
+                    document.getElementById('update-form-container').classList.add('hidden');
+                    currentUpdateUserData = null;
+                    alert(result.message || "Data dengan No. IC tersebut tidak ditemukan.");
+                }
+            } catch (err) {
+                alert("Terjadi kesalahan jaringan saat mencari data.");
+                console.error(err);
+            }
+        }
+
+        async function simpanUpdateDokumen() {
+            if (!currentUpdateUserData) return;
+
+            const btn = document.getElementById('btn-simpan-update');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Menyimpan...</span>`;
+            btn.disabled = true;
+
+            const newPhone = document.getElementById('up-edit-phone').value.trim() || "-";
+            const fileInput1 = document.getElementById('up-file-1');
+            const fileInput2 = document.getElementById('up-file-2');
+
+            let base64File1 = null;
+            let mimeType1 = null;
+            let base64File2 = null;
+            let mimeType2 = null;
+
+            try {
+                if (fileInput1.files && fileInput1.files[0]) {
+                    base64File1 = await fileToBase64(fileInput1.files[0]);
+                    mimeType1 = fileInput1.files[0].type;
+                }
+                if (fileInput2.files && fileInput2.files[0]) {
+                    base64File2 = await fileToBase64(fileInput2.files[0]);
+                    mimeType2 = fileInput2.files[0].type;
+                }
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'update_document_data',
+                        ic: currentUpdateUserData.ic,
+                        role: currentUpdateUserData.role,
+                        noTelpon: newPhone,
+                        nomorUrut: currentUpdateUserData.nomorUrut,
+                        name: currentUpdateUserData.name,
+                        file1: { base64: base64File1, mimeType: mimeType1 },
+                        file2: { base64: base64File2, mimeType: mimeType2 }
+                    })
+                });
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    alert("✅ Perubahan nomor telepon dan dokumen berhasil disimpan!");
+                    switchView('view-home');
+                } else {
+                    alert("Gagal menyimpan: " + result.message);
+                }
+            } catch (err) {
+                alert("Kesalahan jaringan saat menyimpan data.");
+                console.error(err);
+            } finally {
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span>Simpan Perubahan</span>`;
+                btn.disabled = false;
+            }
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
         function prosesMyKadFile(inputElement) {
             if (inputElement.files && inputElement.files[0]) {
                 selectedMyKadFile = inputElement.files[0];
@@ -766,7 +950,6 @@
             reader.readAsDataURL(selectedMyKadFile);
         }
 
-        // Fungsi Handler untuk Gambar Kedua (Hanya Simpan)
         function prosesSecondFile(inputElement) {
             if (inputElement.files && inputElement.files[0]) {
                 selectedSecondFile = inputElement.files[0];
@@ -862,13 +1045,13 @@
                             name: name, 
                             role: role, 
                             myKadUrl: myKadDriveUrl, 
-                            secondImageUrl: secondImageDriveUrl, // Kirim URL gambar kedua
+                            secondImageUrl: secondImageDriveUrl,
                             alamat_lengkap: ocrResultData ? ocrResultData.alamat_lengkap : "-",
                             warganegara: ocrResultData ? ocrResultData.warganegara : "-",
                             gender: ocrResultData ? ocrResultData.gender : "-",
                             descriptors: registeredFaceDescriptors, 
                             noTelpon: phone,
-                            noTelpon2: phone2 // Kirim nomor telepon kedua
+                            noTelpon2: phone2
                         })
                     });
                     alert("Pendaftaran wajah berhasil disimpan ke database!");
