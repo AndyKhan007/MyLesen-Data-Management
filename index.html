@@ -272,7 +272,7 @@
             </div>
         </section>
 
-        <!-- 5. UPDATE DOKUMEN & DATA VIEW (RESPONSIF DIPERBAIKI) -->
+        <!-- 5. UPDATE DOKUMEN & DATA VIEW (DIUBAH KE FACE DETECTION) -->
         <section id="view-update-document" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
                 <h2 class="text-lg sm:text-xl font-bold flex items-center space-x-2 text-white">
@@ -282,29 +282,38 @@
                 <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <!-- Kolom Pencarian IC (Responsif & Error Handling / Loading Ditambahkan) -->
-            <div class="space-y-3 bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                <label class="block text-sm font-semibold text-brand-accent">Masukkan Nomor IC / MyKad</label>
-                
-                <!-- Layout Flex Responsif untuk mobile dan desktop -->
-                <div class="flex flex-col sm:flex-row gap-2">
-                    <input type="text" id="update-search-ic" placeholder="Contoh: 950101015001" class="w-full sm:flex-grow bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
-                    
-                    <button id="btn-cari-update" onclick="cariDataUpdate()" class="w-full sm:w-auto px-6 py-2.5 bg-brand-accent hover:opacity-90 font-bold rounded-xl text-black transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <span>Cari</span>
-                    </button>
+            <!-- STEP 1: POPUP PROMPT AWAL -->
+            <div id="update-step-prompt" class="space-y-4 bg-zinc-900 p-6 rounded-xl border border-zinc-800 text-center">
+                <div class="w-16 h-16 bg-brand-accent/20 border border-brand-accent rounded-full flex items-center justify-center mx-auto text-brand-accent text-2xl shadow-[0_0_15px_rgba(50,222,132,0.2)]">
+                    <i class="fa-solid fa-shield-halved"></i>
                 </div>
-
-                <!-- Indikator Loading & Pesan Error Pencarian -->
-                <div id="search-loading-msg" class="text-xs text-brand-accent font-medium hidden flex items-center space-x-2 mt-2">
-                    <i class="fa-solid fa-spinner fa-spin"></i>
-                    <span>Sedang mencari data, silakan tunggu...</span>
-                </div>
-                <div id="search-error-msg" class="text-xs text-red-400 font-medium hidden mt-2"></div>
+                <p class="text-slate-200 text-sm sm:text-base font-medium">Untuk keamanan lakukan pemindaian wajah anda</p>
+                <button onclick="mulaiScanUpdate()" class="px-6 py-3 bg-brand-accent hover:opacity-90 font-bold rounded-xl text-black transition text-sm shadow">
+                    Lanjutkan
+                </button>
             </div>
 
-            <!-- Konten Informasi Data (Read-Only & Edit Telepon & 2 Kolom Upload) -->
+            <!-- STEP 2: PEMINDAI WAJAH -->
+            <div id="update-step-scanner" class="hidden space-y-4">
+                <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-brand-accent/50 shadow-inner flex items-center justify-center">
+                    <video id="update-video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100 absolute inset-0"></video>
+                    <canvas id="update-overlay-canvas" class="absolute inset-0 w-full h-full object-cover transform -scale-x-100"></canvas>
+                    
+                    <div class="absolute inset-0 border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
+                        <div class="w-64 h-64 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
+                            <span id="update-scan-status-label" class="text-xs bg-black/80 px-3 py-1.5 rounded text-brand-success font-mono font-semibold">Posisikan Wajah</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: INDIKATOR LOADING "Mencari data" -->
+            <div id="update-step-loading" class="hidden py-12 text-center space-y-3 bg-zinc-900 rounded-xl border border-zinc-800">
+                <i class="fa-solid fa-spinner fa-spin text-3xl text-brand-accent"></i>
+                <p class="text-sm font-medium text-slate-200">Mencari data</p>
+            </div>
+
+            <!-- STEP 4: KONTEN INFORMASI DATA (Read-Only & Edit Telepon & 2 Kolom Upload) -->
             <div id="update-form-container" class="hidden space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 text-sm">
                     <div>
@@ -370,17 +379,20 @@
         const FACE_MATCH_THRESHOLD = 0.60;
 
         let activeStream = null;
+        let updateActiveStream = null;
         let modelsLoaded = false;
         let currentGpsData = "Tidak Terdeteksi";
         let currentDistanceMeters = 0;
         let attendanceStatus = "Di Luar Wilayah Kerja";
         let detectAnimationId = null;
+        let updateDetectAnimationId = null;
         let registeredFaceDatabase = [];
         let faceMatcher = null;
         
         let lastRecognizedId = null; 
         let faceLostTimeout = null;
         let isDetecting = false; 
+        let isUpdateDetecting = false;
         let ttsTimeoutId = null; 
         
         let targetFps = 8;
@@ -389,7 +401,6 @@
         let myKadDriveUrl = ""; 
         let ocrResultData = null; 
 
-        // Variabel untuk Gambar Kedua (Hanya Disimpan)
         let selectedSecondFile = null;
         let secondImageDriveUrl = "";
 
@@ -605,7 +616,7 @@
             });
             document.getElementById(viewId).classList.remove('hidden');
 
-            stopCamera(); stopAllAudio();
+            stopCamera(); stopUpdateCamera(); stopAllAudio();
             lastRecognizedId = null;
             if (faceLostTimeout) { clearTimeout(faceLostTimeout); faceLostTimeout = null; }
             window.matchedUser = null;
@@ -623,10 +634,11 @@
                 resetRegistration();
                 fetchFaceDatabase().then(() => { generateNextUserId(); });
             } else if (viewId === 'view-update-document') {
-                document.getElementById('update-search-ic').value = '';
+                // Tampilkan kembali langkah prompt awal saat masuk view update dokumen
+                document.getElementById('update-step-prompt').classList.remove('hidden');
+                document.getElementById('update-step-scanner').classList.add('hidden');
+                document.getElementById('update-step-loading').classList.add('hidden');
                 document.getElementById('update-form-container').classList.add('hidden');
-                document.getElementById('search-error-msg').classList.add('hidden');
-                document.getElementById('search-loading-msg').classList.add('hidden');
                 currentUpdateUserData = null;
             }
         }
@@ -640,10 +652,25 @@
             } catch (err) { alert("Gagal mengakses kamera."); }
         }
 
+        async function startUpdateCamera() {
+            try {
+                updateActiveStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+                const videoElement = document.getElementById('update-video-feed');
+                videoElement.srcObject = updateActiveStream;
+                return new Promise(resolve => { videoElement.onloadedmetadata = () => resolve(); });
+            } catch (err) { alert("Gagal mengakses kamera."); }
+        }
+
         function stopCamera() {
             isDetecting = false; 
             if (activeStream) { activeStream.getTracks().forEach(track => track.stop()); activeStream = null; }
             if (detectAnimationId) { cancelAnimationFrame(detectAnimationId); detectAnimationId = null; }
+        }
+
+        function stopUpdateCamera() {
+            isUpdateDetecting = false;
+            if (updateActiveStream) { updateActiveStream.getTracks().forEach(track => track.stop()); updateActiveStream = null; }
+            if (updateDetectAnimationId) { cancelAnimationFrame(updateDetectAnimationId); updateDetectAnimationId = null; }
         }
 
         const handleFaceLoss = () => {
@@ -736,6 +763,152 @@
             detectAnimationId = requestAnimationFrame(processLoop);
         }
 
+        // =========================================================================
+        // LOGIKA BARU: PEMINDAIAN WAJAH UNTUK UPDATE DOKUMEN & DATA
+        // =========================================================================
+        async function mulaiScanUpdate() {
+            if (!modelsLoaded) { alert("Model AI sedang dimuat..."); return; }
+
+            document.getElementById('update-step-prompt').classList.add('hidden');
+            document.getElementById('update-step-scanner').classList.remove('hidden');
+
+            await fetchFaceDatabase();
+            await startUpdateCamera();
+            startUpdateFaceDetection();
+        }
+
+        async function startUpdateFaceDetection() {
+            isUpdateDetecting = true;
+            const video = document.getElementById('update-video-feed');
+            const canvas = document.getElementById('update-overlay-canvas');
+            const displaySize = { width: video.videoWidth || 640, height: video.videoHeight || 480 };
+            faceapi.matchDimensions(canvas, displaySize);
+
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width = 320; offCanvas.height = 240;
+            const offCtx = offCanvas.getContext('2d');
+
+            let isProcessing = false;
+            let lastFrameTime = performance.now();
+
+            const processLoop = async (now) => {
+                if (!isUpdateDetecting) return;
+                updateDetectAnimationId = requestAnimationFrame(processLoop);
+
+                const elapsed = now - lastFrameTime;
+                const interval = 1000 / targetFps;
+                if (elapsed < interval) return;
+                lastFrameTime = now;
+
+                if (video.paused || video.ended || isProcessing) return;
+                isProcessing = true;
+
+                try {
+                    offCtx.drawImage(video, 0, 0, offCanvas.width, offCanvas.height);
+                    const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.35 });
+                    const detection = await faceapi.detectSingleFace(offCanvas, options).withFaceLandmarks().withFaceDescriptor();
+
+                    if (!isUpdateDetecting) { isProcessing = false; return; }
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    const statusLabel = document.getElementById('update-scan-status-label');
+
+                    if (detection && faceMatcher) {
+                        const box = detection.detection.box; 
+                        const scaleX = displaySize.width / offCanvas.width;
+                        const scaleY = displaySize.height / offCanvas.height;
+                        const drawBox = { x: box.x * scaleX, y: box.y * scaleY, width: box.width * scaleX, height: box.height * scaleY };
+
+                        const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+
+                        if (bestMatch.label !== 'unknown') {
+                            const [id, name, role] = bestMatch.label.split('|');
+                            const similarity = Math.round((1 - bestMatch.distance) * 100);
+
+                            ctx.strokeStyle = '#32DE84';
+                            statusLabel.innerText = `Terdeteksi: [${id}] ${name} (${similarity}%)`;
+                            ctx.lineWidth = 3;
+                            ctx.strokeRect(drawBox.x, drawBox.y, drawBox.width, drawBox.height);
+
+                            // KUNCI HASIL KECOCOKAN & HENTIKAN PEMINDAI
+                            isUpdateDetecting = false;
+                            if (updateDetectAnimationId) { cancelAnimationFrame(updateDetectAnimationId); updateDetectAnimationId = null; }
+                            stopUpdateCamera();
+
+                            // Sembunyikan pemindai dan tampilkan loading "Mencari data"
+                            document.getElementById('update-step-scanner').classList.add('hidden');
+                            document.getElementById('update-step-loading').classList.remove('hidden');
+
+                            // Lakukan pencarian data otomatis berdasarkan IC/ID wajah yang terdeteksi
+                            await fetchAndUpdateData(id);
+                            return;
+                        } else {
+                            ctx.strokeStyle = '#ef4444';
+                            statusLabel.innerText = "Wajah Tidak Dikenal";
+                            ctx.lineWidth = 3;
+                            ctx.strokeRect(drawBox.x, drawBox.y, drawBox.width, drawBox.height);
+                        }
+                    } else if (detection) {
+                        const box = detection.detection.box;
+                        const scaleX = displaySize.width / offCanvas.width;
+                        const scaleY = displaySize.height / offCanvas.height;
+                        ctx.strokeStyle = '#32DE84'; ctx.lineWidth = 2;
+                        ctx.strokeRect(box.x * scaleX, box.y * scaleY, box.width * scaleX, box.height * scaleY);
+                        statusLabel.innerText = "Mencocokkan wajah...";
+                    } else {
+                        statusLabel.innerText = "Posisikan Wajah";
+                    }
+                } catch (err) { console.error(err); } 
+                finally { isProcessing = false; }
+            };
+
+            updateDetectAnimationId = requestAnimationFrame(processLoop);
+        }
+
+        async function fetchAndUpdateData(icQuery) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'search_by_ic', ic: icQuery })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Gagal terhubung ke server (HTTP error: " + response.status + ")");
+                }
+
+                const result = await response.json();
+
+                // Sembunyikan loading "Mencari data"
+                document.getElementById('update-step-loading').classList.add('hidden');
+
+                if (result.status === 'success') {
+                    currentUpdateUserData = result.data;
+                    
+                    document.getElementById('up-display-ic').innerText = result.data.ic;
+                    document.getElementById('up-display-name').innerText = result.data.name;
+                    document.getElementById('up-display-alamat').innerText = result.data.alamat;
+                    document.getElementById('up-display-info').innerText = `${result.data.warganegara} | ${result.data.gender} (${result.data.role.toUpperCase()})`;
+                    
+                    document.getElementById('up-edit-phone').value = result.data.noTelpon !== '-' ? result.data.noTelpon : '';
+                    
+                    document.getElementById('up-file-1').value = '';
+                    document.getElementById('up-file-2').value = '';
+
+                    // Tampilkan form data diri dan upload
+                    document.getElementById('update-form-container').classList.remove('hidden');
+                } else {
+                    alert(result.message || "Data dengan wajah tersebut tidak ditemukan di sistem.");
+                    switchView('view-home');
+                }
+            } catch (err) {
+                document.getElementById('update-step-loading').classList.add('hidden');
+                alert("Terjadi kesalahan jaringan atau sistem saat mencari data: " + err.message);
+                switchView('view-home');
+            }
+        }
+        // =========================================================================
+
         async function prosesAbsen() {
             if (!window.matchedUser) { alert("Wajah tidak dikenali!"); return; }
             const btn = document.getElementById('btn-proses-absen');
@@ -804,76 +977,6 @@
                 else { alert(result.message); }
             } catch (err) { alert("Kesalahan server."); } 
             finally { btn.innerText = "Masuk ke Pendaftaran"; btn.disabled = false; }
-        }
-
-        // =========================================================================
-        // PERBAIKAN: FITUR CARI DATA UPDATE DENGAN ERROR HANDLING & LOADING PROGRESS
-        // =========================================================================
-        async function cariDataUpdate() {
-            const icInput = document.getElementById('update-search-ic').value.trim();
-            const errorMsgEl = document.getElementById('search-error-msg');
-            const loadingMsgEl = document.getElementById('search-loading-msg');
-            const searchBtn = document.getElementById('btn-cari-update');
-            const formContainer = document.getElementById('update-form-container');
-
-            // Reset pesan error & form sebelumnya
-            errorMsgEl.classList.add('hidden');
-            errorMsgEl.innerText = '';
-            formContainer.classList.add('hidden');
-
-            if (!icInput) {
-                errorMsgEl.innerText = "Silakan masukkan Nomor IC terlebih dahulu!";
-                errorMsgEl.classList.remove('hidden');
-                return;
-            }
-
-            // Aktifkan state loading & nonaktifkan tombol
-            searchBtn.disabled = true;
-            loadingMsgEl.classList.remove('hidden');
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'search_by_ic', ic: icInput })
-                });
-
-                if (!response.ok) {
-                    throw new Error("Gagal terhubung ke server (HTTP error: " + response.status + ")");
-                }
-
-                const result = await response.json();
-
-                if (result.status === 'success') {
-                    currentUpdateUserData = result.data;
-                    
-                    document.getElementById('up-display-ic').innerText = result.data.ic;
-                    document.getElementById('up-display-name').innerText = result.data.name;
-                    document.getElementById('up-display-alamat').innerText = result.data.alamat;
-                    document.getElementById('up-display-info').innerText = `${result.data.warganegara} | ${result.data.gender} (${result.data.role.toUpperCase()})`;
-                    
-                    document.getElementById('up-edit-phone').value = result.data.noTelpon !== '-' ? result.data.noTelpon : '';
-                    
-                    document.getElementById('up-file-1').value = '';
-                    document.getElementById('up-file-2').value = '';
-
-                    formContainer.classList.remove('hidden');
-                } else {
-                    formContainer.classList.add('hidden');
-                    currentUpdateUserData = null;
-                    errorMsgEl.innerText = result.message || "Data dengan No. IC tersebut tidak ditemukan.";
-                    errorMsgEl.classList.remove('hidden');
-                }
-            } catch (err) {
-                formContainer.classList.add('hidden');
-                currentUpdateUserData = null;
-                errorMsgEl.innerText = "Terjadi kesalahan jaringan atau sistem saat mencari data: " + err.message;
-                errorMsgEl.classList.remove('hidden');
-                console.error(err);
-            } finally {
-                // Matikan state loading & aktifkan kembali tombol
-                searchBtn.disabled = false;
-                loadingMsgEl.classList.add('hidden');
-            }
         }
 
         async function simpanUpdateDokumen() {
