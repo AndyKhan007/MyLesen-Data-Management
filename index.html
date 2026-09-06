@@ -272,7 +272,7 @@
             </div>
         </section>
 
-        <!-- 5. UPDATE DOKUMEN & DATA VIEW (DIUBAH KE FACE DETECTION) -->
+        <!-- 5. UPDATE DOKUMEN & DATA VIEW -->
         <section id="view-update-document" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
                 <h2 class="text-lg sm:text-xl font-bold flex items-center space-x-2 text-white">
@@ -307,13 +307,21 @@
                 </div>
             </div>
 
-            <!-- STEP 3: INDIKATOR LOADING "Mencari data" -->
+            <!-- STEP 3: ANIMASI CHECKLIST & "VERIFIED" -->
+            <div id="update-step-verified" class="hidden py-10 text-center space-y-3 bg-zinc-900 rounded-xl border border-zinc-800">
+                <div class="w-16 h-16 bg-brand-success/20 border border-brand-success rounded-full flex items-center justify-center mx-auto text-brand-success text-3xl animate-bounce shadow-[0_0_15px_rgba(50,222,132,0.4)]">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <p class="text-base font-bold text-brand-success tracking-wide">Verified</p>
+            </div>
+
+            <!-- STEP 4: INDIKATOR LOADING "Mencari data" -->
             <div id="update-step-loading" class="hidden py-12 text-center space-y-3 bg-zinc-900 rounded-xl border border-zinc-800">
                 <i class="fa-solid fa-spinner fa-spin text-3xl text-brand-accent"></i>
                 <p class="text-sm font-medium text-slate-200">Mencari data</p>
             </div>
 
-            <!-- STEP 4: KONTEN INFORMASI DATA (Read-Only & Edit Telepon & 2 Kolom Upload) -->
+            <!-- STEP 5: KONTEN INFORMASI DATA (Read-Only & 2 Kolom Telepon & Upload) -->
             <div id="update-form-container" class="hidden space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 text-sm">
                     <div>
@@ -334,10 +342,16 @@
                     </div>
                 </div>
 
-                <!-- Field yang DAPAT diedit: Nomor Telepon -->
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Nomor Telepon (Dapat Diubah)</label>
-                    <input type="tel" id="up-edit-phone" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan nomor telepon baru">
+                <!-- 2 Field Nomor Telepon yang DAPAT diedit -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Utama (Dapat Diubah)</label>
+                        <input type="tel" id="up-edit-phone" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Nomor telepon utama">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Kedua (Dapat Diubah)</label>
+                        <input type="tel" id="up-edit-phone-2" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Nomor telepon kedua">
+                    </div>
                 </div>
 
                 <!-- 2 Kolom Upload Gambar Baru (Responsif) -->
@@ -370,7 +384,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw6PJ-IqVT2jl11wniVznlPfGeriG_cQ_abHf7lbw8SHIPjVOGNzMEv4pJkEzd6Ba5zmg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxzYzyK0AqSG9r-FFyRaB7wwTx_p9fyoZcl0XToe3AswStm83PfeEgsmRd_QI9DCJ7QaA/exec";
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
         const OFFICE_LAT = 5.350205443577465;
@@ -634,9 +648,9 @@
                 resetRegistration();
                 fetchFaceDatabase().then(() => { generateNextUserId(); });
             } else if (viewId === 'view-update-document') {
-                // Tampilkan kembali langkah prompt awal saat masuk view update dokumen
                 document.getElementById('update-step-prompt').classList.remove('hidden');
                 document.getElementById('update-step-scanner').classList.add('hidden');
+                document.getElementById('update-step-verified').classList.add('hidden');
                 document.getElementById('update-step-loading').classList.add('hidden');
                 document.getElementById('update-form-container').classList.add('hidden');
                 currentUpdateUserData = null;
@@ -764,7 +778,7 @@
         }
 
         // =========================================================================
-        // LOGIKA BARU: PEMINDAIAN WAJAH UNTUK UPDATE DOKUMEN & DATA
+        // PEMINDAIAN WAJAH UNTUK UPDATE DOKUMEN & DATA
         // =========================================================================
         async function mulaiScanUpdate() {
             if (!modelsLoaded) { alert("Model AI sedang dimuat..."); return; }
@@ -836,12 +850,19 @@
                             if (updateDetectAnimationId) { cancelAnimationFrame(updateDetectAnimationId); updateDetectAnimationId = null; }
                             stopUpdateCamera();
 
-                            // Sembunyikan pemindai dan tampilkan loading "Mencari data"
+                            // Tampilkan animasi checklist "✓" dan "verified" warna hijau
                             document.getElementById('update-step-scanner').classList.add('hidden');
-                            document.getElementById('update-step-loading').classList.remove('hidden');
+                            document.getElementById('update-step-verified').classList.remove('hidden');
 
-                            // Lakukan pencarian data otomatis berdasarkan IC/ID wajah yang terdeteksi
-                            await fetchAndUpdateData(id);
+                            // Jeda sebentar, lalu sembunyikan verified dan tampilkan loading "Mencari data"
+                            setTimeout(async () => {
+                                document.getElementById('update-step-verified').classList.add('hidden');
+                                document.getElementById('update-step-loading').classList.remove('hidden');
+
+                                // Lakukan pencarian data otomatis berdasarkan ID/IC wajah yang terdeteksi
+                                await fetchAndUpdateData(id);
+                            }, 1500);
+
                             return;
                         } else {
                             ctx.strokeStyle = '#ef4444';
@@ -891,6 +912,7 @@
                     document.getElementById('up-display-info').innerText = `${result.data.warganegara} | ${result.data.gender} (${result.data.role.toUpperCase()})`;
                     
                     document.getElementById('up-edit-phone').value = result.data.noTelpon !== '-' ? result.data.noTelpon : '';
+                    document.getElementById('up-edit-phone-2').value = result.data.noTelpon2 && result.data.noTelpon2 !== '-' ? result.data.noTelpon2 : '';
                     
                     document.getElementById('up-file-1').value = '';
                     document.getElementById('up-file-2').value = '';
@@ -987,6 +1009,7 @@
             btn.disabled = true;
 
             const newPhone = document.getElementById('up-edit-phone').value.trim() || "-";
+            const newPhone2 = document.getElementById('up-edit-phone-2').value.trim() || "-";
             const fileInput1 = document.getElementById('up-file-1');
             const fileInput2 = document.getElementById('up-file-2');
 
@@ -1012,6 +1035,7 @@
                         ic: currentUpdateUserData.ic,
                         role: currentUpdateUserData.role,
                         noTelpon: newPhone,
+                        noTelpon2: newPhone2,
                         nomorUrut: currentUpdateUserData.nomorUrut,
                         name: currentUpdateUserData.name,
                         file1: { base64: base64File1, mimeType: mimeType1 },
