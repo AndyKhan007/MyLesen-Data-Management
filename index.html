@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <!-- Panggil File CSS Terpisah -->
+    <!-- File CSS Terpisah -->
     <link rel="stylesheet" href="themes.css">
 
     <!-- Tailwind CSS CDN -->
@@ -44,32 +44,39 @@
         }
     </script>
 </head>
-<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col justify-between select-none theme-dark overflow-x-hidden">
+<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col justify-between select-none theme-dark antialiased">
 
     <!-- HEADER / STATUS BAR -->
-    <header class="w-full bg-brand-card border-b border-zinc-800 px-3 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-2 shadow-md shrink-0">
-        <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
-            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-brand-success rounded-full animate-pulse shadow-[0_0_10px_#32DE84] shrink-0"></div>
-            <span class="font-bold tracking-wider text-xs sm:text-sm md:text-base text-brand-accent truncate">Mulyadi _ BIO ATTENDANCE SYSTEM</span>
+    <header class="w-full bg-brand-card border-b border-zinc-800 p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-md">
+        <div class="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto justify-between sm:justify-start">
+            <div class="flex items-center space-x-2">
+                <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-brand-success rounded-full animate-pulse shadow-[0_0_10px_#32DE84]"></div>
+                <span class="font-bold tracking-wider text-xs sm:text-sm md:text-base text-brand-accent truncate">Mulyadi _ BIO ATTENDANCE SYSTEM</span>
+            </div>
+            <!-- Toggle Theme Mobile Only -->
+            <button onclick="toggleTheme()" class="sm:hidden px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-medium text-slate-200 flex items-center space-x-1.5 transition shadow">
+                <i class="fa-solid fa-palette text-brand-accent"></i>
+                <span id="theme-label-mobile">Tema</span>
+            </button>
         </div>
         
-        <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
-            <!-- Tombol Pengalih Tema -->
-            <button onclick="toggleTheme()" class="px-2.5 sm:px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-medium text-slate-200 flex items-center space-x-1.5 sm:space-x-2 transition shadow">
+        <div class="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-zinc-800/80 pt-2 sm:pt-0">
+            <!-- Tombol Pengalih Tema Desktop -->
+            <button onclick="toggleTheme()" class="hidden sm:flex px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-medium text-slate-200 items-center space-x-2 transition shadow">
                 <i class="fa-solid fa-palette text-brand-accent"></i>
-                <span id="theme-label" class="text-xs">Ganti Tema</span>
+                <span id="theme-label">Ganti Tema</span>
             </button>
-            <div id="real-time-clock" class="text-xs sm:text-sm font-mono text-slate-400 hidden md:block">00:00:00 | 00-00-0000</div>
+            <div id="real-time-clock" class="text-xs sm:text-sm font-mono text-slate-400 w-full text-center sm:text-right">00:00:00 | 00-00-0000</div>
         </div>
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="flex-grow flex items-center justify-center p-3 sm:p-4 md:p-6 w-full">
+    <main class="flex-grow flex items-center justify-center p-3 sm:p-4 md:p-6 w-full max-w-7xl mx-auto">
 
         <!-- 1. HOME VIEW -->
-        <section id="view-home" class="w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-2xl text-center space-y-6 sm:space-y-8 my-auto">
+        <section id="view-home" class="w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-2xl text-center space-y-6 sm:space-y-8">
             <div>
-                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-brand-accent/25 border border-brand-accent rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-brand-accent text-2xl sm:text-3xl shadow-[0_0_15px_rgba(50,222,132,0.2)]">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-brand-accent/20 border border-brand-accent rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-brand-accent text-2xl sm:text-3xl shadow-[0_0_15px_rgba(50,222,132,0.2)]">
                     <i class="fa-solid fa-fingerprint"></i>
                 </div>
                 <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Sistem Faceprint</h1>
@@ -77,19 +84,19 @@
             </div>
 
             <div class="space-y-3">
-                <button onclick="startFaceprint('in')" class="w-full py-3 sm:py-3.5 bg-brand-accent hover:opacity-90 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base group text-black">
+                <button onclick="startFaceprint('in')" class="w-full py-3 sm:py-3.5 bg-brand-accent hover:opacity-90 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base group text-black active:scale-[0.99]">
                     <i class="fa-solid fa-right-to-bracket group-hover:scale-110 transition-transform"></i>
                     <span>FacePrint In</span>
                 </button>
-                <button onclick="startFaceprint('out')" class="w-full py-3 sm:py-3.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base text-slate-200 group">
+                <button onclick="startFaceprint('out')" class="w-full py-3 sm:py-3.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base text-slate-200 group active:scale-[0.99]">
                     <i class="fa-solid fa-right-from-bracket group-hover:scale-110 transition-transform text-brand-accent"></i>
                     <span>FacePrint Out</span>
                 </button>
-                <button onclick="switchView('view-update-document')" class="w-full py-3 sm:py-3.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base text-slate-200 group">
+                <button onclick="switchView('view-update-document')" class="w-full py-3 sm:py-3.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base text-slate-200 group active:scale-[0.99]">
                     <i class="fa-solid fa-file-pen group-hover:scale-110 transition-transform text-brand-accent"></i>
                     <span>Update Dokumen & Data</span>
                 </button>
-                <button onclick="switchView('view-admin-login')" class="w-full py-3 sm:py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base text-slate-300">
+                <button onclick="switchView('view-admin-login')" class="w-full py-3 sm:py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base text-slate-300 active:scale-[0.99]">
                     <i class="fa-solid fa-lock text-brand-accent"></i>
                     <span>Login Admin / Pendaftaran</span>
                 </button>
@@ -97,22 +104,22 @@
         </section>
 
         <!-- 2. FACEPRINT (ABSENSI) VIEW -->
-        <section id="view-faceprint" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-6 my-auto">
+        <section id="view-faceprint" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-6">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-3 sm:pb-4">
-                <h2 id="faceprint-heading" class="text-base sm:text-xl font-bold flex items-center space-x-2 text-white truncate pr-2">
-                    <i class="fa-solid fa-video text-brand-accent shrink-0"></i>
-                    <span class="truncate">Pemindaian Kehadiran (FacePrint In)</span>
+                <h2 id="faceprint-heading" class="text-base sm:text-xl font-bold flex items-center space-x-2 text-white truncate">
+                    <i class="fa-solid fa-video text-brand-accent"></i>
+                    <span>Pemindaian Kehadiran (FacePrint In)</span>
                 </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white shrink-0 p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg sm:text-xl"></i></button>
             </div>
 
-            <div id="video-container" class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-brand-accent/50 shadow-inner flex items-center justify-center max-h-[50vh] sm:max-h-[60vh]">
+            <div id="video-container" class="relative w-full aspect-[4/3] sm:aspect-video bg-black rounded-xl overflow-hidden border-2 border-brand-accent/50 shadow-inner flex items-center justify-center">
                 <video id="video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100 absolute inset-0"></video>
                 <canvas id="overlay-canvas" class="absolute inset-0 w-full h-full object-cover transform -scale-x-100"></canvas>
                 
-                <div class="absolute inset-0 border-[20px] sm:border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
-                    <div class="w-48 h-48 sm:w-64 sm:h-64 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
-                        <span id="scan-status-label" class="text-[11px] sm:text-xs bg-black/80 px-2 sm:px-3 py-1.5 rounded text-brand-success font-mono font-semibold">Posisikan Wajah</span>
+                <div class="absolute inset-0 border-[16px] sm:border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
+                    <div class="w-44 h-44 sm:w-60 sm:h-60 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
+                        <span id="scan-status-label" class="text-[10px] sm:text-xs bg-black/80 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded text-brand-success font-mono font-semibold max-w-[90%] truncate">Posisikan Wajah</span>
                     </div>
                 </div>
             </div>
@@ -122,134 +129,134 @@
                     <p class="text-slate-400">Status GPS:</p>
                     <p id="gps-status-text" class="text-brand-success font-medium"><i class="fa-solid fa-spinner fa-spin"></i> Memeriksa GPS...</p>
                 </div>
-                <button id="btn-proses-absen" onclick="prosesAbsen()" class="w-full sm:w-auto px-6 py-2.5 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow transition text-black">
+                <button id="btn-proses-absen" onclick="prosesAbsen()" class="w-full sm:w-auto px-6 py-2.5 sm:py-3 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow transition text-black text-sm active:scale-[0.98]">
                     Proses Absen
                 </button>
             </div>
         </section>
 
         <!-- 3. ADMIN LOGIN VIEW -->
-        <section id="view-admin-login" class="hidden w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-2xl space-y-5 sm:space-y-6 my-auto">
+        <section id="view-admin-login" class="hidden w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-2xl space-y-5 sm:space-y-6">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-3 sm:pb-4">
                 <h2 class="text-lg sm:text-xl font-bold flex items-center space-x-2 text-white">
                     <i class="fa-solid fa-shield-halved text-brand-accent"></i>
                     <span>Login Administrator</span>
                 </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg sm:text-xl"></i></button>
             </div>
 
             <form onsubmit="handleAdminLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs sm:text-sm text-slate-400 mb-1">Username Admin</label>
-                    <input type="text" id="admin-user" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white text-sm" placeholder="Masukkan username">
+                    <input type="text" id="admin-user" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 sm:py-3 text-base sm:text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan username">
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm text-slate-400 mb-1">Password</label>
-                    <input type="password" id="admin-pass" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white text-sm" placeholder="Masukkan password">
+                    <input type="password" id="admin-pass" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 sm:py-3 text-base sm:text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan password">
                 </div>
-                <button type="submit" id="btn-login-submit" class="w-full py-3.5 bg-brand-accent hover:opacity-90 transition font-semibold rounded-xl shadow-lg mt-2 text-black text-sm">
+                <button type="submit" id="btn-login-submit" class="w-full py-3 sm:py-3.5 bg-brand-accent hover:opacity-90 transition font-semibold rounded-xl shadow-lg mt-2 text-black text-sm sm:text-base active:scale-[0.98]">
                     Masuk ke Pendaftaran
                 </button>
             </form>
         </section>
 
         <!-- 4. FACE REGISTRATION VIEW -->
-        <section id="view-registration" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-6 my-auto max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 sm:pb-4 sticky top-0 bg-brand-card z-10">
-                <h2 class="text-base sm:text-xl font-bold flex items-center space-x-2 text-white">
+        <section id="view-registration" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-5 sm:space-y-6">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 sm:pb-4">
+                <h2 class="text-base sm:text-xl font-bold flex items-center space-x-2 text-white truncate">
                     <i class="fa-solid fa-user-plus text-brand-accent"></i>
                     <span>Pendaftaran Wajah Baru (7 Pose)</span>
                 </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg sm:text-xl"></i></button>
             </div>
 
             <!-- MODUL 1: UPLOAD MYKAD (UNTUK OCR & DISIMPAN) -->
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-5 shadow-inner space-y-3">
-                <label class="block text-xs sm:text-sm font-semibold text-brand-accent">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 sm:p-5 mb-4 shadow-inner">
+                <label class="block text-xs sm:text-sm font-semibold text-brand-accent mb-2.5">
                     <i class="fa-solid fa-id-card mr-2"></i>1. Upload MyKad (Untuk OCR & Disimpan)
                 </label>
                 
                 <input type="file" id="mykad-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesMyKadFile(this)">
                 <input type="file" id="mykad-gallery" accept="image/*" class="hidden" onchange="prosesMyKadFile(this)">
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                    <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-2.5 sm:py-3 bg-brand-accent hover:opacity-90 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-black">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 mb-3">
+                    <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-2.5 sm:py-3 bg-brand-accent hover:opacity-90 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-black active:scale-[0.98]">
                         <i class="fa-solid fa-camera"></i>
                         <span>Ambil Kamera</span>
                     </button>
-                    <button type="button" onclick="document.getElementById('mykad-gallery').click()" class="py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
+                    <button type="button" onclick="document.getElementById('mykad-gallery').click()" class="py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200 active:scale-[0.98]">
                         <i class="fa-solid fa-image"></i>
                         <span>Pilih Galeri</span>
                     </button>
                 </div>
 
-                <div id="file-selected-info" class="text-xs text-brand-success text-center font-mono hidden"></div>
+                <div id="file-selected-info" class="text-xs text-brand-success text-center font-mono hidden mb-3 break-all"></div>
 
-                <button type="button" onclick="kirimMyKadKeServer()" id="btn-ocr" class="w-full py-3 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow-lg transition text-xs sm:text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-black" disabled>
+                <button type="button" onclick="kirimMyKadKeServer()" id="btn-ocr" class="w-full py-2.5 sm:py-3 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow-lg transition text-xs sm:text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-black" disabled>
                     <i class="fa-solid fa-microchip"></i>
                     <span>Scan MyKad & Ekstrak Data</span>
                 </button>
             </div>
 
             <!-- MODUL 2: UPLOAD GAMBAR KEDUA (HANYA DISIMPAN) -->
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-5 shadow-inner space-y-3">
-                <label class="block text-xs sm:text-sm font-semibold text-brand-accent">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 sm:p-5 mb-4 shadow-inner">
+                <label class="block text-xs sm:text-sm font-semibold text-brand-accent mb-2.5">
                     <i class="fa-solid fa-image mr-2"></i>2. Upload Gambar Kedua (Hanya Disimpan Saja)
                 </label>
                 
                 <input type="file" id="second-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesSecondFile(this)">
                 <input type="file" id="second-gallery" accept="image/*" class="hidden" onchange="prosesSecondFile(this)">
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                    <button type="button" onclick="document.getElementById('second-camera').click()" class="py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 mb-3">
+                    <button type="button" onclick="document.getElementById('second-camera').click()" class="py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200 active:scale-[0.98]">
                         <i class="fa-solid fa-camera"></i>
                         <span>Ambil Kamera</span>
                     </button>
-                    <button type="button" onclick="document.getElementById('second-gallery').click()" class="py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
+                    <button type="button" onclick="document.getElementById('second-gallery').click()" class="py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200 active:scale-[0.98]">
                         <i class="fa-solid fa-image"></i>
                         <span>Pilih Galeri</span>
                     </button>
                 </div>
 
-                <div id="second-file-info" class="text-xs text-brand-success text-center font-mono hidden"></div>
+                <div id="second-file-info" class="text-xs text-brand-success text-center font-mono hidden mb-3 break-all"></div>
 
-                <button type="button" onclick="kirimSecondImageKeServer()" id="btn-upload-second" class="w-full py-3 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow-lg transition text-xs sm:text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-black" disabled>
+                <button type="button" onclick="kirimSecondImageKeServer()" id="btn-upload-second" class="w-full py-2.5 sm:py-3 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow-lg transition text-xs sm:text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-black" disabled>
                     <i class="fa-solid fa-cloud-arrow-up"></i>
                     <span>Simpan Gambar Kedua ke Drive</span>
                 </button>
             </div>
 
             <!-- FORMULIR INPUT DATA -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">User ID / No. IC</label>
-                    <input type="text" id="reg-id" placeholder="User ID / No. IC" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
+                    <input type="text" id="reg-id" placeholder="User ID / No. IC" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Nama Lengkap User</label>
-                    <input type="text" id="reg-name" placeholder="Nama Lengkap User" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white">
+                    <input type="text" id="reg-name" placeholder="Nama Lengkap User" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Utama</label>
-                    <input type="tel" id="reg-phone" placeholder="Contoh: 0123456789" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white">
+                    <input type="tel" id="reg-phone" placeholder="Contoh: 0123456789" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Kedua (Opsional)</label>
-                    <input type="tel" id="reg-phone-2" placeholder="Contoh: 0187654321" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white">
+                    <input type="tel" id="reg-phone-2" placeholder="Contoh: 0187654321" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
-                <div class="sm:col-span-2">
+                <div class="md:col-span-2">
                     <label class="block text-xs text-slate-400 mb-1">Jenis User / Role</label>
-                    <select id="reg-role" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white">
+                    <select id="reg-role" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:border-brand-accent text-white">
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>
             </div>
 
-            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-zinc-800 shadow-inner flex items-center justify-center max-h-[40vh]">
+            <div class="relative w-full aspect-[4/3] sm:aspect-video bg-black rounded-xl overflow-hidden border-2 border-zinc-800 shadow-inner flex items-center justify-center">
                 <video id="reg-video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
-                <div class="absolute top-3 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-3 py-1.5 rounded-full text-center max-w-[92%]">
-                    <span id="pose-instruction" class="text-[11px] sm:text-sm font-semibold text-brand-accent truncate block">Langkah 1/7: Hadap Depan Lurus (Netral)</span>
+                <div class="absolute top-3 sm:top-4 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-center max-w-[95%]">
+                    <span id="pose-instruction" class="text-xs sm:text-sm font-semibold text-brand-accent truncate">Langkah 1/7: Hadap Depan Lurus (Netral)</span>
                 </div>
             </div>
 
@@ -263,9 +270,9 @@
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row justify-between items-center pt-2 gap-2">
+            <div class="flex flex-col sm:flex-row justify-between items-center pt-2 gap-2.5 sm:gap-3">
                 <button onclick="resetRegistration()" class="w-full sm:w-auto px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-xs sm:text-sm rounded-lg border border-zinc-600 transition text-slate-200">Reset</button>
-                <button onclick="captureNextPose()" id="btn-capture" class="w-full sm:w-auto px-6 py-2.5 bg-brand-accent hover:opacity-90 font-bold rounded-lg shadow transition flex items-center justify-center space-x-2 text-black text-xs sm:text-sm">
+                <button onclick="captureNextPose()" id="btn-capture" class="w-full sm:w-auto px-6 py-2.5 sm:py-3 bg-brand-accent hover:opacity-90 font-bold rounded-lg shadow transition flex items-center justify-center space-x-2 text-black text-xs sm:text-sm active:scale-[0.98]">
                     <i class="fa-solid fa-camera"></i>
                     <span>Ambil Sampel Pose Ini</span>
                 </button>
@@ -273,13 +280,13 @@
         </section>
 
         <!-- 5. UPDATE DOKUMEN & DATA VIEW -->
-        <section id="view-update-document" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-6 my-auto max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 sm:pb-4 sticky top-0 bg-brand-card z-10">
+        <section id="view-update-document" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-5 sm:space-y-6">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 sm:pb-4">
                 <h2 class="text-base sm:text-xl font-bold flex items-center space-x-2 text-white">
                     <i class="fa-solid fa-file-pen text-brand-accent"></i>
                     <span>Update Dokumen & Data</span>
                 </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg sm:text-xl"></i></button>
             </div>
 
             <!-- STEP 1: POPUP PROMPT AWAL -->
@@ -288,27 +295,27 @@
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
                 <p class="text-slate-200 text-xs sm:text-base font-medium">Untuk keamanan lakukan pemindaian wajah anda</p>
-                <button onclick="mulaiScanUpdate()" class="px-6 py-3 bg-brand-accent hover:opacity-90 font-bold rounded-xl text-black transition text-xs sm:text-sm shadow">
+                <button onclick="mulaiScanUpdate()" class="px-6 py-2.5 sm:py-3 bg-brand-accent hover:opacity-90 font-bold rounded-xl text-black transition text-xs sm:text-sm shadow active:scale-[0.98]">
                     Lanjutkan
                 </button>
             </div>
 
             <!-- STEP 2: PEMINDAI WAJAH -->
             <div id="update-step-scanner" class="hidden space-y-4">
-                <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-brand-accent/50 shadow-inner flex items-center justify-center max-h-[50vh]">
+                <div class="relative w-full aspect-[4/3] sm:aspect-video bg-black rounded-xl overflow-hidden border-2 border-brand-accent/50 shadow-inner flex items-center justify-center">
                     <video id="update-video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100 absolute inset-0"></video>
                     <canvas id="update-overlay-canvas" class="absolute inset-0 w-full h-full object-cover transform -scale-x-100"></canvas>
                     
-                    <div class="absolute inset-0 border-[20px] sm:border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
-                        <div class="w-48 h-48 sm:w-64 sm:h-64 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
-                            <span id="update-scan-status-label" class="text-[11px] sm:text-xs bg-black/80 px-2 sm:px-3 py-1.5 rounded text-brand-success font-mono font-semibold">Posisikan Wajah</span>
+                    <div class="absolute inset-0 border-[16px] sm:border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
+                        <div class="w-44 h-44 sm:w-60 sm:h-60 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
+                            <span id="update-scan-status-label" class="text-[10px] sm:text-xs bg-black/80 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded text-brand-success font-mono font-semibold max-w-[90%] truncate">Posisikan Wajah</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- STEP 3: ANIMASI CHECKLIST & "VERIFIED" -->
-            <div id="update-step-verified" class="hidden py-10 text-center space-y-3 bg-zinc-900 rounded-xl border border-zinc-800">
+            <div id="update-step-verified" class="hidden py-8 sm:py-10 text-center space-y-3 bg-zinc-900 rounded-xl border border-zinc-800">
                 <div class="w-14 h-14 sm:w-16 sm:h-16 bg-brand-success/20 border border-brand-success rounded-full flex items-center justify-center mx-auto text-brand-success text-2xl sm:text-3xl animate-bounce shadow-[0_0_15px_rgba(50,222,132,0.4)]">
                     <i class="fa-solid fa-check"></i>
                 </div>
@@ -316,21 +323,21 @@
             </div>
 
             <!-- STEP 4: INDIKATOR LOADING "Mencari data" -->
-            <div id="update-step-loading" class="hidden py-12 text-center space-y-3 bg-zinc-900 rounded-xl border border-zinc-800">
+            <div id="update-step-loading" class="hidden py-10 sm:py-12 text-center space-y-3 bg-zinc-900 rounded-xl border border-zinc-800">
                 <i class="fa-solid fa-spinner fa-spin text-2xl sm:text-3xl text-brand-accent"></i>
                 <p class="text-xs sm:text-sm font-medium text-slate-200">Mencari data</p>
             </div>
 
             <!-- STEP 5: KONTEN INFORMASI DATA (Read-Only & 2 Kolom Telepon & Upload) -->
             <div id="update-form-container" class="hidden space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-zinc-900/50 p-3 sm:p-4 rounded-xl border border-zinc-800 text-xs sm:text-sm">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-zinc-900/50 p-3.5 sm:p-4 rounded-xl border border-zinc-800 text-xs sm:text-sm">
                     <div>
                         <span class="block text-[11px] sm:text-xs text-slate-400">Nomor IC / ID</span>
-                        <p id="up-display-ic" class="font-mono font-bold text-white mt-0.5 sm:mt-1">-</p>
+                        <p id="up-display-ic" class="font-mono font-bold text-white mt-0.5 sm:mt-1 break-all">-</p>
                     </div>
                     <div>
                         <span class="block text-[11px] sm:text-xs text-slate-400">Nama Lengkap</span>
-                        <p id="up-display-name" class="font-semibold text-white mt-0.5 sm:mt-1">-</p>
+                        <p id="up-display-name" class="font-semibold text-white mt-0.5 sm:mt-1 break-words">-</p>
                     </div>
                     <div>
                         <span class="block text-[11px] sm:text-xs text-slate-400">Alamat Lengkap</span>
@@ -338,7 +345,7 @@
                     </div>
                     <div>
                         <span class="block text-[11px] sm:text-xs text-slate-400">Warganegara & Gender</span>
-                        <p id="up-display-info" class="text-slate-200 mt-0.5 sm:mt-1">-</p>
+                        <p id="up-display-info" class="text-slate-200 mt-0.5 sm:mt-1 break-words">-</p>
                     </div>
                 </div>
 
@@ -346,28 +353,28 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Utama (Dapat Diubah)</label>
-                        <input type="tel" id="up-edit-phone" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Nomor telepon utama">
+                        <input type="tel" id="up-edit-phone" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Nomor telepon utama">
                     </div>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Kedua (Dapat Diubah)</label>
-                        <input type="tel" id="up-edit-phone-2" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Nomor telepon kedua">
+                        <input type="tel" id="up-edit-phone-2" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Nomor telepon kedua">
                     </div>
                 </div>
 
                 <!-- 2 Kolom Upload Gambar Baru (Responsif) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
-                    <div class="bg-zinc-950 p-3 sm:p-4 rounded-xl border border-zinc-800 space-y-2">
+                    <div class="bg-zinc-900 p-3.5 sm:p-4 rounded-xl border border-zinc-800 space-y-2">
                         <label class="block text-xs font-semibold text-brand-accent"><i class="fa-solid fa-image mr-1"></i> Upload Gambar 1 Baru</label>
-                        <input type="file" id="up-file-1" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-black hover:file:opacity-90 cursor-pointer">
+                        <input type="file" id="up-file-1" accept="image/*" class="w-full text-xs text-slate-400 file:mr-2 sm:file:mr-3 file:py-1.5 file:px-2.5 sm:file:py-2 sm:file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-black hover:file:opacity-90 cursor-pointer">
                     </div>
-                    <div class="bg-zinc-950 p-3 sm:p-4 rounded-xl border border-zinc-800 space-y-2">
+                    <div class="bg-zinc-900 p-3.5 sm:p-4 rounded-xl border border-zinc-800 space-y-2">
                         <label class="block text-xs font-semibold text-brand-accent"><i class="fa-solid fa-image mr-1"></i> Upload Gambar 2 Baru</label>
-                        <input type="file" id="up-file-2" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-black hover:file:opacity-90 cursor-pointer">
+                        <input type="file" id="up-file-2" accept="image/*" class="w-full text-xs text-slate-400 file:mr-2 sm:file:mr-3 file:py-1.5 file:px-2.5 sm:file:py-2 sm:file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-black hover:file:opacity-90 cursor-pointer">
                     </div>
                 </div>
 
-                <div class="flex justify-end pt-2">
-                    <button onclick="simpanUpdateDokumen()" id="btn-simpan-update" class="w-full sm:w-auto px-6 py-3 bg-brand-success hover:opacity-90 font-bold rounded-xl text-black transition shadow flex items-center justify-center space-x-2 text-xs sm:text-sm">
+                <div class="flex justify-end pt-3 sm:pt-4">
+                    <button onclick="simpanUpdateDokumen()" id="btn-simpan-update" class="w-full sm:w-auto px-6 py-2.5 sm:py-3 bg-brand-success hover:opacity-90 font-bold rounded-xl text-black transition shadow flex items-center justify-center space-x-2 text-xs sm:text-sm active:scale-[0.98]">
                         <i class="fa-solid fa-floppy-disk"></i>
                         <span>Simpan Perubahan</span>
                     </button>
@@ -378,11 +385,11 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="w-full text-center py-3 px-2 text-[11px] sm:text-xs text-slate-500 border-t border-zinc-800 shrink-0">
+    <footer class="w-full text-center py-3 sm:py-4 text-[10px] sm:text-xs text-slate-500 border-t border-zinc-800 px-2">
         Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script
     </footer>
 
-    <!-- JAVASCRIPT LOGIC (UNCHANGED) -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbxzYzyK0AqSG9r-FFyRaB7wwTx_p9fyoZcl0XToe3AswStm83PfeEgsmRd_QI9DCJ7QaA/exec";
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
@@ -425,16 +432,19 @@
         function toggleTheme() {
             const body = document.body;
             const themeLabel = document.getElementById('theme-label');
+            const themeLabelMobile = document.getElementById('theme-label-mobile');
             
             if (body.classList.contains('theme-green')) {
                 body.classList.remove('theme-green');
                 body.classList.add('theme-dark');
                 if(themeLabel) themeLabel.innerText = "Tema Android";
+                if(themeLabelMobile) themeLabelMobile.innerText = "Android";
                 localStorage.setItem('app_theme', 'theme-dark');
             } else {
                 body.classList.remove('theme-dark');
                 body.classList.add('theme-green');
                 if(themeLabel) themeLabel.innerText = "Tema Default";
+                if(themeLabelMobile) themeLabelMobile.innerText = "Default";
                 localStorage.setItem('app_theme', 'theme-green');
             }
         }
@@ -444,8 +454,12 @@
             document.body.classList.remove('theme-dark', 'theme-green');
             document.body.classList.add(savedTheme);
             const themeLabel = document.getElementById('theme-label');
+            const themeLabelMobile = document.getElementById('theme-label-mobile');
             if(themeLabel) {
                 themeLabel.innerText = savedTheme === 'theme-green' ? 'Tema Default' : 'Tema Android';
+            }
+            if(themeLabelMobile) {
+                themeLabelMobile.innerText = savedTheme === 'theme-green' ? 'Default' : 'Android';
             }
         });
 
@@ -778,6 +792,9 @@
             detectAnimationId = requestAnimationFrame(processLoop);
         }
 
+        // =========================================================================
+        // PEMINDAIAN WAJAH UNTUK UPDATE DOKUMEN & DATA
+        // =========================================================================
         async function mulaiScanUpdate() {
             if (!modelsLoaded) { alert("Model AI sedang dimuat..."); return; }
 
@@ -843,16 +860,21 @@
                             ctx.lineWidth = 3;
                             ctx.strokeRect(drawBox.x, drawBox.y, drawBox.width, drawBox.height);
 
+                            // KUNCI HASIL KECOCOKAN & HENTIKAN PEMINDAI
                             isUpdateDetecting = false;
                             if (updateDetectAnimationId) { cancelAnimationFrame(updateDetectAnimationId); updateDetectAnimationId = null; }
                             stopUpdateCamera();
 
+                            // Tampilkan animasi checklist "✓" dan "verified" warna hijau
                             document.getElementById('update-step-scanner').classList.add('hidden');
                             document.getElementById('update-step-verified').classList.remove('hidden');
 
+                            // Jeda sebentar, lalu sembunyikan verified dan tampilkan loading "Mencari data"
                             setTimeout(async () => {
                                 document.getElementById('update-step-verified').classList.add('hidden');
                                 document.getElementById('update-step-loading').classList.remove('hidden');
+
+                                // Lakukan pencarian data otomatis berdasarkan ID/IC wajah yang terdeteksi
                                 await fetchAndUpdateData(id);
                             }, 1500);
 
@@ -892,6 +914,8 @@
                 }
 
                 const result = await response.json();
+
+                // Sembunyikan loading "Mencari data"
                 document.getElementById('update-step-loading').classList.add('hidden');
 
                 if (result.status === 'success') {
@@ -908,6 +932,7 @@
                     document.getElementById('up-file-1').value = '';
                     document.getElementById('up-file-2').value = '';
 
+                    // Tampilkan form data diri dan upload
                     document.getElementById('update-form-container').classList.remove('hidden');
                 } else {
                     alert(result.message || "Data dengan wajah tersebut tidak ditemukan di sistem.");
@@ -919,6 +944,7 @@
                 switchView('view-home');
             }
         }
+        // =========================================================================
 
         async function prosesAbsen() {
             if (!window.matchedUser) { alert("Wajah tidak dikenali!"); return; }
