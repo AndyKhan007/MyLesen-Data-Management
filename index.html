@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistem Faceprint & Absensi Biometrik</title>
 
     <!-- Google Fonts: Roboto -->
@@ -44,224 +44,212 @@
         }
     </script>
 </head>
-<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col justify-between select-none theme-dark">
+<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col justify-between select-none theme-dark overflow-x-hidden">
 
     <!-- HEADER / STATUS BAR -->
-    <header class="w-full bg-brand-card border-b border-zinc-800 p-4 flex justify-between items-center shadow-md">
-        <div class="flex items-center space-x-3">
-            <div class="w-3 h-3 bg-brand-success rounded-full animate-pulse shadow-[0_0_10px_#32DE84]"></div>
-            <span class="font-bold tracking-wider text-sm md:text-base text-brand-accent">Mulyadi _ BIO ATTENDANCE SYSTEM</span>
+    <header class="w-full bg-brand-card border-b border-zinc-800 px-3 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-2 shadow-md shrink-0">
+        <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-brand-success rounded-full animate-pulse shadow-[0_0_10px_#32DE84] shrink-0"></div>
+            <span class="font-bold tracking-wider text-xs sm:text-sm md:text-base text-brand-accent truncate">Mulyadi _ BIO ATTENDANCE SYSTEM</span>
         </div>
         
-        <div class="flex items-center space-x-3">
-            <!-- Dropdown Pilihan Bahasa -->
-            <select id="language-select" onchange="changeLanguage(this.value)" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-medium text-slate-200 focus:outline-none shadow">
-                <option value="ms">Bahasa Melayu</option>
-                <option value="en">English</option>
-                <option value="zh">中文</option>
-                <option value="id">Bahasa Indonesia</option>
-                <option value="hi">हिन्दी (India)</option>
-                <option value="ja">日本語</option>
-                <option value="ko">한국어</option>
-                <option value="ru">Русский</option>
-            </select>
-
+        <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
             <!-- Tombol Pengalih Tema -->
-            <button onclick="toggleTheme()" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-medium text-slate-200 flex items-center space-x-2 transition shadow">
+            <button onclick="toggleTheme()" class="px-2.5 sm:px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-medium text-slate-200 flex items-center space-x-1.5 sm:space-x-2 transition shadow">
                 <i class="fa-solid fa-palette text-brand-accent"></i>
-                <span id="theme-label">Ganti Tema</span>
+                <span id="theme-label" class="text-xs">Ganti Tema</span>
             </button>
-            <div id="real-time-clock" class="text-sm font-mono text-slate-400 hidden sm:block">00:00:00 | 00-00-0000</div>
+            <div id="real-time-clock" class="text-xs sm:text-sm font-mono text-slate-400 hidden md:block">00:00:00 | 00-00-0000</div>
         </div>
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="flex-grow flex items-center justify-center p-4">
+    <main class="flex-grow flex items-center justify-center p-3 sm:p-4 md:p-6 w-full">
 
         <!-- 1. HOME VIEW -->
-        <section id="view-home" class="w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-8 shadow-2xl text-center space-y-8">
+        <section id="view-home" class="w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-2xl text-center space-y-6 sm:space-y-8 my-auto">
             <div>
-                <div class="w-20 h-20 bg-brand-accent/20 border border-brand-accent rounded-full flex items-center justify-center mx-auto mb-4 text-brand-accent text-3xl shadow-[0_0_15px_rgba(50,222,132,0.2)]">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-brand-accent/25 border border-brand-accent rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-brand-accent text-2xl sm:text-3xl shadow-[0_0_15px_rgba(50,222,132,0.2)]">
                     <i class="fa-solid fa-fingerprint"></i>
                 </div>
-                <h1 data-i18n="home_title" class="text-2xl font-bold tracking-tight text-white">Sistem Faceprint</h1>
-                <p data-i18n="home_subtitle" class="text-slate-400 text-sm mt-1">Sila pilih menu operasi di bawah</p>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Sistem Faceprint</h1>
+                <p class="text-slate-400 text-xs sm:text-sm mt-1">Silakan pilih menu operasional di bawah ini</p>
             </div>
 
             <div class="space-y-3">
-                <button onclick="startFaceprint('in')" class="w-full py-3.5 bg-brand-accent hover:opacity-90 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-base group text-black">
+                <button onclick="startFaceprint('in')" class="w-full py-3 sm:py-3.5 bg-brand-accent hover:opacity-90 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base group text-black">
                     <i class="fa-solid fa-right-to-bracket group-hover:scale-110 transition-transform"></i>
-                    <span data-i18n="btn_face_in">FacePrint In</span>
+                    <span>FacePrint In</span>
                 </button>
-                <button onclick="startFaceprint('out')" class="w-full py-3.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-base text-slate-200 group">
+                <button onclick="startFaceprint('out')" class="w-full py-3 sm:py-3.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base text-slate-200 group">
                     <i class="fa-solid fa-right-from-bracket group-hover:scale-110 transition-transform text-brand-accent"></i>
-                    <span data-i18n="btn_face_out">FacePrint Out</span>
+                    <span>FacePrint Out</span>
                 </button>
-                <button onclick="switchView('view-update-document')" class="w-full py-3.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-base text-slate-200 group">
+                <button onclick="switchView('view-update-document')" class="w-full py-3 sm:py-3.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base text-slate-200 group">
                     <i class="fa-solid fa-file-pen group-hover:scale-110 transition-transform text-brand-accent"></i>
-                    <span data-i18n="btn_update_doc">Kemaskini Dokumen & Data</span>
+                    <span>Update Dokumen & Data</span>
                 </button>
-                <button onclick="switchView('view-admin-login')" class="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-base text-slate-300">
+                <button onclick="switchView('view-admin-login')" class="w-full py-3 sm:py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 transition font-semibold rounded-xl shadow-lg flex items-center justify-center space-x-3 text-sm sm:text-base text-slate-300">
                     <i class="fa-solid fa-lock text-brand-accent"></i>
-                    <span data-i18n="btn_admin_login">Log Masuk Admin / Pendaftaran</span>
+                    <span>Login Admin / Pendaftaran</span>
                 </button>
             </div>
         </section>
 
         <!-- 2. FACEPRINT (ABSENSI) VIEW -->
-        <section id="view-faceprint" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-6 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
-                <h2 id="faceprint-heading" class="text-xl font-bold flex items-center space-x-2 text-white">
-                    <i class="fa-solid fa-video text-brand-accent"></i>
-                    <span data-i18n="scan_title_in">Imbasan Kehadiran (FacePrint In)</span>
+        <section id="view-faceprint" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-6 my-auto">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 sm:pb-4">
+                <h2 id="faceprint-heading" class="text-base sm:text-xl font-bold flex items-center space-x-2 text-white truncate pr-2">
+                    <i class="fa-solid fa-video text-brand-accent shrink-0"></i>
+                    <span class="truncate">Pemindaian Kehadiran (FacePrint In)</span>
                 </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white shrink-0 p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <div id="video-container" class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-brand-accent/50 shadow-inner flex items-center justify-center">
+            <div id="video-container" class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-brand-accent/50 shadow-inner flex items-center justify-center max-h-[50vh] sm:max-h-[60vh]">
                 <video id="video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100 absolute inset-0"></video>
                 <canvas id="overlay-canvas" class="absolute inset-0 w-full h-full object-cover transform -scale-x-100"></canvas>
                 
-                <div class="absolute inset-0 border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
-                    <div class="w-64 h-64 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
-                        <span id="scan-status-label" data-i18n="position_face" class="text-xs bg-black/80 px-3 py-1.5 rounded text-brand-success font-mono font-semibold">Letakkan Muka di Posisi Betul</span>
+                <div class="absolute inset-0 border-[20px] sm:border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
+                    <div class="w-48 h-48 sm:w-64 sm:h-64 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
+                        <span id="scan-status-label" class="text-[11px] sm:text-xs bg-black/80 px-2 sm:px-3 py-1.5 rounded text-brand-success font-mono font-semibold">Posisikan Wajah</span>
                     </div>
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row justify-between items-center bg-zinc-900/80 p-4 rounded-xl border border-zinc-800 text-sm gap-3">
+            <div class="flex flex-col sm:flex-row justify-between items-center bg-zinc-900/80 p-3 sm:p-4 rounded-xl border border-zinc-800 text-xs sm:text-sm gap-3">
                 <div class="w-full sm:w-auto text-center sm:text-left">
-                    <p data-i18n="gps_status_label" class="text-slate-400">Status GPS:</p>
+                    <p class="text-slate-400">Status GPS:</p>
                     <p id="gps-status-text" class="text-brand-success font-medium"><i class="fa-solid fa-spinner fa-spin"></i> Memeriksa GPS...</p>
                 </div>
-                <button id="btn-proses-absen" data-i18n="btn_process_absence" onclick="prosesAbsen()" class="w-full sm:w-auto px-6 py-2.5 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow transition text-black">
-                    Proses Kehadiran
+                <button id="btn-proses-absen" onclick="prosesAbsen()" class="w-full sm:w-auto px-6 py-2.5 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow transition text-black">
+                    Proses Absen
                 </button>
             </div>
         </section>
 
         <!-- 3. ADMIN LOGIN VIEW -->
-        <section id="view-admin-login" class="hidden w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-8 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
-                <h2 class="text-xl font-bold flex items-center space-x-2 text-white">
+        <section id="view-admin-login" class="hidden w-full max-w-md bg-brand-card border border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-2xl space-y-5 sm:space-y-6 my-auto">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 sm:pb-4">
+                <h2 class="text-lg sm:text-xl font-bold flex items-center space-x-2 text-white">
                     <i class="fa-solid fa-shield-halved text-brand-accent"></i>
-                    <span data-i18n="admin_login_title">Log Masuk Pentadbir</span>
+                    <span>Login Administrator</span>
                 </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
             <form onsubmit="handleAdminLogin(event)" class="space-y-4">
                 <div>
-                    <label data-i18n="username_label" class="block text-sm text-slate-400 mb-1">Nama Pengguna Admin</label>
-                    <input type="text" id="admin-user" required data-i18n-placeholder="username_placeholder" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan nama pengguna">
+                    <label class="block text-xs sm:text-sm text-slate-400 mb-1">Username Admin</label>
+                    <input type="text" id="admin-user" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white text-sm" placeholder="Masukkan username">
                 </div>
                 <div>
-                    <label data-i18n="password_label" class="block text-sm text-slate-400 mb-1">Kata Laluan</label>
-                    <input type="password" id="admin-pass" required data-i18n-placeholder="password_placeholder" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white" placeholder="Masukkan kata laluan">
+                    <label class="block text-xs sm:text-sm text-slate-400 mb-1">Password</label>
+                    <input type="password" id="admin-pass" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-accent text-white text-sm" placeholder="Masukkan password">
                 </div>
-                <button type="submit" id="btn-login-submit" data-i18n="btn_login_submit" class="w-full py-3.5 bg-brand-accent hover:opacity-90 transition font-semibold rounded-xl shadow-lg mt-2 text-black">
-                    Log Masuk ke Pendaftaran
+                <button type="submit" id="btn-login-submit" class="w-full py-3.5 bg-brand-accent hover:opacity-90 transition font-semibold rounded-xl shadow-lg mt-2 text-black text-sm">
+                    Masuk ke Pendaftaran
                 </button>
             </form>
         </section>
 
         <!-- 4. FACE REGISTRATION VIEW -->
-        <section id="view-registration" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-6 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
-                <h2 class="text-xl font-bold flex items-center space-x-2 text-white">
+        <section id="view-registration" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-6 my-auto max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 sm:pb-4 sticky top-0 bg-brand-card z-10">
+                <h2 class="text-base sm:text-xl font-bold flex items-center space-x-2 text-white">
                     <i class="fa-solid fa-user-plus text-brand-accent"></i>
-                    <span data-i18n="reg_title">Pendaftaran Muka Baharu (7 Pose)</span>
+                    <span>Pendaftaran Wajah Baru (7 Pose)</span>
                 </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
             <!-- MODUL 1: UPLOAD MYKAD (UNTUK OCR & DISIMPAN) -->
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mb-4 shadow-inner">
-                <label data-i18n="reg_mod1" class="block text-sm font-semibold text-brand-accent mb-3">
-                    <i class="fa-solid fa-id-card mr-2"></i>1. Muat Naik MyKad (Untuk OCR & Disimpan)
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-5 shadow-inner space-y-3">
+                <label class="block text-xs sm:text-sm font-semibold text-brand-accent">
+                    <i class="fa-solid fa-id-card mr-2"></i>1. Upload MyKad (Untuk OCR & Disimpan)
                 </label>
                 
                 <input type="file" id="mykad-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesMyKadFile(this)">
                 <input type="file" id="mykad-gallery" accept="image/*" class="hidden" onchange="prosesMyKadFile(this)">
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                    <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-3 bg-brand-accent hover:opacity-90 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-black">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    <button type="button" onclick="document.getElementById('mykad-camera').click()" class="py-2.5 sm:py-3 bg-brand-accent hover:opacity-90 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-black">
                         <i class="fa-solid fa-camera"></i>
-                        <span data-i18n="btn_camera">Ambil Kamera</span>
+                        <span>Ambil Kamera</span>
                     </button>
-                    <button type="button" onclick="document.getElementById('mykad-gallery').click()" class="py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
+                    <button type="button" onclick="document.getElementById('mykad-gallery').click()" class="py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
                         <i class="fa-solid fa-image"></i>
-                        <span data-i18n="btn_gallery">Pilih Galeri</span>
+                        <span>Pilih Galeri</span>
                     </button>
                 </div>
 
-                <div id="file-selected-info" class="text-xs text-brand-success text-center font-mono hidden mb-3"></div>
+                <div id="file-selected-info" class="text-xs text-brand-success text-center font-mono hidden"></div>
 
-                <button type="button" onclick="kirimMyKadKeServer()" id="btn-ocr" class="w-full py-3 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow-lg transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-black" disabled>
+                <button type="button" onclick="kirimMyKadKeServer()" id="btn-ocr" class="w-full py-3 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow-lg transition text-xs sm:text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-black" disabled>
                     <i class="fa-solid fa-microchip"></i>
-                    <span data-i18n="btn_ocr">Imbas MyKad & Ekstrak Data</span>
+                    <span>Scan MyKad & Ekstrak Data</span>
                 </button>
             </div>
 
             <!-- MODUL 2: UPLOAD GAMBAR KEDUA (HANYA DISIMPAN) -->
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mb-4 shadow-inner">
-                <label data-i18n="reg_mod2" class="block text-sm font-semibold text-brand-accent mb-3">
-                    <i class="fa-solid fa-image mr-2"></i>2. Muat Naik Gambar Kedua (Hanya Disimpan)
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-5 shadow-inner space-y-3">
+                <label class="block text-xs sm:text-sm font-semibold text-brand-accent">
+                    <i class="fa-solid fa-image mr-2"></i>2. Upload Gambar Kedua (Hanya Disimpan Saja)
                 </label>
                 
                 <input type="file" id="second-camera" accept="image/*" capture="environment" class="hidden" onchange="prosesSecondFile(this)">
                 <input type="file" id="second-gallery" accept="image/*" class="hidden" onchange="prosesSecondFile(this)">
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                    <button type="button" onclick="document.getElementById('second-camera').click()" class="py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    <button type="button" onclick="document.getElementById('second-camera').click()" class="py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
                         <i class="fa-solid fa-camera"></i>
-                        <span data-i18n="btn_camera">Ambil Kamera</span>
+                        <span>Ambil Kamera</span>
                     </button>
-                    <button type="button" onclick="document.getElementById('second-gallery').click()" class="py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
+                    <button type="button" onclick="document.getElementById('second-gallery').click()" class="py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition shadow text-slate-200">
                         <i class="fa-solid fa-image"></i>
-                        <span data-i18n="btn_gallery">Pilih Galeri</span>
+                        <span>Pilih Galeri</span>
                     </button>
                 </div>
 
-                <div id="second-file-info" class="text-xs text-brand-success text-center font-mono hidden mb-3"></div>
+                <div id="second-file-info" class="text-xs text-brand-success text-center font-mono hidden"></div>
 
-                <button type="button" onclick="kirimSecondImageKeServer()" id="btn-upload-second" class="w-full py-3 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow-lg transition text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-black" disabled>
+                <button type="button" onclick="kirimSecondImageKeServer()" id="btn-upload-second" class="w-full py-3 bg-brand-success hover:opacity-90 font-bold rounded-lg shadow-lg transition text-xs sm:text-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-black" disabled>
                     <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <span data-i18n="btn_save_second">Simpan Gambar Kedua ke Drive</span>
+                    <span>Simpan Gambar Kedua ke Drive</span>
                 </button>
             </div>
 
             <!-- FORMULIR INPUT DATA -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                    <label data-i18n="label_userid" class="block text-xs text-slate-400 mb-1">ID Pengguna / No. IC</label>
-                    <input type="text" id="reg-id" data-i18n-placeholder="label_userid" placeholder="ID Pengguna / No. IC" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
+                    <label class="block text-xs text-slate-400 mb-1">User ID / No. IC</label>
+                    <input type="text" id="reg-id" placeholder="User ID / No. IC" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white font-mono">
                 </div>
                 <div>
-                    <label data-i18n="label_name" class="block text-xs text-slate-400 mb-1">Nama Penuh Pengguna</label>
-                    <input type="text" id="reg-name" data-i18n-placeholder="label_name" placeholder="Nama Penuh Pengguna" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                    <label class="block text-xs text-slate-400 mb-1">Nama Lengkap User</label>
+                    <input type="text" id="reg-name" placeholder="Nama Lengkap User" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
                 <div>
-                    <label data-i18n="label_phone1" class="block text-xs text-slate-400 mb-1">Nombor Telefon Utama</label>
-                    <input type="tel" id="reg-phone" data-i18n-placeholder="phone_placeholder1" placeholder="Contoh: 0123456789" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                    <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Utama</label>
+                    <input type="tel" id="reg-phone" placeholder="Contoh: 0123456789" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
                 <div>
-                    <label data-i18n="label_phone2" class="block text-xs text-slate-400 mb-1">Nombor Telefon Kedua (Pilihan)</label>
-                    <input type="tel" id="reg-phone-2" data-i18n-placeholder="phone_placeholder2" placeholder="Contoh: 0187654321" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                    <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Kedua (Opsional)</label>
+                    <input type="tel" id="reg-phone-2" placeholder="Contoh: 0187654321" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white">
                 </div>
-                <div class="md:col-span-2">
-                    <label data-i18n="label_role" class="block text-xs text-slate-400 mb-1">Jenis Pengguna / Peranan</label>
-                    <select id="reg-role" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white">
+                <div class="sm:col-span-2">
+                    <label class="block text-xs text-slate-400 mb-1">Jenis User / Role</label>
+                    <select id="reg-role" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white">
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>
             </div>
 
-            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-zinc-800 shadow-inner flex items-center justify-center">
+            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-zinc-800 shadow-inner flex items-center justify-center max-h-[40vh]">
                 <video id="reg-video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
-                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-4 py-2 rounded-full text-center max-w-[90%]">
-                    <span id="pose-instruction" class="text-xs sm:text-sm font-semibold text-brand-accent">Langkah 1/7: Hadap Depan Lurus (Neutral)</span>
+                <div class="absolute top-3 left-1/2 transform -translate-x-1/2 bg-black/80 border border-brand-accent px-3 py-1.5 rounded-full text-center max-w-[92%]">
+                    <span id="pose-instruction" class="text-[11px] sm:text-sm font-semibold text-brand-accent truncate block">Langkah 1/7: Hadap Depan Lurus (Netral)</span>
                 </div>
             </div>
 
@@ -276,44 +264,44 @@
             </div>
 
             <div class="flex flex-col sm:flex-row justify-between items-center pt-2 gap-2">
-                <button onclick="resetRegistration()" data-i18n="btn_reset" class="w-full sm:w-auto px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-sm rounded-lg border border-zinc-600 transition text-slate-200">Set Semula</button>
-                <button onclick="captureNextPose()" id="btn-capture" class="w-full sm:w-auto px-6 py-2.5 bg-brand-accent hover:opacity-90 font-bold rounded-lg shadow transition flex items-center justify-center space-x-2 text-black">
+                <button onclick="resetRegistration()" class="w-full sm:w-auto px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-xs sm:text-sm rounded-lg border border-zinc-600 transition text-slate-200">Reset</button>
+                <button onclick="captureNextPose()" id="btn-capture" class="w-full sm:w-auto px-6 py-2.5 bg-brand-accent hover:opacity-90 font-bold rounded-lg shadow transition flex items-center justify-center space-x-2 text-black text-xs sm:text-sm">
                     <i class="fa-solid fa-camera"></i>
-                    <span data-i18n="btn_capture">Ambil Sampel Pose Ini</span>
+                    <span>Ambil Sampel Pose Ini</span>
                 </button>
             </div>
         </section>
 
         <!-- 5. UPDATE DOKUMEN & DATA VIEW -->
-        <section id="view-update-document" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
-                <h2 class="text-lg sm:text-xl font-bold flex items-center space-x-2 text-white">
+        <section id="view-update-document" class="hidden w-full max-w-2xl bg-brand-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-6 my-auto max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 sm:pb-4 sticky top-0 bg-brand-card z-10">
+                <h2 class="text-base sm:text-xl font-bold flex items-center space-x-2 text-white">
                     <i class="fa-solid fa-file-pen text-brand-accent"></i>
-                    <span data-i18n="update_title">Kemaskini Dokumen & Data</span>
+                    <span>Update Dokumen & Data</span>
                 </h2>
-                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
             <!-- STEP 1: POPUP PROMPT AWAL -->
-            <div id="update-step-prompt" class="space-y-4 bg-zinc-900 p-6 rounded-xl border border-zinc-800 text-center">
-                <div class="w-16 h-16 bg-brand-accent/20 border border-brand-accent rounded-full flex items-center justify-center mx-auto text-brand-accent text-2xl shadow-[0_0_15px_rgba(50,222,132,0.2)]">
+            <div id="update-step-prompt" class="space-y-4 bg-zinc-900 p-5 sm:p-6 rounded-xl border border-zinc-800 text-center">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-brand-accent/20 border border-brand-accent rounded-full flex items-center justify-center mx-auto text-brand-accent text-xl sm:text-2xl shadow-[0_0_15px_rgba(50,222,132,0.2)]">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <p data-i18n="update_prompt" class="text-slate-200 text-sm sm:text-base font-medium">Untuk keselamatan, sila imbas wajah anda</p>
-                <button onclick="mulaiScanUpdate()" data-i18n="btn_continue" class="px-6 py-3 bg-brand-accent hover:opacity-90 font-bold rounded-xl text-black transition text-sm shadow">
-                    Teruskan
+                <p class="text-slate-200 text-xs sm:text-base font-medium">Untuk keamanan lakukan pemindaian wajah anda</p>
+                <button onclick="mulaiScanUpdate()" class="px-6 py-3 bg-brand-accent hover:opacity-90 font-bold rounded-xl text-black transition text-xs sm:text-sm shadow">
+                    Lanjutkan
                 </button>
             </div>
 
             <!-- STEP 2: PEMINDAI WAJAH -->
             <div id="update-step-scanner" class="hidden space-y-4">
-                <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-brand-accent/50 shadow-inner flex items-center justify-center">
+                <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border-2 border-brand-accent/50 shadow-inner flex items-center justify-center max-h-[50vh]">
                     <video id="update-video-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100 absolute inset-0"></video>
                     <canvas id="update-overlay-canvas" class="absolute inset-0 w-full h-full object-cover transform -scale-x-100"></canvas>
                     
-                    <div class="absolute inset-0 border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
-                        <div class="w-64 h-64 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
-                            <span id="update-scan-status-label" data-i18n="position_face" class="text-xs bg-black/80 px-3 py-1.5 rounded text-brand-success font-mono font-semibold">Letakkan Muka di Posisi Betul</span>
+                    <div class="absolute inset-0 border-[20px] sm:border-[30px] border-black/40 pointer-events-none flex items-center justify-center">
+                        <div class="w-48 h-48 sm:w-64 sm:h-64 border-2 border-dashed border-brand-success rounded-full animate-pulse flex items-center justify-center p-2 text-center">
+                            <span id="update-scan-status-label" class="text-[11px] sm:text-xs bg-black/80 px-2 sm:px-3 py-1.5 rounded text-brand-success font-mono font-semibold">Posisikan Wajah</span>
                         </div>
                     </div>
                 </div>
@@ -321,67 +309,67 @@
 
             <!-- STEP 3: ANIMASI CHECKLIST & "VERIFIED" -->
             <div id="update-step-verified" class="hidden py-10 text-center space-y-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                <div class="w-16 h-16 bg-brand-success/20 border border-brand-success rounded-full flex items-center justify-center mx-auto text-brand-success text-3xl animate-bounce shadow-[0_0_15px_rgba(50,222,132,0.4)]">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-brand-success/20 border border-brand-success rounded-full flex items-center justify-center mx-auto text-brand-success text-2xl sm:text-3xl animate-bounce shadow-[0_0_15px_rgba(50,222,132,0.4)]">
                     <i class="fa-solid fa-check"></i>
                 </div>
-                <p data-i18n="verified" class="text-base font-bold text-brand-success tracking-wide">Disahkan</p>
+                <p class="text-sm sm:text-base font-bold text-brand-success tracking-wide">Verified</p>
             </div>
 
             <!-- STEP 4: INDIKATOR LOADING "Mencari data" -->
             <div id="update-step-loading" class="hidden py-12 text-center space-y-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                <i class="fa-solid fa-spinner fa-spin text-3xl text-brand-accent"></i>
-                <p data-i18n="searching_data" class="text-sm font-medium text-slate-200">Mencari data</p>
+                <i class="fa-solid fa-spinner fa-spin text-2xl sm:text-3xl text-brand-accent"></i>
+                <p class="text-xs sm:text-sm font-medium text-slate-200">Mencari data</p>
             </div>
 
-            <!-- STEP 5: KONTEN INFORMASI DATA -->
+            <!-- STEP 5: KONTEN INFORMASI DATA (Read-Only & 2 Kolom Telepon & Upload) -->
             <div id="update-form-container" class="hidden space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 text-sm">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-zinc-900/50 p-3 sm:p-4 rounded-xl border border-zinc-800 text-xs sm:text-sm">
                     <div>
-                        <span data-i18n="lbl_ic" class="block text-xs text-slate-400">No. IC / ID</span>
-                        <p id="up-display-ic" class="font-mono font-bold text-white mt-1">-</p>
+                        <span class="block text-[11px] sm:text-xs text-slate-400">Nomor IC / ID</span>
+                        <p id="up-display-ic" class="font-mono font-bold text-white mt-0.5 sm:mt-1">-</p>
                     </div>
                     <div>
-                        <span data-i18n="lbl_fullname" class="block text-xs text-slate-400">Nama Penuh</span>
-                        <p id="up-display-name" class="font-semibold text-white mt-1">-</p>
+                        <span class="block text-[11px] sm:text-xs text-slate-400">Nama Lengkap</span>
+                        <p id="up-display-name" class="font-semibold text-white mt-0.5 sm:mt-1">-</p>
                     </div>
                     <div>
-                        <span data-i18n="lbl_address" class="block text-xs text-slate-400">Alamat Penuh</span>
-                        <p id="up-display-alamat" class="text-slate-200 mt-1">-</p>
+                        <span class="block text-[11px] sm:text-xs text-slate-400">Alamat Lengkap</span>
+                        <p id="up-display-alamat" class="text-slate-200 mt-0.5 sm:mt-1 break-words">-</p>
                     </div>
                     <div>
-                        <span data-i18n="lbl_nationality_gender" class="block text-xs text-slate-400">Warganegara & Jantina</span>
-                        <p id="up-display-info" class="text-slate-200 mt-1">-</p>
-                    </div>
-                </div>
-
-                <!-- 2 Field Nomor Telepon -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label data-i18n="lbl_edit_phone1" class="block text-xs text-slate-400 mb-1">Nomor Telefon Utama (Boleh Diubah)</label>
-                        <input type="tel" id="up-edit-phone" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Nombor telefon utama">
-                    </div>
-                    <div>
-                        <label data-i18n="lbl_edit_phone2" class="block text-xs text-slate-400 mb-1">Nomor Telefon Kedua (Boleh Diubah)</label>
-                        <input type="tel" id="up-edit-phone-2" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Nombor telefon kedua">
+                        <span class="block text-[11px] sm:text-xs text-slate-400">Warganegara & Gender</span>
+                        <p id="up-display-info" class="text-slate-200 mt-0.5 sm:mt-1">-</p>
                     </div>
                 </div>
 
-                <!-- 2 Kolom Upload Gambar Baru -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2">
-                        <label data-i18n="lbl_upload_new1" class="block text-xs font-semibold text-brand-accent"><i class="fa-solid fa-image mr-1"></i> Muat Naik Gambar 1 Baharu</label>
+                <!-- 2 Field Nomor Telepon yang DAPAT diedit -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Utama (Dapat Diubah)</label>
+                        <input type="tel" id="up-edit-phone" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Nomor telepon utama">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Nomor Telepon Kedua (Dapat Diubah)</label>
+                        <input type="tel" id="up-edit-phone-2" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-accent text-white" placeholder="Nomor telepon kedua">
+                    </div>
+                </div>
+
+                <!-- 2 Kolom Upload Gambar Baru (Responsif) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
+                    <div class="bg-zinc-950 p-3 sm:p-4 rounded-xl border border-zinc-800 space-y-2">
+                        <label class="block text-xs font-semibold text-brand-accent"><i class="fa-solid fa-image mr-1"></i> Upload Gambar 1 Baru</label>
                         <input type="file" id="up-file-1" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-black hover:file:opacity-90 cursor-pointer">
                     </div>
-                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2">
-                        <label data-i18n="lbl_upload_new2" class="block text-xs font-semibold text-brand-accent"><i class="fa-solid fa-image mr-1"></i> Muat Naik Gambar 2 Baharu</label>
+                    <div class="bg-zinc-950 p-3 sm:p-4 rounded-xl border border-zinc-800 space-y-2">
+                        <label class="block text-xs font-semibold text-brand-accent"><i class="fa-solid fa-image mr-1"></i> Upload Gambar 2 Baru</label>
                         <input type="file" id="up-file-2" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-black hover:file:opacity-90 cursor-pointer">
                     </div>
                 </div>
 
-                <div class="flex justify-end pt-4">
-                    <button onclick="simpanUpdateDokumen()" id="btn-simpan-update" class="w-full sm:w-auto px-6 py-3 bg-brand-success hover:opacity-90 font-bold rounded-xl text-black transition shadow flex items-center justify-center space-x-2">
+                <div class="flex justify-end pt-2">
+                    <button onclick="simpanUpdateDokumen()" id="btn-simpan-update" class="w-full sm:w-auto px-6 py-3 bg-brand-success hover:opacity-90 font-bold rounded-xl text-black transition shadow flex items-center justify-center space-x-2 text-xs sm:text-sm">
                         <i class="fa-solid fa-floppy-disk"></i>
-                        <span data-i18n="btn_save_changes">Simpan Perubahan</span>
+                        <span>Simpan Perubahan</span>
                     </button>
                 </div>
             </div>
@@ -390,404 +378,12 @@
     </main>
 
     <!-- FOOTER -->
-    <footer data-i18n="footer" class="w-full text-center py-4 text-xs text-slate-500 border-t border-zinc-800">
+    <footer class="w-full text-center py-3 px-2 text-[11px] sm:text-xs text-slate-500 border-t border-zinc-800 shrink-0">
         Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script
     </footer>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT LOGIC (UNCHANGED) -->
     <script>
-        // Kamus Terjemahan Multi-Bahasa
-        const translations = {
-            ms: {
-                home_title: "Sistem Faceprint",
-                home_subtitle: "Sila pilih menu operasi di bawah",
-                btn_face_in: "FacePrint In",
-                btn_face_out: "FacePrint Out",
-                btn_update_doc: "Kemaskini Dokumen & Data",
-                btn_admin_login: "Log Masuk Admin / Pendaftaran",
-                scan_title_in: "Imbasan Kehadiran (FacePrint In)",
-                scan_title_out: "Imbasan Kehadiran (FacePrint Out)",
-                position_face: "Letakkan Muka di Posisi Betul",
-                gps_status_label: "Status GPS:",
-                btn_process_absence: "Proses Kehadiran",
-                admin_login_title: "Log Masuk Pentadbir",
-                username_label: "Nama Pengguna Admin",
-                password_label: "Kata Laluan",
-                btn_login_submit: "Log Masuk ke Pendaftaran",
-                reg_title: "Pendaftaran Muka Baharu (7 Pose)",
-                reg_mod1: "1. Muat Naik MyKad (Untuk OCR & Disimpan)",
-                btn_camera: "Ambil Kamera",
-                btn_gallery: "Pilih Galeri",
-                btn_ocr: "Imbas MyKad & Ekstrak Data",
-                reg_mod2: "2. Muat Naik Gambar Kedua (Hanya Disimpan)",
-                btn_save_second: "Simpan Gambar Kedua ke Drive",
-                label_userid: "ID Pengguna / No. IC",
-                label_name: "Nama Penuh Pengguna",
-                label_phone1: "Nombor Telefon Utama",
-                label_phone2: "Nombor Telefon Kedua (Pilihan)",
-                label_role: "Jenis Pengguna / Peranan",
-                btn_reset: "Set Semula",
-                btn_capture: "Ambil Sampel Pose Ini",
-                update_title: "Kemaskini Dokumen & Data",
-                update_prompt: "Untuk keselamatan, sila imbas wajah anda",
-                btn_continue: "Teruskan",
-                verified: "Disahkan",
-                searching_data: "Mencari data",
-                lbl_ic: "No. IC / ID",
-                lbl_fullname: "Nama Penuh",
-                lbl_address: "Alamat Penuh",
-                lbl_nationality_gender: "Warganegara & Jantina",
-                lbl_edit_phone1: "Nombor Telefon Utama (Boleh Diubah)",
-                lbl_edit_phone2: "Nombor Telefon Kedua (Boleh Diubah)",
-                lbl_upload_new1: "Muat Naik Gambar 1 Baharu",
-                lbl_upload_new2: "Muat Naik Gambar 2 Baharu",
-                btn_save_changes: "Simpan Perubahan",
-                footer: "Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script"
-            },
-            en: {
-                home_title: "Faceprint System",
-                home_subtitle: "Please select an operational menu below",
-                btn_face_in: "FacePrint In",
-                btn_face_out: "FacePrint Out",
-                btn_update_doc: "Update Document & Data",
-                btn_admin_login: "Admin Login / Registration",
-                scan_title_in: "Attendance Scan (FacePrint In)",
-                scan_title_out: "Attendance Scan (FacePrint Out)",
-                position_face: "Position Face Properly",
-                gps_status_label: "GPS Status:",
-                btn_process_absence: "Process Attendance",
-                admin_login_title: "Administrator Login",
-                username_label: "Admin Username",
-                password_label: "Password",
-                btn_login_submit: "Login to Registration",
-                reg_title: "New Face Registration (7 Poses)",
-                reg_mod1: "1. Upload MyKad (For OCR & Save)",
-                btn_camera: "Take Camera",
-                btn_gallery: "Select Gallery",
-                btn_ocr: "Scan MyKad & Extract Data",
-                reg_mod2: "2. Upload Second Image (Save Only)",
-                btn_save_second: "Save Second Image to Drive",
-                label_userid: "User ID / IC No.",
-                label_name: "Full Name",
-                label_phone1: "Primary Phone Number",
-                label_phone2: "Secondary Phone Number (Optional)",
-                label_role: "User Role",
-                btn_reset: "Reset",
-                btn_capture: "Capture This Pose Sample",
-                update_title: "Update Document & Data",
-                update_prompt: "For security, please scan your face",
-                btn_continue: "Continue",
-                verified: "Verified",
-                searching_data: "Searching data",
-                lbl_ic: "IC / ID Number",
-                lbl_fullname: "Full Name",
-                lbl_address: "Full Address",
-                lbl_nationality_gender: "Nationality & Gender",
-                lbl_edit_phone1: "Primary Phone Number (Editable)",
-                lbl_edit_phone2: "Secondary Phone Number (Editable)",
-                lbl_upload_new1: "Upload New Image 1",
-                lbl_upload_new2: "Upload New Image 2",
-                btn_save_changes: "Save Changes",
-                footer: "Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script"
-            },
-            zh: {
-                home_title: "人脸打卡系统",
-                home_subtitle: "请选择以下操作菜单",
-                btn_face_in: "签到 (FacePrint In)",
-                btn_face_out: "签退 (FacePrint Out)",
-                btn_update_doc: "更新文档与资料",
-                btn_admin_login: "管理员登录 / 注册",
-                scan_title_in: "考勤扫描 (签到)",
-                scan_title_out: "考勤扫描 (签退)",
-                position_face: "请将脸部对准位置",
-                gps_status_label: "GPS 状态:",
-                btn_process_absence: "处理考勤",
-                admin_login_title: "管理员登录",
-                username_label: "管理员账号",
-                password_label: "密码",
-                btn_login_submit: "登录至注册页面",
-                reg_title: "新面部注册 (7种姿势)",
-                reg_mod1: "1. 上传MyKad (用于OCR并保存)",
-                btn_camera: "拍照",
-                btn_gallery: "选择相册",
-                btn_ocr: "扫描MyKad并提取数据",
-                reg_mod2: "2. 上传第二张图片 (仅保存)",
-                btn_save_second: "保存第二张图片至云端",
-                label_userid: "用户ID / 身份证号",
-                label_name: "用户全名",
-                label_phone1: "主要电话号码",
-                label_phone2: "备用电话号码 (可选)",
-                label_role: "用户角色",
-                btn_reset: "重置",
-                btn_capture: "捕获此姿势样本",
-                update_title: "更新文档与资料",
-                update_prompt: "为了安全起见，请扫描您的人脸",
-                btn_continue: "继续",
-                verified: "已验证",
-                searching_data: "正在搜索数据",
-                lbl_ic: "身份证/ID号",
-                lbl_fullname: "全名",
-                lbl_address: "详细地址",
-                lbl_nationality_gender: "国籍与性别",
-                lbl_edit_phone1: "主要电话号码 (可修改)",
-                lbl_edit_phone2: "备用电话号码 (可修改)",
-                lbl_upload_new1: "上传新图片1",
-                lbl_upload_new2: "上传新图片2",
-                btn_save_changes: "保存更改",
-                footer: "基于网页的人脸打卡与地理围栏系统 &bull; 由 Google Sheets & Apps Script 提供支持"
-            },
-            id: {
-                home_title: "Sistem Faceprint",
-                home_subtitle: "Silakan pilih menu operasional di bawah ini",
-                btn_face_in: "FacePrint In",
-                btn_face_out: "FacePrint Out",
-                btn_update_doc: "Update Dokumen & Data",
-                btn_admin_login: "Login Admin / Pendaftaran",
-                scan_title_in: "Pemindaian Kehadiran (FacePrint In)",
-                scan_title_out: "Pemindaian Kehadiran (FacePrint Out)",
-                position_face: "Posisikan Wajah dengan Benar",
-                gps_status_label: "Status GPS:",
-                btn_process_absence: "Proses Absen",
-                admin_login_title: "Login Administrator",
-                username_label: "Username Admin",
-                password_label: "Password",
-                btn_login_submit: "Masuk ke Pendaftaran",
-                reg_title: "Pendaftaran Wajah Baru (7 Pose)",
-                reg_mod1: "1. Upload MyKad (Untuk OCR & Disimpan)",
-                btn_camera: "Ambil Kamera",
-                btn_gallery: "Pilih Galeri",
-                btn_ocr: "Scan MyKad & Ekstrak Data",
-                reg_mod2: "2. Upload Gambar Kedua (Hanya Disimpan Saja)",
-                btn_save_second: "Simpan Gambar Kedua ke Drive",
-                label_userid: "User ID / No. IC",
-                label_name: "Nama Lengkap User",
-                label_phone1: "Nomor Telepon Utama",
-                label_phone2: "Nomor Telepon Kedua (Opsional)",
-                label_role: "Jenis User / Role",
-                btn_reset: "Reset",
-                btn_capture: "Ambil Sampel Pose Ini",
-                update_title: "Update Dokumen & Data",
-                update_prompt: "Untuk keamanan lakukan pemindaian wajah anda",
-                btn_continue: "Lanjutkan",
-                verified: "Verified",
-                searching_data: "Mencari data",
-                lbl_ic: "Nomor IC / ID",
-                lbl_fullname: "Nama Lengkap",
-                lbl_address: "Alamat Lengkap",
-                lbl_nationality_gender: "Warganegara & Gender",
-                lbl_edit_phone1: "Nomor Telepon Utama (Dapat Diubah)",
-                lbl_edit_phone2: "Nomor Telepon Kedua (Dapat Diubah)",
-                lbl_upload_new1: "Upload Gambar 1 Baru",
-                lbl_upload_new2: "Upload Gambar 2 Baru",
-                btn_save_changes: "Simpan Perubahan",
-                footer: "Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script"
-            },
-            hi: {
-                home_title: "फेसप्रिंट सिस्टम",
-                home_subtitle: "कृपया नीचे दिए गए ऑपरेशनल मेनू का चयन करें",
-                btn_face_in: "फेसप्रिंट इन",
-                btn_face_out: "फेसप्रिंट आउट",
-                btn_update_doc: "दस्तावेज़ और डेटा अपडेट करें",
-                btn_admin_login: "व्यवस्थापक लॉगिन / पंजीकरण",
-                scan_title_in: "उपस्थिति स्कैन (फेसप्रिंट इन)",
-                scan_title_out: "उपस्थिति स्कैन (फेसप्रिंट आउट)",
-                position_face: "चेहरा सही स्थिति में रखें",
-                gps_status_label: "GPS स्थिति:",
-                btn_process_absence: "उपस्थिति दर्ज करें",
-                admin_login_title: "व्यवस्थापक लॉगिन",
-                username_label: "एडमिन यूजरनेम",
-                password_label: "पासवर्ड",
-                btn_login_submit: "पंजीकरण में लॉगिन करें",
-                reg_title: "नया चेहरा पंजीकरण (7 पोज़)",
-                reg_mod1: "1. MyKad अपलोड करें (OCR और सहेजने के लिए)",
-                btn_camera: "कैमरा लें",
-                btn_gallery: "गैलरी चुनें",
-                btn_ocr: "MyKad स्कैन करें और डेटा निकालें",
-                reg_mod2: "2. दूसरी छवि अपलोड करें (केवल सहेजें)",
-                btn_save_second: "ड्राइव में दूसरी छवि सहेजें",
-                label_userid: "यूजर आईडी / आईसी नंबर",
-                label_name: "पूरा नाम",
-                label_phone1: "प्राथमिक फोन नंबर",
-                label_phone2: "द्वितीयक फोन नंबर (वैकल्पिक)",
-                label_role: "यूजर भूमिका",
-                btn_reset: "रीसेट",
-                btn_capture: "यह पोज़ सैंपल कैप्चर करें",
-                update_title: "दस्तावेज़ और डेटा अपडेट करें",
-                update_prompt: "सुरक्षा के लिए कृपया अपना चेहरा स्कैन करें",
-                btn_continue: "जारी रखें",
-                verified: "सत्यापित",
-                searching_data: "डेटा खोज रहा है",
-                lbl_ic: "आईसी / आईडी नंबर",
-                lbl_fullname: "पूरा नाम",
-                lbl_address: "पूरा पता",
-                lbl_nationality_gender: "राष्ट्रीयता और लिंग",
-                lbl_edit_phone1: "प्राथमिक फोन नंबर (संपादन योग्य)",
-                lbl_edit_phone2: "द्वितीयक फोन नंबर (संपादन योग्य)",
-                lbl_upload_new1: "नई छवि 1 अपलोड करें",
-                lbl_upload_new2: "नई छवि 2 अपलोड करें",
-                btn_save_changes: "परिवर्तन सहेजें",
-                footer: "Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script"
-            },
-            ja: {
-                home_title: "フェイスプリントシステム",
-                home_subtitle: "以下の操作メニューを選択してください",
-                btn_face_in: "顔認証出勤 (FacePrint In)",
-                btn_face_out: "顔認証退勤 (FacePrint Out)",
-                btn_update_doc: "書類・データ更新",
-                btn_admin_login: "管理者ログイン / 登録",
-                scan_title_in: "出勤スキャン (FacePrint In)",
-                scan_title_out: "退勤スキャン (FacePrint Out)",
-                position_face: "顔を正しい位置に合わせてください",
-                gps_status_label: "GPSステータス:",
-                btn_process_absence: "出席を処理",
-                admin_login_title: "管理者ログイン",
-                username_label: "管理者ユーザー名",
-                password_label: "パスワード",
-                btn_login_submit: "登録へログイン",
-                reg_title: "新しい顔登録 (7つのポーズ)",
-                reg_mod1: "1. MyKadをアップロード (OCRおよび保存用)",
-                btn_camera: "カメラで撮影",
-                btn_gallery: "ギャラリーから選択",
-                btn_ocr: "MyKadスキャンとデータ抽出",
-                reg_mod2: "2. 2番目の画像をアップロード (保存のみ)",
-                btn_save_second: "2番目の画像をドライブに保存",
-                label_userid: "ユーザーID / IC番号",
-                label_name: "フルネーム",
-                label_phone1: "メイン電話番号",
-                label_phone2: "サブ電話番号 (任意)",
-                label_role: "ユーザーロール",
-                btn_reset: "リセット",
-                btn_capture: "このポーズサンプルをキャプチャ",
-                update_title: "書類・データ更新",
-                update_prompt: "安全のため、顔のスキャンを行ってください",
-                btn_continue: "続行",
-                verified: "認証済み",
-                searching_data: "データを検索中",
-                lbl_ic: "IC / ID番号",
-                lbl_fullname: "フルネーム",
-                lbl_address: "住所",
-                lbl_nationality_gender: "国籍・性別",
-                lbl_edit_phone1: "メイン電話番号 (編集可能)",
-                lbl_edit_phone2: "サブ電話番号 (編集可能)",
-                lbl_upload_new1: "新しい画像1をアップロード",
-                lbl_upload_new2: "新しい画像2をアップロード",
-                btn_save_changes: "変更を保存",
-                footer: "Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script"
-            },
-            ko: {
-                home_title: "페이스프린트 시스템",
-                home_subtitle: "아래 작업 메뉴를 선택하세요",
-                btn_face_in: "출근 (FacePrint In)",
-                btn_face_out: "퇴근 (FacePrint Out)",
-                btn_update_doc: "문서 및 데이터 업데이트",
-                btn_admin_login: "관리자 로그인 / 등록",
-                scan_title_in: "출석 스캔 (출근)",
-                scan_title_out: "출석 스캔 (퇴근)",
-                position_face: "얼굴을 올바른 위치에 놓아주세요",
-                gps_status_label: "GPS 상태:",
-                btn_process_absence: "출석 처리",
-                admin_login_title: "관리자 로그인",
-                username_label: "관리자 사용자 이름",
-                password_label: "비밀번호",
-                btn_login_submit: "등록으로 로그인",
-                reg_title: "신규 안면 등록 (7개 포즈)",
-                reg_mod1: "1. MyKad 업로드 (OCR 및 저장용)",
-                btn_camera: "카메라 촬영",
-                btn_gallery: "갤러리 선택",
-                btn_ocr: "MyKad 스캔 및 데이터 추출",
-                reg_mod2: "2. 두 번째 이미지 업로드 (저장만)",
-                btn_save_second: "드라이브에 두 번째 이미지 저장",
-                label_userid: "사용자 ID / 신분증 번호",
-                label_name: "사용자 전체 이름",
-                label_phone1: "주요 전화번호",
-                label_phone2: "보조 전화번호 (선택사항)",
-                label_role: "사용자 역할",
-                btn_reset: "초기화",
-                btn_capture: "이 포즈 샘플 캡처",
-                update_title: "문서 및 데이터 업데이트",
-                update_prompt: "보안을 위해 얼굴을 스캔해 주세요",
-                btn_continue: "계속",
-                verified: "인증됨",
-                searching_data: "데이터 검색 중",
-                lbl_ic: "IC / ID 번호",
-                lbl_fullname: "전체 이름",
-                lbl_address: "상세 주소",
-                lbl_nationality_gender: "국적 및 성별",
-                lbl_edit_phone1: "주요 전화번호 (수정 가능)",
-                lbl_edit_phone2: "보조 전화번호 (수정 가능)",
-                lbl_upload_new1: "새 이미지 1 업로드",
-                lbl_upload_new2: "새 이미지 2 업로드",
-                btn_save_changes: "변경사항 저장",
-                footer: "Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script"
-            },
-            ru: {
-                home_title: "Система Faceprint",
-                home_subtitle: "Пожалуйста, выберите операционное меню ниже",
-                btn_face_in: "Вход по лицу (FacePrint In)",
-                btn_face_out: "Выход по лицу (FacePrint Out)",
-                btn_update_doc: "Обновить документы и данные",
-                btn_admin_login: "Вход администратора / Регистрация",
-                scan_title_in: "Сканирование посещаемости (Вход)",
-                scan_title_out: "Сканирование посещаемости (Выход)",
-                position_face: "Расположите лицо правильно",
-                gps_status_label: "Статус GPS:",
-                btn_process_absence: "Обработать посещаемость",
-                admin_login_title: "Вход администратора",
-                username_label: "Имя пользователя администратора",
-                password_label: "Пароль",
-                btn_login_submit: "Войти для регистрации",
-                reg_title: "Регистрация нового лица (7 поз)",
-                reg_mod1: "1. Загрузить MyKad (для OCR и сохранения)",
-                btn_camera: "Сделать фото",
-                btn_gallery: "Выбрать из галереи",
-                btn_ocr: "Сканировать MyKad и извлечь данные",
-                reg_mod2: "2. Загрузить второе изображение (только сохранение)",
-                btn_save_second: "Сохранить второе изображение на Диск",
-                label_userid: "ID пользователя / Номер IC",
-                label_name: "Полное имя",
-                label_phone1: "Основной номер телефона",
-                label_phone2: "Дополнительный номер (необязательно)",
-                label_role: "Роль пользователя",
-                btn_reset: "Сбросить",
-                btn_capture: "Захватить этот образец позы",
-                update_title: "Обновить документы и данные",
-                update_prompt: "Для безопасности отсканируйте свое лицо",
-                btn_continue: "Продолжить",
-                verified: "Подтверждено",
-                searching_data: "Поиск данных",
-                lbl_ic: "Номер IC / ID",
-                lbl_fullname: "Полное имя",
-                lbl_address: "Полный адрес",
-                lbl_nationality_gender: "Гражданство и пол",
-                lbl_edit_phone1: "Основной номер (изменяемый)",
-                lbl_edit_phone2: "Второй номер (изменяемый)",
-                lbl_upload_new1: "Загрузить новое изображение 1",
-                lbl_upload_new2: "Загрузить новое изображение 2",
-                btn_save_changes: "Сохранить изменения",
-                footer: "Web-Based Faceprint & Geofencing System &bull; Powered by Google Sheets & Apps Script"
-            }
-        };
-
-        // Fungsi Mengubah Bahasa Aplikasi
-        function changeLanguage(lang) {
-            localStorage.setItem('app_lang', lang);
-            const t = translations[lang] || translations['ms'];
-            
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (t[key]) {
-                    el.innerText = t[key];
-                }
-            });
-
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder');
-                if (t[key]) {
-                    el.placeholder = t[key];
-                }
-            });
-        }
-
         const API_URL = "https://script.google.com/macros/s/AKfycbxzYzyK0AqSG9r-FFyRaB7wwTx_p9fyoZcl0XToe3AswStm83PfeEgsmRd_QI9DCJ7QaA/exec";
         const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
@@ -833,7 +429,7 @@
             if (body.classList.contains('theme-green')) {
                 body.classList.remove('theme-green');
                 body.classList.add('theme-dark');
-                if(themeLabel) themeLabel.innerText = "Ganti Tema";
+                if(themeLabel) themeLabel.innerText = "Tema Android";
                 localStorage.setItem('app_theme', 'theme-dark');
             } else {
                 body.classList.remove('theme-dark');
@@ -849,23 +445,16 @@
             document.body.classList.add(savedTheme);
             const themeLabel = document.getElementById('theme-label');
             if(themeLabel) {
-                themeLabel.innerText = savedTheme === 'theme-green' ? 'Tema Default' : 'Ganti Tema';
+                themeLabel.innerText = savedTheme === 'theme-green' ? 'Tema Default' : 'Tema Android';
             }
-
-            // Inisialisasi Bahasa (Default: ms - Bahasa Malaysia)
-            const savedLang = localStorage.getItem('app_lang') || 'ms';
-            const langSelect = document.getElementById('language-select');
-            if (langSelect) {
-                langSelect.value = savedLang;
-            }
-            changeLanguage(savedLang);
         });
 
         setInterval(() => {
             const now = new Date();
             const timeString = now.toTimeString().split(' ')[0];
             const dateString = String(now.getDate()).padStart(2, '0') + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + now.getFullYear();
-            document.getElementById('real-time-clock').innerText = `${timeString} | ${dateString}`;
+            const clockEl = document.getElementById('real-time-clock');
+            if(clockEl) clockEl.innerText = `${timeString} | ${dateString}`;
         }, 1000);
 
         function speakNativeFallback(text, lang = 'id-ID') {
@@ -1031,10 +620,7 @@
             const headingEl = document.getElementById('faceprint-heading');
             if (headingEl) {
                 const labelType = type === 'in' ? 'FacePrint In' : 'FacePrint Out';
-                const currentLang = localStorage.getItem('app_lang') || 'ms';
-                const t = translations[currentLang] || translations['ms'];
-                const translatedTitle = type === 'in' ? t.scan_title_in : t.scan_title_out;
-                headingEl.innerHTML = `<i class="fa-solid fa-video text-brand-accent"></i><span>${translatedTitle}</span>`;
+                headingEl.innerHTML = `<i class="fa-solid fa-video text-brand-accent"></i><span>Pemindaian Kehadiran (${labelType})</span>`;
             }
             switchView('view-faceprint');
         }
@@ -1183,7 +769,7 @@
                         statusLabel.innerText = "Mencocokkan wajah...";
                         handleFaceLoss();
                     } else {
-                        statusLabel.innerText = "Letakkan Muka di Posisi Betul"; handleFaceLoss();
+                        statusLabel.innerText = "Posisikan Wajah"; handleFaceLoss();
                     }
                 } catch (err) { console.error(err); } 
                 finally { isProcessing = false; }
@@ -1285,7 +871,7 @@
                         ctx.strokeRect(box.x * scaleX, box.y * scaleY, box.width * scaleX, box.height * scaleY);
                         statusLabel.innerText = "Mencocokkan wajah...";
                     } else {
-                        statusLabel.innerText = "Letakkan Muka di Posisi Betul";
+                        statusLabel.innerText = "Posisikan Wajah";
                     }
                 } catch (err) { console.error(err); } 
                 finally { isProcessing = false; }
@@ -1382,12 +968,7 @@
 
                 switchView('view-home');
             } catch (err) { alert("Gagal mengirim absensi."); } 
-            finally { 
-                const currentLang = localStorage.getItem('app_lang') || 'ms';
-                const t = translations[currentLang] || translations['ms'];
-                btn.innerText = t.btn_process_absence; 
-                btn.disabled = false; 
-            }
+            finally { btn.innerText = "Proses Absen"; btn.disabled = false; }
         }
 
         async function handleAdminLogin(event) {
@@ -1406,12 +987,7 @@
                 if (result.status === 'success') { alert("Login Berhasil!"); switchView('view-registration'); } 
                 else { alert(result.message); }
             } catch (err) { alert("Kesalahan server."); } 
-            finally { 
-                const currentLang = localStorage.getItem('app_lang') || 'ms';
-                const t = translations[currentLang] || translations['ms'];
-                btn.innerText = t.btn_login_submit; 
-                btn.disabled = false; 
-            }
+            finally { btn.innerText = "Masuk ke Pendaftaran"; btn.disabled = false; }
         }
 
         async function simpanUpdateDokumen() {
@@ -1467,9 +1043,7 @@
                 alert("Kesalahan jaringan saat menyimpan data.");
                 console.error(err);
             } finally {
-                const currentLang = localStorage.getItem('app_lang') || 'ms';
-                const t = translations[currentLang] || translations['ms'];
-                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span>${t.btn_save_changes}</span>`;
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span>Simpan Perubahan</span>`;
                 btn.disabled = false;
             }
         }
@@ -1527,9 +1101,7 @@
                 } catch (error) {
                     alert("Kesalahan jaringan saat memproses MyKad.");
                 } finally {
-                    const currentLang = localStorage.getItem('app_lang') || 'ms';
-                    const t = translations[currentLang] || translations['ms'];
-                    btn.innerHTML = `<i class="fa-solid fa-microchip"></i> <span>${t.btn_ocr}</span>`;
+                    btn.innerHTML = `<i class="fa-solid fa-microchip"></i> <span>Scan MyKad & Ekstrak Data</span>`;
                     btn.disabled = false;
                 }
             };
@@ -1576,9 +1148,7 @@
                 } catch (error) {
                     alert("Kesalahan jaringan saat mengunggah gambar kedua.");
                 } finally {
-                    const currentLang = localStorage.getItem('app_lang') || 'ms';
-                    const t = translations[currentLang] || translations['ms'];
-                    btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>${t.btn_save_second}</span>`;
+                    btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Simpan Gambar Kedua ke Drive</span>`;
                     btn.disabled = false;
                 }
             };
@@ -1669,13 +1239,8 @@
             document.getElementById('progress-percentage').innerText = `${Math.round(percent)}%`;
             document.getElementById('progress-bar').style.width = `${percent}%`;
 
-            const currentLang = localStorage.getItem('app_lang') || 'ms';
-            const t = translations[currentLang] || translations['ms'];
-
             if(currentPoseStep === totalPoses) {
                 document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-check"></i> <span>Simpan & Selesaikan</span>`;
-            } else {
-                document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-camera"></i> <span>${t.btn_capture}</span>`;
             }
         }
 
@@ -1687,10 +1252,7 @@
             secondImageDriveUrl = "";
             document.getElementById('second-file-info').classList.add('hidden');
             document.getElementById('btn-upload-second').disabled = true;
-            
-            const currentLang = localStorage.getItem('app_lang') || 'ms';
-            const t = translations[currentLang] || translations['ms'];
-            document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-camera"></i> <span>${t.btn_capture}</span>`;
+            document.getElementById('btn-capture').innerHTML = `<i class="fa-solid fa-camera"></i> <span>Ambil Sampel Pose Ini</span>`;
             updateRegistrationUI();
         }
     </script>
